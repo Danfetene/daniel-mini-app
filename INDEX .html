@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gold Soft Drinks</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div class="logo">G</div> 
+            <h1>GOLD SOFT DRINKS</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('shop')">Shop</button>
+            <button class="tab-btn" onclick="showTab('about')">About</button>
+        </div>
+
+        <section id="shop" class="tab-content active">
+            <div class="grid" id="product-grid">
+                </div>
+        </section>
+
+        <section id="about" class="tab-content">
+            <div class="about-card">
+                <h3>Our Mission</h3>
+                <p>Crafting the finest gold-standard beverages since 1998.</p>
+                <div class="stats-row">
+                    <div class="stat"><strong>450</strong><span>Employees</span></div>
+                    <div class="stat"><strong>100k</strong><span>Daily Cap.</span></div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

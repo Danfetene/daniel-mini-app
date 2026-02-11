@@ -1,0 +1,60 @@
+:root {
+    --gold: #FFD700;
+    --dark-gold: #B8860B;
+    --bg: var(--tg-theme-bg-color, #fff);
+    --text: var(--tg-theme-text-color, #222);
+}
+
+body {
+    background-color: var(--tg-theme-secondary-bg-color);
+    color: var(--text);
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    margin: 0; padding: 0; overflow-x: hidden;
+}
+
+.app-header {
+    text-align: center; padding: 20px;
+    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+    color: white; border-bottom-right-radius: 30px; border-bottom-left-radius: 30px;
+}
+
+.logo {
+    width: 60px; height: 60px; background: white; color: var(--dark-gold);
+    font-size: 32px; font-weight: bold; line-height: 60px;
+    margin: 0 auto 10px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.tabs {
+    display: flex; justify-content: center; gap: 10px; margin: 20px 0;
+}
+
+.tab-btn {
+    padding: 8px 25px; border-radius: 20px; border: none;
+    background: var(--tg-theme-bg-color); color: var(--text);
+    font-weight: bold; transition: 0.3s;
+}
+
+.tab-btn.active { background: var(--gold); color: black; }
+
+.grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px;
+}
+
+.product-card {
+    background: var(--bg); border-radius: 15px; padding: 15px;
+    text-align: center; transition: transform 0.2s;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.product-card:active { transform: scale(0.95); }
+
+.product-card img { width: 80%; height: auto; margin-bottom: 10px; }
+
+.tab-content { display: none; animation: fadeIn 0.4s; }
+.tab-content.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.about-card { background: var(--bg); margin: 15px; padding: 20px; border-radius: 15px; }
+.stats-row { display: flex; justify-content: space-around; margin-top: 20px; }
+.stat strong { display: block; font-size: 20px; color: var(--gold); }
