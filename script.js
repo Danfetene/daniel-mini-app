@@ -1,162 +1,66 @@
+// Replace with your actual Google Cloud API Key
+const API_KEY = 'AIzaSyCB11eevxR7iulC-iWgv5lBjJ-hnMpxKyA';
+
 const tg = window.Telegram.WebApp;
+const searchForm = document.getElementById('search-form');
+const searchInput = document.getElementById('search-input');
+const resultsContainer = document.getElementById('video-results');
+const welcomeUser = document.getElementById('welcome-user');
+
+// Initialize Telegram App
 tg.ready();
 tg.expand();
+tg.setHeaderColor('#000000');
 
-// Theme sync
-function updateTheme() {
-  document.body.classList.toggle('tg-theme-dark', tg.colorScheme === 'dark');
-}
-updateTheme();
-tg.onEvent('themeChanged', updateTheme);
-
-// Elements
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
-const clearBtn = document.getElementById('clearBtn');
-const results = document.getElementById('results');
-const loading = document.getElementById('loading');
-const emptyState = document.getElementById('emptyState');
-const playerSection = document.getElementById('playerSection');
-const ytPlayer = document.getElementById('ytPlayer');
-const backBtn = document.getElementById('backBtn');
-const audioOnly = document.getElementById('audioOnly');
-const qualitySelect = document.getElementById('qualitySelect');
-const nowPlayingTitle = document.getElementById('nowPlayingTitle');
-
-const API_KEY = 'AIzaSyCB11eevxR7iulC-iWgv5lBjJ-hnMpxKyA'; // ← replace!
-const qualityMap = { low: '', medium: '&itag=18', high: '&itag=22' };
-
-// Haptic feedback helper
-function tapHaptic() {
-  if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+// Greet the user using Telegram SDK data
+if (tg.initDataUnsafe?.user) {
+    welcomeUser.innerText = `Hello, ${tg.initDataUnsafe.user.first_name}! What shall we watch?`;
 }
 
-// Show/hide helpers
-function show(el) { el.classList.remove('hidden'); }
-function hide(el) { el.classList.add('hidden'); }
+searchForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const query = searchInput.value;
+    if (!query) return;
 
-// Debounce search (avoid spamming API while typing – optional live search later)
-let debounceTimer;
-function debounceSearch() {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(doSearch, 600);
-}
+    // Show loading state
+    resultsContainer.innerHTML = '<div class="placeholder">Searching...</div>';
 
-// Main search function
-async function doSearch() {
-  const query = searchInput.value.trim();
-  if (!query) {
-    show(emptyState);
-    hide(results);
-    hide(loading);
-    return;
-  }
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
 
-  hide(emptyState);
-  show(loading);
-  hide(results);
-  tapHaptic();
+        displayResults(data.items);
+    } catch (error) {
+        resultsContainer.innerHTML = '<div class="placeholder" style="color:red">Error loading videos. Check API Key.</div>';
+    }
+});
 
-  try {
-    const res = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${encodeURIComponent(query)}&regionCode=ET&key=${API_KEY}`
-    );
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const data = await res.json();
-
-    if (data.error) throw new Error(data.error.message);
-
-    results.innerHTML = '';
-
-    if (!data.items?.length) {
-      results.innerHTML = '<p style="text-align:center;padding:40px;">No videos found. Try another search!</p>';
-    } else {
-      data.items.forEach(item => {
-        if (item.id.kind !== 'youtube#video') return;
-
-        const card = document.createElement('div');
-        card.className = 'result-card';
-        card.innerHTML = `
-          <img src="${item.snippet.thumbnails.medium.url || item.snippet.thumbnails.default.url}" alt="${item.snippet.title}" loading="lazy">
-          <div class="result-info">
-            <div class="result-title">${item.snippet.title}</div>
-            <div class="result-channel">${item.snippet.channelTitle}</div>
-          </div>
-        `;
-
-        card.onclick = () => {
-          tapHaptic();
-          nowPlayingTitle.textContent = item.snippet.title;
-          loadVideo(item.id.videoId, item.snippet.title);
-        };
-
-        results.appendChild(card);
-      });
+function displayResults(videos) {
+    if (!videos || videos.length === 0) {
+        resultsContainer.innerHTML = '<div class="placeholder">No videos found.</div>';
+        return;
     }
 
-    show(results);
-  } catch (err) {
-    console.error(err);
-    results.innerHTML = `<p style="color:#ff4444;text-align:center;padding:40px;">Error: ${err.message}<br><small>Check API key or try later</small></p>`;
-    show(results);
-  } finally {
-    hide(loading);
-  }
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    videos.forEach(video => {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+            <img class="thumbnail" src="${video.snippet.thumbnails.medium.url}" alt="thumbnail">
+            <div class="video-info">
+                <h3 class="video-title">${video.snippet.title}</h3>
+                <p class="channel-name">${video.snippet.channelTitle}</p>
+            </div>
+        `;
+        
+        // Use Telegram's openLink to play the video
+        card.onclick = () => {
+            const videoUrl = `https://www.youtube.com/watch?v=${video.id.videoId}`;
+            tg.openLink(videoUrl);
+        };
+        
+        resultsContainer.appendChild(card);
+    });
 }
-
-// Load video with quality & audio-only
-function loadVideo(videoId) {
-  let src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-
-  const q = qualityMap[qualitySelect.value] || '';
-  src += q;
-
-  if (audioOnly.checked) {
-    ytPlayer.style.opacity = '0';
-    // YouTube doesn't have perfect audio-only → we hide video
-  } else {
-    ytPlayer.style.opacity = '1';
-  }
-
-  ytPlayer.src = src;
-  hide(results);
-  hide(emptyState);
-  show(playerSection);
-}
-
-// Events
-searchBtn.onclick = doSearch;
-searchInput.oninput = () => {
-  clearBtn.style.display = searchInput.value ? 'block' : 'none';
-  // debounceSearch(); // uncomment for live search
-};
-
-clearBtn.onclick = () => {
-  searchInput.value = '';
-  clearBtn.style.display = 'none';
-  searchInput.focus();
-  show(emptyState);
-  hide(results);
-};
-
-backBtn.onclick = () => {
-  tapHaptic();
-  ytPlayer.src = '';
-  hide(playerSection);
-  show(results);
-};
-
-audioOnly.onchange = qualitySelect.onchange = () => {
-  if (ytPlayer.src.includes('embed/')) {
-    const videoId = ytPlayer.src.match(/embed\/([^?]+)/)?.[1];
-    if (videoId) loadVideo(videoId);
-  }
-};
-
-// Init
-searchInput.focus();
-tg.MainButton.text = "Back to Search";
-tg.MainButton.onClick(() => backBtn.click());
-tg.MainButton.show();
