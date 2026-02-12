@@ -1,114 +1,77 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
-tg.enableClosingConfirmation();
+const TelegramWebApp = window.Telegram.WebApp;
+TelegramWebApp.ready();
+TelegramWebApp.expand();
 
-// Product Data
-const products = [
-    { id: 1, name: "Gold Cola", type: "soda", price: 25, img: "https://cdn-icons-png.flaticon.com/512/2405/2405597.png", desc: "Classic dark cola with a golden twist." },
-    { id: 2, name: "Gold Lemon", type: "soda", price: 20, img: "https://cdn-icons-png.flaticon.com/512/2442/2442019.png", desc: "Sharp, zesty, and refreshing lemon lime." },
-    { id: 3, name: "Gold Tonic", type: "soda", price: 22, img: "https://cdn-icons-png.flaticon.com/512/2405/2405451.png", desc: "The perfect premium mixer." },
-    { id: 4, name: "Gold Apple", type: "juice", price: 25, img: "https://cdn-icons-png.flaticon.com/512/415/415733.png", desc: "Crisp red apple flavor." },
-    { id: 5, name: "Gold Energy", type: "energy", price: 35, img: "https://cdn-icons-png.flaticon.com/512/6030/6030105.png", desc: "Maximum power for the workday." },
-    { id: 6, name: "Gold Orange", type: "juice", price: 20, img: "https://cdn-icons-png.flaticon.com/512/2442/2442019.png", desc: "Sun-ripened orange delight." }
-];
+const API_KEY = 'YOUR_API_KEY'; // Replace or use proxy fetch
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const resultsDiv = document.getElementById('results');
+const playerDiv = document.getElementById('player');
+const ytPlayer = document.getElementById('ytPlayer');
+const qualitySelect = document.getElementById('qualitySelect');
+const audioOnly = document.getElementById('audioOnly');
+const controls = document.getElementById('controls');
 
-let cart = 0;
+// Map quality to YouTube itag (approx): low=95 (360p), medium=18 (480p), high=22 (720p)
+const qualityMap = { low: '', medium: '&itag=18', high: '&itag=22' }; // Empty for low/auto
 
-// Render Products
-function renderProducts(filter = 'all') {
-    const grid = document.getElementById('product-grid');
-    grid.innerHTML = '';
+searchBtn.addEventListener('click', () => {
+    const query = searchInput.value.trim();
+    if (!query) return alert('Enter a search!');
     
-    products.forEach(p => {
-        if (filter === 'all' || p.type === filter) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <img src="${p.img}" alt="${p.name}">
-                <h3>${p.name}</h3>
-                <span class="price">${p.price} ETB</span>
-            `;
-            // Make card interactive
-            card.onclick = () => openModal(p);
-            grid.appendChild(card);
-        }
-    });
-}
-
-// Modal Logic
-const modal = document.getElementById('product-modal');
-const modalAddBtn = document.getElementById('modal-add-btn');
-
-function openModal(product) {
-    tg.HapticFeedback.impactOccurred('light');
-    document.getElementById('modal-img').src = product.img;
-    document.getElementById('modal-title').innerText = product.name;
-    document.getElementById('modal-desc').innerText = product.desc;
-    document.getElementById('modal-price').innerText = product.price + " ETB";
-    
-    modal.style.display = 'flex';
-    
-    // Set button action
-    modalAddBtn.onclick = () => {
-        addToCart(product);
-        closeModal();
-    };
-}
-
-function closeModal() {
-    modal.style.display = 'none';
-}
-
-// Cart Logic
-function addToCart(product) {
-    cart++;
-    document.getElementById('cart-count').innerText = cart;
-    tg.HapticFeedback.notificationOccurred('success');
-    
-    // Show Main Button in Telegram
-    if (cart > 0) {
-        tg.MainButton.text = `CHECKOUT (${cart} ITEMS)`;
-        tg.MainButton.show();
-    }
-}
-
-tg.MainButton.onClick(() => {
-    tg.showAlert(`Processing order for ${cart} items!`);
+    // Use proxy if set up: fetch('/api/search?q=' + query)
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&key=${API_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+            resultsDiv.innerHTML = '';
+            data.items.forEach(item => {
+                if (item.id.kind === 'youtube#video') {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.innerHTML = `
+                        <img src="${item.snippet.thumbnails.default.url}" loading="lazy" alt="${item.snippet.title}">
+                        <div class="result-info">
+                            <div class="result-title">${item.snippet.title}</div>
+                            <div>${item.snippet.channelTitle}</div>
+                        </div>
+                    `;
+                    div.addEventListener('click', () => {
+                        controls.style.display = 'block';
+                        playerDiv.style.display = 'block';
+                        resultsDiv.style.display = 'none';
+                        loadVideo(item.id.videoId);
+                    });
+                    resultsDiv.appendChild(div);
+                }
+            });
+        })
+        .catch(err => console.error(err));
 });
 
-// Navigation Logic
-function switchTab(tab) {
-    tg.HapticFeedback.selectionChanged();
-    const shop = document.getElementById('product-grid');
-    const hero = document.querySelector('.hero');
-    const filters = document.querySelector('.filters');
-    const about = document.getElementById('about-section');
-    const navItems = document.querySelectorAll('.nav-item');
-
-    if (tab === 'shop') {
-        shop.classList.remove('hidden');
-        hero.classList.remove('hidden');
-        filters.classList.remove('hidden');
-        about.classList.add('hidden');
-        navItems[0].classList.add('active');
-        navItems[1].classList.remove('active');
+function loadVideo(videoId) {
+    let src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    const quality = qualityMap[qualitySelect.value];
+    if (quality) src += quality;
+    if (audioOnly.checked) {
+        src += '&mute=0'; // Audio plays, but add CSS to hide video
+        playerDiv.style.background = 'black'; // Simulate audio mode
+        ytPlayer.style.display = 'none'; // Hide video to save data
     } else {
-        shop.classList.add('hidden');
-        hero.classList.add('hidden');
-        filters.classList.add('hidden');
-        about.classList.remove('hidden');
-        navItems[0].classList.remove('active');
-        navItems[1].classList.add('active');
+        ytPlayer.style.display = 'block';
     }
+    ytPlayer.src = src; // Lazy load here
 }
 
-function filterProducts(type) {
-    tg.HapticFeedback.selectionChanged();
-    // Update active chip UI
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    event.target.classList.add('active');
-    renderProducts(type);
-}
+// Back button
+TelegramWebApp.MainButton.text = 'Back to Search';
+TelegramWebApp.MainButton.onClick(() => {
+    playerDiv.style.display = 'none';
+    resultsDiv.style.display = 'block';
+    controls.style.display = 'none';
+    ytPlayer.src = ''; // Stop loading to save data
+});
+TelegramWebApp.MainButton.show();
 
-// Initial Render
-renderProducts();
+// Event listeners for real-time changes
+qualitySelect.addEventListener('change', () => loadVideo(ytPlayer.src.match(/embed\/([^?]+)/)[1]));
+audioOnly.addEventListener('change', () => loadVideo(ytPlayer.src.match(/embed\/([^?]+)/)[1]));
