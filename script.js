@@ -2,7 +2,7 @@ const TelegramWebApp = window.Telegram.WebApp;
 TelegramWebApp.ready();
 TelegramWebApp.expand();
 
-const API_KEY = 'YOUR_API_KEY'; // Replace or use proxy fetch
+const API_KEY = 'AIzaSyCB11eevxR7iulC-iWgv5lBjJ-hnMpxKyA'; // Replace or use proxy fetch
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
 const resultsDiv = document.getElementById('results');
