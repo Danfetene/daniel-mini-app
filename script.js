@@ -1,66 +1,131 @@
-// Replace with your actual Google Cloud API Key
-const API_KEY = 'AIzaSyCB11eevxR7iulC-iWgv5lBjJ-hnMpxKyA';
-
 const tg = window.Telegram.WebApp;
-const searchForm = document.getElementById('search-form');
-const searchInput = document.getElementById('search-input');
-const resultsContainer = document.getElementById('video-results');
-const welcomeUser = document.getElementById('welcome-user');
-
-// Initialize Telegram App
 tg.ready();
-tg.expand();
-tg.setHeaderColor('#000000');
+tg.expand();               // full height
+tg.MainButton.setParams({ text: "SUBMIT FORM" });
+tg.MainButton.show();
+tg.MainButton.onClick(() => document.getElementById("user-form").dispatchEvent(new Event("submit")));
 
-// Greet the user using Telegram SDK data
-if (tg.initDataUnsafe?.user) {
-    welcomeUser.innerText = `Hello, ${tg.initDataUnsafe.user.first_name}! What shall we watch?`;
+const form = document.getElementById("user-form");
+const statusEl = document.getElementById("status");
+const greeting = document.getElementById("greeting");
+
+const user = tg.initDataUnsafe?.user;
+if (user) {
+  greeting.textContent = `Hello, ${user.first_name || "friend"}!`;
 }
 
-searchForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const query = searchInput.value;
-    if (!query) return;
+// Theme sync
+function applyTheme() {
+  document.documentElement.style.setProperty("--tg-theme-bg-color", tg.themeParams.bg_color);
+  document.documentElement.style.setProperty("--tg-theme-text-color", tg.themeParams.text_color);
+  // ... add more if needed
+}
+applyTheme();
+tg.onEvent("themeChanged", applyTheme);
 
-    // Show loading state
-    resultsContainer.innerHTML = '<div class="placeholder">Searching...</div>';
-
+// Load saved draft
+const STORAGE_KEY = "AIzaSyCB11eevxR7iulC-iWgv5lBjJ-hnMpxKyA";
+tg.CloudStorage.getItem(STORAGE_KEY, (err, value) => {
+  if (!err && value) {
     try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        displayResults(data.items);
-    } catch (error) {
-        resultsContainer.innerHTML = '<div class="placeholder" style="color:red">Error loading videos. Check API Key.</div>';
-    }
+      const data = JSON.parse(value);
+      Object.keys(data).forEach(key => {
+        const el = document.getElementById(key);
+        if (el) el.value = data[key];
+      });
+      document.getElementById("agree").checked = data.agree === "on";
+    } catch {}
+  }
 });
 
-function displayResults(videos) {
-    if (!videos || videos.length === 0) {
-        resultsContainer.innerHTML = '<div class="placeholder">No videos found.</div>';
-        return;
-    }
+// Clear form
+document.getElementById("clear-btn").onclick = () => {
+  form.reset();
+  tg.CloudStorage.removeItem(STORAGE_KEY);
+  statusEl.classList.add("hidden");
+};
 
-    resultsContainer.innerHTML = ''; // Clear previous results
+// Real-time validation + save draft on change
+form.addEventListener("input", () => {
+  saveDraft();
+  clearErrors();
+});
 
-    videos.forEach(video => {
-        const card = document.createElement('div');
-        card.className = 'video-card';
-        card.innerHTML = `
-            <img class="thumbnail" src="${video.snippet.thumbnails.medium.url}" alt="thumbnail">
-            <div class="video-info">
-                <h3 class="video-title">${video.snippet.title}</h3>
-                <p class="channel-name">${video.snippet.channelTitle}</p>
-            </div>
-        `;
-        
-        // Use Telegram's openLink to play the video
-        card.onclick = () => {
-            const videoUrl = `https://www.youtube.com/watch?v=${video.id.videoId}`;
-            tg.openLink(videoUrl);
-        };
-        
-        resultsContainer.appendChild(card);
-    });
+function saveDraft() {
+  const data = new FormData(form);
+  const obj = {};
+  for (let [k, v] of data) obj[k] = v;
+  tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(obj), () => {});
 }
+
+function showError(input, msg) {
+  const errEl = input.nextElementSibling;
+  if (errEl) errEl.textContent = msg;
+  input.style.borderColor = "var(--destructive)";
+}
+
+function clearErrors() {
+  document.querySelectorAll(".error").forEach(el => el.textContent = "");
+  document.querySelectorAll("input, select").forEach(el => el.style.borderColor = "");
+}
+
+// Submit
+form.onsubmit = async (e) => {
+  e.preventDefault();
+  clearErrors();
+
+  let valid = true;
+
+  const name = document.getElementById("name");
+  if (name.value.trim().length < 2) {
+    showError(name, "Name is too short");
+    valid = false;
+  }
+
+  const age = document.getElementById("age");
+  if (age.value < 13 || age.value > 120) {
+    showError(age, "Age must be 13–120");
+    valid = false;
+  }
+
+  const email = document.getElementById("email");
+  if (!email.value.includes("@") || email.value.length < 6) {
+    showError(email, "Invalid email");
+    valid = false;
+  }
+
+  const country = document.getElementById("country");
+  if (!country.value) {
+    showError(country, "Please select country");
+    valid = false;
+  }
+
+  const agree = document.getElementById("agree");
+  if (!agree.checked) {
+    showError(agree, "You must agree to terms");
+    valid = false;
+  }
+
+  if (!valid) {
+    tg.HapticFeedback.notificationOccurred("error");
+    return;
+  }
+
+  // Success
+  tg.HapticFeedback.notificationOccurred("success");
+  statusEl.textContent = "Thank you! Data saved.";
+  statusEl.classList.remove("hidden");
+
+  tg.MainButton.hide();
+
+  // Optional: send to bot / your server
+  // tg.sendData(JSON.stringify(Object.fromEntries(new FormData(form))));
+
+  // Clear after submit (or keep – your choice)
+  // form.reset();
+  // tg.CloudStorage.removeItem(STORAGE_KEY);
+};
+
+// Back button closes app
+tg.BackButton.show();
+tg.BackButton.onClick(() => tg.close());
