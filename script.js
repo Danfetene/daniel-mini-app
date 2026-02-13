@@ -1,131 +1,159 @@
 const tg = window.Telegram.WebApp;
 tg.ready();
-tg.expand();               // full height
-tg.MainButton.setParams({ text: "SUBMIT FORM" });
-tg.MainButton.show();
-tg.MainButton.onClick(() => document.getElementById("user-form").dispatchEvent(new Event("submit")));
+tg.expand();
+tg.MainButton.hide(); // We use it only if needed later
 
-const form = document.getElementById("user-form");
-const statusEl = document.getElementById("status");
-const greeting = document.getElementById("greeting");
-
+const greeting = document.getElementById('greeting');
 const user = tg.initDataUnsafe?.user;
-if (user) {
-  greeting.textContent = `Hello, ${user.first_name || "friend"}!`;
+if (user?.first_name) greeting.textContent = `Hi ${user.first_name} • Lite mode`;
+
+// Theme sync (smooth)
+function updateTheme() {
+  document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#000');
+  document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#fff');
+  // more vars if needed
+}
+updateTheme();
+tg.onEvent('themeChanged', updateTheme);
+
+// Config – very low data
+const API_KEY = 'AIzaSyCB11eevxR7iulC-iWgv5lBjJ-hnMpxKyA'; // ← INSERT HERE
+const LOW_QUALITY = 'small'; // 144p–240p range
+
+let currentPlayer = null;
+let playerAPIReady = false;
+
+// Lazy-load YouTube API only once
+function loadYTAPI() {
+  if (playerAPIReady) return Promise.resolve();
+  return new Promise(r => {
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    s.onload = () => { playerAPIReady = true; r(); };
+    document.head.appendChild(s);
+  });
 }
 
-// Theme sync
-function applyTheme() {
-  document.documentElement.style.setProperty("--tg-theme-bg-color", tg.themeParams.bg_color);
-  document.documentElement.style.setProperty("--tg-theme-text-color", tg.themeParams.text_color);
-  // ... add more if needed
-}
-applyTheme();
-tg.onEvent("themeChanged", applyTheme);
+// Create lite embed (thumbnail + play overlay)
+function createLiteEmbed(videoId, title, thumbnailUrl) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'thumbnail-wrapper';
 
-// Load saved draft
-const STORAGE_KEY = "AIzaSyCB11eevxR7iulC-iWgv5lBjJ-hnMpxKyA";
-tg.CloudStorage.getItem(STORAGE_KEY, (err, value) => {
-  if (!err && value) {
-    try {
-      const data = JSON.parse(value);
-      Object.keys(data).forEach(key => {
-        const el = document.getElementById(key);
-        if (el) el.value = data[key];
-      });
-      document.getElementById("agree").checked = data.agree === "on";
-    } catch {}
+  const img = document.createElement('img');
+  img.className = 'thumbnail';
+  img.src = thumbnailUrl.replace('hqdefault', 'mqdefault'); // medium = ~320px → low data
+  img.alt = title;
+  img.loading = 'lazy';
+
+  const play = document.createElement('div');
+  play.className = 'play-icon';
+  play.innerHTML = '▶';
+
+  wrapper.append(img, play);
+
+  wrapper.onclick = async () => {
+    tg.HapticFeedback.impactOccurred('medium');
+    await loadYTAPI();
+
+    // Replace lite with real player
+    wrapper.innerHTML = '';
+    currentPlayer = new YT.Player(wrapper, {
+      height: '100%',
+      width: '100%',
+      videoId,
+      playerVars: {
+        autoplay: 0,
+        controls: 1,
+        rel: 0,
+        modestbranding: 1,
+        iv_load_policy: 3,
+        playsinline: 1,
+        enablejsapi: 1,
+        origin: window.location.origin
+      },
+      events: {
+        onReady: e => {
+          // Force lowest quality
+          try {
+            e.target.setPlaybackQualityRange(LOW_QUALITY, 'medium');
+            e.target.setPlaybackQuality(LOW_QUALITY);
+          } catch {}
+          e.target.playVideo();
+        },
+        onError: () => tg.showPopup({ title: "Error", message: "Can't play – check connection or try later" })
+      }
+    });
+
+    // Back navigation
+    tg.BackButton.show();
+    tg.BackButton.onClick(() => {
+      if (currentPlayer) { currentPlayer.destroy(); currentPlayer = null; }
+      document.getElementById('player-container').innerHTML = '';
+      document.getElementById('player-container').classList.add('hidden');
+      document.getElementById('results').classList.remove('hidden');
+      tg.BackButton.hide();
+    });
+  };
+
+  return wrapper;
+}
+
+// Render results
+function render(videos) {
+  const list = document.getElementById('results');
+  list.innerHTML = '';
+
+  videos.forEach(v => {
+    const li = document.createElement('li');
+    const thumbUrl = v.snippet.thumbnails?.medium?.url || v.snippet.thumbnails?.default?.url;
+
+    li.innerHTML = `
+      <div class="info">
+        <div class="title">${v.snippet.title}</div>
+        <div class="channel">${v.snippet.channelTitle}</div>
+      </div>
+    `;
+    li.prepend(createLiteEmbed(v.id.videoId, v.snippet.title, thumbUrl));
+    list.appendChild(li);
+  });
+}
+
+// Fetch (minimal quota use)
+async function search(q = 'popular this week') {
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('results').innerHTML = '';
+
+  try {
+    const r = await fetch(
+      `https://youtube.googleapis.com/youtube/v3/search?` +
+      `part=snippet&maxResults=12&type=video&q=${encodeURIComponent(q)}&key=${API_KEY}`
+    );
+    const d = await r.json();
+
+    if (d.items?.length) {
+      render(d.items);
+    } else {
+      tg.showPopup({ message: "No videos found or quota issue" });
+    }
+  } catch {
+    tg.showPopup({ message: "Network error – try again" });
+  } finally {
+    document.getElementById('loading').classList.add('hidden');
   }
-});
+}
 
-// Clear form
-document.getElementById("clear-btn").onclick = () => {
-  form.reset();
-  tg.CloudStorage.removeItem(STORAGE_KEY);
-  statusEl.classList.add("hidden");
+// Events
+document.getElementById('search-btn').onclick = () => {
+  const q = document.getElementById('query').value.trim();
+  if (q) search(q);
 };
 
-// Real-time validation + save draft on change
-form.addEventListener("input", () => {
-  saveDraft();
-  clearErrors();
-});
-
-function saveDraft() {
-  const data = new FormData(form);
-  const obj = {};
-  for (let [k, v] of data) obj[k] = v;
-  tg.CloudStorage.setItem(STORAGE_KEY, JSON.stringify(obj), () => {});
-}
-
-function showError(input, msg) {
-  const errEl = input.nextElementSibling;
-  if (errEl) errEl.textContent = msg;
-  input.style.borderColor = "var(--destructive)";
-}
-
-function clearErrors() {
-  document.querySelectorAll(".error").forEach(el => el.textContent = "");
-  document.querySelectorAll("input, select").forEach(el => el.style.borderColor = "");
-}
-
-// Submit
-form.onsubmit = async (e) => {
-  e.preventDefault();
-  clearErrors();
-
-  let valid = true;
-
-  const name = document.getElementById("name");
-  if (name.value.trim().length < 2) {
-    showError(name, "Name is too short");
-    valid = false;
+document.getElementById('query').onkeypress = e => {
+  if (e.key === 'Enter') {
+    const q = e.target.value.trim();
+    if (q) search(q);
   }
-
-  const age = document.getElementById("age");
-  if (age.value < 13 || age.value > 120) {
-    showError(age, "Age must be 13–120");
-    valid = false;
-  }
-
-  const email = document.getElementById("email");
-  if (!email.value.includes("@") || email.value.length < 6) {
-    showError(email, "Invalid email");
-    valid = false;
-  }
-
-  const country = document.getElementById("country");
-  if (!country.value) {
-    showError(country, "Please select country");
-    valid = false;
-  }
-
-  const agree = document.getElementById("agree");
-  if (!agree.checked) {
-    showError(agree, "You must agree to terms");
-    valid = false;
-  }
-
-  if (!valid) {
-    tg.HapticFeedback.notificationOccurred("error");
-    return;
-  }
-
-  // Success
-  tg.HapticFeedback.notificationOccurred("success");
-  statusEl.textContent = "Thank you! Data saved.";
-  statusEl.classList.remove("hidden");
-
-  tg.MainButton.hide();
-
-  // Optional: send to bot / your server
-  // tg.sendData(JSON.stringify(Object.fromEntries(new FormData(form))));
-
-  // Clear after submit (or keep – your choice)
-  // form.reset();
-  // tg.CloudStorage.removeItem(STORAGE_KEY);
 };
 
-// Back button closes app
-tg.BackButton.show();
-tg.BackButton.onClick(() => tg.close());
+// Start with trending / popular (low data, engaging)
+search();

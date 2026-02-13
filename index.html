@@ -1,61 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quick Form</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>YouTube Lite</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Quick Profile</h1>
-    <p id="greeting">Hello!</p>
+    <h1>YouTube Lite</h1>
+    <p id="greeting">Fast & light</p>
 
-    <form id="user-form" class="form">
-      <label>
-        Full Name
-        <input type="text" id="name" placeholder="John Doe" required minlength="2" maxlength="60"/>
-        <span class="error"></span>
-      </label>
+    <div class="search">
+      <input id="query" type="search" placeholder="Search or tap trending..." autocomplete="off">
+      <button id="search-btn">Go</button>
+    </div>
 
-      <label>
-        Age
-        <input type="number" id="age" placeholder="25" min="13" max="120" required/>
-        <span class="error"></span>
-      </label>
+    <div id="player-container" class="player hidden"></div>
 
-      <label>
-        Email
-        <input type="email" id="email" placeholder="you@example.com" required/>
-        <span class="error"></span>
-      </label>
+    <ul id="results" class="results"></ul>
 
-      <label>
-        Country
-        <select id="country" required>
-          <option value="" disabled selected>Select country</option>
-          <option value="ET">Ethiopia</option>
-          <option value="KE">Kenya</option>
-          <option value="US">United States</option>
-          <option value="IN">India</option>
-          <option value="Other">Other</option>
-        </select>
-        <span class="error"></span>
-      </label>
-
-      <label class="checkbox-label">
-        <input type="checkbox" id="agree" required/>
-        I agree to terms & privacy
-      </label>
-
-      <div class="buttons">
-        <button type="button" id="clear-btn">Clear</button>
-        <button type="submit" id="submit-btn">Submit</button>
-      </div>
-    </form>
-
-    <p id="status" class="status hidden"></p>
+    <div id="loading" class="loading hidden">Loading...</div>
   </div>
 
   <script src="script.js"></script>
