@@ -28,6 +28,7 @@
       padding: 16px;
       padding-bottom: 90px;
       transition: background 0.4s, color 0.4s;
+      overflow-y: auto; /* Ensure scrolling */
     }
 
     h1 { font-size: 26px; text-align: center; margin: 0 0 20px; }
@@ -40,9 +41,18 @@
       position: relative;
       overflow: hidden;
       transition: transform 0.15s;
+      cursor: pointer; /* Indicate clickable for details */
     }
 
     .product:active { transform: scale(0.98); }
+
+    .product img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      object-fit: cover;
+    }
 
     .product h3 { font-size: 19px; margin-bottom: 6px; }
     .product .desc { color: var(--hint); font-size: 14px; margin-bottom: 10px; }
@@ -148,6 +158,57 @@
 
     #empty { text-align: center; color: var(--hint); padding: 30px 0; font-size: 16px; }
 
+    /* Modal for details */
+    #modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      overflow-y: auto;
+    }
+
+    #modal.show { display: flex; }
+
+    .modal-content {
+      background: var(--bg);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px;
+      max-width: 90%;
+      position: relative;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--hint);
+    }
+
+    .modal-img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-desc {
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
     @media (min-width: 500px) {
       body { max-width: 480px; margin: 0 auto; }
     }
@@ -169,6 +230,18 @@
     <div id="total">Total: 0 Stars</div>
 
     <div id="empty">Cart is empty — add some water! 💧</div>
+  </div>
+
+  <!-- Modal for product details -->
+  <div id="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal()">×</span>
+      <h2 id="modal-title"></h2>
+      <img id="modal-img" src="" alt="">
+      <p class="modal-desc" id="modal-desc"></p>
+      <p class="price" id="modal-price"></p>
+      <button class="qty-btn" style="width: auto; padding: 10px 20px; border-radius: 10px;" onclick="addToCartFromModal()">Add to Cart</button>
+    </div>
   </div>
 
   <script>
@@ -195,15 +268,18 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // ─── Products ────────────────────────────────────────
+    // ─── Products (6 brands with placeholders) ───────────────────────────────
     const products = [
-      { id:1, name:"Spring Water 500 ml", price:45,  desc:"Pure natural spring" },
-      { id:2, name:"Mineral Water 1 L",   price:85,  desc:"Rich in minerals" },
-      { id:3, name:"Alkaline Water 750 ml",price:120, desc:"pH 8.5+ ionized" },
-      { id:4, name:"Sparkling 500 ml",    price:65,  desc:"Naturally carbonated" },
+      { id:1, name:"Brand 1: Spring Water", price:45, desc:"Pure natural spring water from the mountains. Refreshing and crisp taste.", image: "https://placehold.co/300x200?text=Brand+1" },
+      { id:2, name:"Brand 2: Mineral Water", price:85, desc:"Naturally mineralized water with essential electrolytes for hydration.", image: "https://placehold.co/300x200?text=Brand+2" },
+      { id:3, name:"Brand 3: Alkaline Water", price:120, desc:"High pH water to balance your body's acidity. Smooth and clean.", image: "https://placehold.co/300x200?text=Brand+3" },
+      { id:4, name:"Brand 4: Sparkling Water", price:65, desc:"Carbonated water with a fizzy twist. Perfect for mixing drinks.", image: "https://placehold.co/300x200?text=Brand+4" },
+      { id:5, name:"Brand 5: Purified Water", price:50, desc:"Ultra-purified water through reverse osmosis. Crystal clear.", image: "https://placehold.co/300x200?text=Brand+5" },
+      { id:6, name:"Brand 6: Flavored Water", price:95, desc:"Lightly flavored with natural fruits. Zero calories, great taste.", image: "https://placehold.co/300x200?text=Brand+6" },
     ];
 
     let cart = [];
+    let currentProductId = null;
 
     // ─── Cart persistence ────────────────────────────────
     function loadCart() {
@@ -243,7 +319,7 @@
     function changeQty(id, delta) {
       const item = cart.find(i => i.id === id);
       if (!item) return;
-      item.qty = Math.max(1, item.qty + delta);
+      item.qty = Math.max(0, item.qty + delta);
       if (item.qty === 0) removeFromCart(id);
       else {
         saveCart();
@@ -268,19 +344,22 @@
         div.className = 'product';
         div.dataset.id = p.id;
         div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
           <h3>${p.name}</h3>
-          <div class="desc">${p.desc}</div>
+          <div class="desc">${p.desc.substring(0, 50)}...</div> <!-- Teaser desc -->
           <div class="price">${p.price} Stars</div>
           <div class="qty-controls">
-            <div class="qty-btn" onclick="addToCartFromId(${p.id})">+</div>
+            <div class="qty-btn" onclick="event.stopPropagation(); addToCartFromId(${p.id})">+</div>
           </div>
           <div class="added-flash">Added!</div>
         `;
+        div.addEventListener('click', () => showDetails(p.id)); // Click for details
         cont.appendChild(div);
       });
     }
 
-    window.addToCartFromId = id => {
+    window.addToCartFromId = (id, event) => {
+      if (event) event.stopPropagation();
       const p = products.find(x => x.id === id);
       if (p) addToCart(p);
     };
@@ -344,6 +423,33 @@
       tg.MainButton.setText(`Checkout • ${sum} Stars`);
       tg.MainButton.show();
     }
+
+    // ─── Details Modal ───────────────────────────────────
+    function showDetails(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+
+      currentProductId = id;
+
+      document.getElementById('modal-title').textContent = p.name;
+      document.getElementById('modal-img').src = p.image;
+      document.getElementById('modal-img').alt = p.name;
+      document.getElementById('modal-desc').textContent = p.desc;
+      document.getElementById('modal-price').textContent = `${p.price} Stars`;
+      document.getElementById('modal').classList.add('show');
+
+      tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('show');
+      currentProductId = null;
+    }
+
+    window.addToCartFromModal = () => {
+      if (currentProductId) addToCartFromId(currentProductId);
+      closeModal();
+    };
 
     // ─── Checkout simulation ─────────────────────────────
     tg.MainButton.onClick(() => {
