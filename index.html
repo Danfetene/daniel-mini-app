@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gold Water • ET Bottled Water</title>
+  <title>ET Water Market • Mini App</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     :root {
-      --bg: #ffffff;
-      --text: #000000;
-      --hint: #999999;
-      --button: #0088cc;
-      --button-text: #ffffff;
-      --secondary: #f0f0f0;
+      --green: #00b140;       /* JiJi green */
+      --dark-green: #009933;
+      --bg: #f8f9fa;
+      --text: #333;
+      --hint: #777;
       --accent: #2e7d32;
       --danger: #d32f2f;
+      --white: #ffffff;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -25,178 +25,155 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 16px;
-      padding-bottom: 90px;
     }
 
-    h1 { font-size: 26px; text-align: center; margin: 0 0 24px; }
-
-    .product {
-      background: var(--secondary);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 24px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.15s;
-      cursor: pointer;
+    header {
+      background: var(--green);
+      color: white;
+      padding: 12px 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .product:active { transform: scale(0.98); }
-
-    .product img {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      object-fit: cover;
+    header h1 {
+      font-size: 22px;
+      margin: 0;
     }
 
-    .product h2 { font-size: 22px; margin-bottom: 8px; }
-    .product .desc { color: var(--hint); font-size: 15px; margin-bottom: 12px; line-height: 1.4; }
-    .product .price-info { font-size: 16px; color: var(--accent); margin-bottom: 12px; }
-
-    .added-flash {
-      position: absolute;
-      inset: 0;
-      background: rgba(46,125,50,0.18);
+    .search-bar {
+      background: white;
+      border-radius: 8px;
+      margin: 12px 16px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      font-weight: bold;
-      color: var(--accent);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.6s;
-      z-index: 2;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    .added-flash.show { opacity: 1; }
-
-    select {
-      width: 100%;
-      padding: 12px;
-      margin: 12px 0 16px;
-      border-radius: 8px;
-      border: 1px solid var(--hint);
+    .search-bar input {
+      border: none;
+      flex: 1;
       font-size: 16px;
-      background: var(--bg);
+      outline: none;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 16px;
+      background: white;
+    }
+
+    .category-tile {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .category-tile:active { transform: scale(0.95); }
+
+    .category-tile img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 8px;
+    }
+
+    .category-tile span {
+      font-size: 13px;
+      display: block;
       color: var(--text);
     }
 
-    .qty-controls {
+    .brand-section {
+      display: none;
+      padding: 16px;
+      background: white;
+      margin: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .brand-section.active { display: block; }
+
+    .brand-header {
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: var(--green);
+    }
+
+    .variant {
+      background: #f8fff8;
+      border: 1px solid #e0f0e0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 16px;
-      margin-top: 12px;
-      justify-content: center;
     }
 
-    .qty-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--button);
+    .variant-info {
+      flex: 1;
+    }
+
+    .variant-size {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .variant-price {
+      font-size: 20px;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .add-btn {
+      background: var(--green);
       color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
       font-size: 24px;
-      line-height: 44px;
-      text-align: center;
       cursor: pointer;
-      user-select: none;
     }
-
-    .qty-btn:active { background: #006699; }
 
     #cart-summary {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      background: var(--bg);
-      border-top: 1px solid var(--secondary);
-      padding: 16px;
-      box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+      background: var(--white);
+      border-top: 1px solid #ddd;
+      padding: 12px 16px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
       transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.4s;
     }
 
     #cart-summary.visible { transform: translateY(0); }
 
-    .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .cart-header h2 { font-size: 18px; }
-
-    #cart-items { list-style: none; margin-bottom: 12px; }
+    #cart-items { list-style: none; margin: 8px 0; max-height: 140px; overflow-y: auto; }
     .cart-item {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--secondary);
-      font-size: 16px;
+      font-size: 15px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
     }
 
-    .cart-item-name { flex: 1; font-weight: 500; }
-    .cart-item-price { font-weight: bold; color: var(--accent); min-width: 110px; text-align: right; }
+    #total { font-weight: bold; text-align: right; font-size: 18px; margin: 8px 0; }
 
-    .remove-btn {
-      color: var(--danger);
-      font-size: 22px;
-      width: 36px;
-      height: 36px;
-      line-height: 36px;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    #total {
-      font-size: 20px;
-      font-weight: 700;
-      text-align: right;
-      margin: 12px 0;
-    }
-
-    #empty { text-align: center; color: var(--hint); padding: 40px 0; font-size: 16px; }
-
-    #modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    #modal.show { display: flex; }
-
-    .modal-content {
-      background: var(--bg);
-      border-radius: 20px;
-      padding: 24px;
-      margin: 20px;
-      max-width: 90%;
-      position: relative;
-    }
-
-    .close-modal {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 28px;
-      cursor: pointer;
-      color: var(--hint);
-    }
-
-    .modal-img {
-      width: 100%;
-      border-radius: 16px;
-      margin-bottom: 16px;
-    }
-
-    .modal-desc {
-      font-size: 16px;
-      line-height: 1.5;
-      margin-bottom: 16px;
-    }
+    #empty { text-align: center; color: var(--hint); padding: 20px; }
 
     @media (min-width: 500px) {
       body { max-width: 480px; margin: 0 auto; }
@@ -205,54 +182,82 @@
 </head>
 <body>
 
-  <h1>Gold Water</h1>
+  <header>
+    <h1>ET Water Market</h1>
+  </header>
 
-  <div class="product" id="product-card">
-    <img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold Water">
-    <h2>Gold Water</h2>
-    <div class="desc">Gold Water – pure and healthy drinking water from trusted source in Ethiopia. Available in convenient sizes for daily use.</div>
-    <div class="price-info">Tap to see sizes and order</div>
-    <div class="qty-controls">
-      <div class="qty-btn" onclick="addToCart()">+</div>
-    </div>
-    <div class="added-flash" id="flash">Added!</div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search water brands..." disabled>
   </div>
+
+  <div class="categories">
+    <div class="category-tile" onclick="showBrand('gold')">
+      <img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold">
+      <span>Gold Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('top')">
+      <img src="https://via.placeholder.com/60?text=Top" alt="Top">
+      <span>Top Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('daily')">
+      <img src="https://via.placeholder.com/60?text=Daily" alt="Daily">
+      <span>Daily Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('aqua')">
+      <img src="https://via.placeholder.com/60?text=Aqua" alt="Aqua">
+      <span>Aqua Addis</span>
+    </div>
+    <!-- You can add more brands here -->
+  </div>
+
+  <!-- Brand detail sections -->
+  <div id="gold-section" class="brand-section">
+    <div class="brand-header">Gold Water – Pure & Healthy</div>
+    <div class="variant">
+      <div class="variant-info">
+        <div class="variant-size">0.3L</div>
+        <div class="variant-price">140 Birr</div>
+      </div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info">
+        <div class="variant-size">0.6L</div>
+        <div class="variant-price">150 Birr</div>
+      </div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info">
+        <div class="variant-size">2L</div>
+        <div class="variant-price">160 Birr</div>
+      </div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="top-section" class="brand-section">
+    <div class="brand-header">Top Water – Premium Quality</div>
+    <div class="variant">
+      <div class="variant-info">
+        <div class="variant-size">0.3L</div>
+        <div class="variant-price">145 Birr</div>
+      </div>
+      <button class="add-btn" onclick="addToCart('Top Water', '0.3L', 145)">+</button>
+    </div>
+    <!-- Add other sizes for Top Water -->
+  </div>
+
+  <!-- Repeat similar blocks for other brands with their prices -->
 
   <div id="cart-summary">
     <div class="cart-header">
       <h2>Your Cart</h2>
       <span id="cart-count">0</span>
     </div>
-
     <ul id="cart-items"></ul>
-
     <div id="total">Total: 0 Birr</div>
-
-    <div id="empty">Your cart is empty – add Gold Water! 💧</div>
-  </div>
-
-  <!-- Details Modal with Size Selection -->
-  <div id="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeModal()">×</span>
-      <h2>Gold Water</h2>
-      <img class="modal-img" src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold Water">
-      <p class="modal-desc">
-        Gold Water – pure and healthy drinking water from trusted source in Ethiopia.<br><br>
-        Select your preferred size to order with daily prices.
-      </p>
-
-      <label for="size-select">Select size to order:</label>
-      <select id="size-select">
-        <option value="0">0.3L – 140 Birr</option>
-        <option value="1" selected>0.6L – 150 Birr</option>
-        <option value="2">2L – 160 Birr</option>
-      </select>
-
-      <div class="qty-controls" style="justify-content: center; margin-top: 20px;">
-        <div class="qty-btn" onclick="addToCartFromModal()">Add to Cart</div>
-      </div>
-    </div>
+    <div id="empty">Cart is empty – choose a brand! 💧</div>
   </div>
 
   <script>
@@ -260,84 +265,31 @@
     tg.ready();
     tg.expand();
 
-    tg.MainButton.setParams({
-      text: 'Checkout',
-      color: '#0088cc',
-      text_color: '#ffffff'
-    });
+    tg.MainButton.setParams({ text: 'Checkout', color: '#00b140', text_color: '#ffffff' });
     tg.MainButton.hide();
 
-    // Theme sync
-    function applyTheme() {
-      const th = tg.themeParams;
-      document.documentElement.style.setProperty('--bg', th.bg_color || '#ffffff');
-      document.documentElement.style.setProperty('--text', th.text_color || '#000');
-      document.documentElement.style.setProperty('--hint', th.hint_color || '#999');
-      document.documentElement.style.setProperty('--button', th.button_color || '#0088cc');
-      document.documentElement.style.setProperty('--button-text', th.button_text_color || '#fff');
-      document.documentElement.style.setProperty('--secondary', th.secondary_bg_color || '#f0f0f0');
-    }
-    applyTheme();
-    tg.onEvent('themeChanged', applyTheme);
+    let cart = [];
 
-    // Single product with 3 variants (daily prices in Birr)
-    const product = {
-      name: "Gold Water",
-      image: "https://i.postimg.cc/xTXcXRGR/gold-water-image.webp",
-      desc: "Gold Water – pure and healthy drinking water from trusted source in Ethiopia. Available in convenient sizes for daily use.",
-      variants: [
-        { size: "0.3L", price: 140 },
-        { size: "0.6L", price: 150 },
-        { size: "2L",   price: 160 }
-      ]
-    };
-
-    let cart = []; // Array of {variantIndex, qty}
-
-    // Cart persistence
-    function loadCart() {
-      tg.CloudStorage.getItem('gold_cart', (err, val) => {
-        if (!err && val) {
-          cart = JSON.parse(val);
-          renderCart();
-          updateMainButton();
-        }
-      });
-    }
-
-    function saveCart() {
-      tg.CloudStorage.setItem('gold_cart', JSON.stringify(cart));
-    }
-
-    // Add selected variant
-    function addToCart(variantIndex = 1) {  // default to 0.6L
-      const existing = cart.find(item => item.variantIndex === variantIndex);
-      if (existing) {
-        existing.qty++;
-      } else {
-        cart.push({ variantIndex, qty: 1 });
-      }
-
-      saveCart();
-      tg.HapticFeedback.impactOccurred('medium');
-      renderCart();
-      updateMainButton();
-
-      const flash = document.getElementById('flash');
-      flash.classList.add('show');
-      setTimeout(() => flash.classList.remove('show'), 900);
-    }
-
-    function changeQty(variantIndex, delta) {
-      const item = cart.find(i => i.variantIndex === variantIndex);
-      if (!item) return;
-      item.qty = Math.max(0, item.qty + delta);
-      if (item.qty === 0) {
-        cart = cart.filter(i => i.variantIndex !== variantIndex);
-      }
-      saveCart();
-      renderCart();
+    function showBrand(brand) {
+      document.querySelectorAll('.brand-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(`${brand}-section`).classList.add('active');
       tg.HapticFeedback.impactOccurred('light');
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+
+    function addToCart(brand, size, price) {
+      const existing = cart.find(item => item.brand === brand && item.size === size);
+      if (existing) existing.qty++;
+      else cart.push({ brand, size, price, qty: 1 });
+
+      renderCart();
+      tg.HapticFeedback.impactOccurred('medium');
+    }
+
+    function changeQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) cart.splice(index, 1);
+      renderCart();
     }
 
     function renderCart() {
@@ -349,7 +301,7 @@
 
       list.innerHTML = '';
       let total = 0;
-      let itemCount = 0;
+      let count = 0;
 
       if (cart.length === 0) {
         emptyEl.style.display = 'block';
@@ -363,92 +315,50 @@
       emptyEl.style.display = 'none';
       summary.classList.add('visible');
 
-      cart.forEach(cartItem => {
-        const variant = product.variants[cartItem.variantIndex];
-        const lineTotal = variant.price * cartItem.qty;
+      cart.forEach((item, index) => {
+        const lineTotal = item.price * item.qty;
         total += lineTotal;
-        itemCount += cartItem.qty;
+        count += item.qty;
 
         const li = document.createElement('li');
         li.className = 'cart-item';
         li.innerHTML = `
-          <span class="cart-item-name">${product.name} ${variant.size}</span>
-          <div class="qty-controls" style="margin:0; width:auto;">
-            <div class="qty-btn" onclick="changeQty(${cartItem.variantIndex}, -1)">−</div>
-            <span style="min-width:30px; text-align:center; font-size:16px;">${cartItem.qty}</span>
-            <div class="qty-btn" onclick="changeQty(${cartItem.variantIndex}, 1)">+</div>
-          </div>
-          <span class="cart-item-price">${lineTotal} Birr</span>
-          <span class="remove-btn" onclick="changeQty(${cartItem.variantIndex}, -999)">×</span>
+          <span>${item.brand} ${item.size} × ${item.qty}</span>
+          <span>${lineTotal} Birr</span>
+          <span style="color:var(--danger);font-size:20px;cursor:pointer;" onclick="changeQty(${index}, -1)">×</span>
         `;
         list.appendChild(li);
       });
 
-      countEl.textContent = itemCount;
+      countEl.textContent = count;
       totalEl.textContent = `Total: ${total} Birr`;
-
-      updateMainButton();
-    }
-
-    function updateMainButton() {
-      if (cart.length === 0) {
-        tg.MainButton.hide();
-        return;
-      }
-
-      const total = cart.reduce((sum, item) => {
-        return sum + product.variants[item.variantIndex].price * item.qty;
-      }, 0);
 
       tg.MainButton.setText(`Checkout • ${total} Birr`);
       tg.MainButton.show();
     }
 
-    // Modal show
-    function showDetails() {
-      document.getElementById('modal').classList.add('show');
-      tg.HapticFeedback.impactOccurred('light');
-    }
-
-    function closeModal() {
-      document.getElementById('modal').classList.remove('show');
-    }
-
-    window.addToCartFromModal = () => {
-      const select = document.getElementById('size-select');
-      const variantIndex = parseInt(select.value);
-      addToCart(variantIndex);
-      closeModal();
-    };
-
-    // Checkout simulation with amount calculation
     tg.MainButton.onClick(() => {
       if (cart.length === 0) return;
 
-      tg.HapticFeedback.impactOccurred('heavy');
-
-      let summaryText = "Order summary:\n";
-      cart.forEach(item => {
-        const v = product.variants[item.variantIndex];
-        summaryText += `${product.name} ${v.size} × ${item.qty} = ${v.price * item.qty} Birr\n`;
+      let text = "Order summary:\n";
+      let grand = 0;
+      cart.forEach(i => {
+        const lt = i.price * i.qty;
+        text += `${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
+        grand += lt;
       });
-      const grandTotal = cart.reduce((s, i) => s + product.variants[i.variantIndex].price * i.qty, 0);
-      summaryText += `\nTotal Amount: ${grandTotal} Birr\n\n(Real payment would be processed here – contact seller for delivery in Waliso!)`;
+      text += `\nTotal: ${grand} Birr`;
 
-      alert(summaryText);
+      alert(text + "\n\n(Contact seller for delivery in Waliso!)");
 
       setTimeout(() => {
-        alert("Order simulation: SUCCESS! Thank you for choosing Gold Water! 💧 We will contact you soon.");
+        alert("Order placed! Thank you! 💧");
         cart = [];
-        saveCart();
         renderCart();
-        tg.MainButton.hide();
-      }, 900);
+      }, 800);
     });
 
-    // Start
-    document.getElementById('product-card').addEventListener('click', showDetails);
-    loadCart();
+    // Init
     renderCart();
   </script>
 
