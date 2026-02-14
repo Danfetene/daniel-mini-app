@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ET Water Market • Mini App</title>
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
     :root {
       --green: #0066FF;
@@ -18,16 +16,13 @@
       --danger: #d32f2f;
       --white: #ffffff;
     }
-
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-bottom: 140px; /* extra space for footer + cart */
     }
-
     header {
       background: var(--green);
       color: white;
@@ -38,9 +33,7 @@
       z-index: 10;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
     header h1 { font-size: 22px; margin: 0; }
-
     .search-bar {
       background: white;
       border-radius: 8px;
@@ -51,14 +44,12 @@
       gap: 12px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-
     .search-bar input {
       border: none;
       flex: 1;
       font-size: 16px;
       outline: none;
     }
-
     .categories {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -66,7 +57,6 @@
       padding: 16px;
       background: white;
     }
-
     .category-tile {
       background: #fff;
       border-radius: 12px;
@@ -76,9 +66,7 @@
       cursor: pointer;
       transition: transform 0.15s;
     }
-
     .category-tile:active { transform: scale(0.95); }
-
     .category-tile img {
       width: 60px;
       height: 60px;
@@ -86,13 +74,11 @@
       object-fit: cover;
       margin-bottom: 8px;
     }
-
     .category-tile span {
       font-size: 13px;
       display: block;
       color: var(--text);
     }
-
     .brand-section {
       display: none;
       padding: 16px;
@@ -101,16 +87,13 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-
     .brand-section.active { display: block; }
-
     .brand-header {
       font-size: 20px;
       margin-bottom: 16px;
       color: var(--green);
       text-align: center;
     }
-
     .variant {
       background: #f8fff8;
       border: 1px solid #e0f0e0;
@@ -121,11 +104,9 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .variant-info { flex: 1; }
     .variant-size { font-size: 18px; font-weight: 600; }
     .variant-price { font-size: 20px; color: var(--accent); font-weight: bold; }
-
     .add-btn {
       background: var(--green);
       color: white;
@@ -136,7 +117,6 @@
       font-size: 26px;
       cursor: pointer;
     }
-
     #cart-summary {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -147,9 +127,7 @@
       transform: translateY(100%);
       transition: transform 0.4s;
     }
-
     #cart-summary.visible { transform: translateY(0); }
-
     #cart-items { list-style: none; margin: 8px 0; max-height: 160px; overflow-y: auto; }
     .cart-item {
       display: flex;
@@ -158,48 +136,18 @@
       padding: 8px 0;
       border-bottom: 1px solid #eee;
     }
-
     #total { font-weight: bold; text-align: right; font-size: 18px; margin: 8px 0; }
-
     #empty { text-align: center; color: var(--hint); padding: 20px; }
-
-    .contact-btn {
-      background: var(--green);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 16px;
-      width: 100%;
-      margin-top: 12px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .footer-contact {
-      text-align: center;
-      color: var(--hint);
-      font-size: 14px;
-      padding: 16px;
-      background: white;
-      margin: 16px;
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    }
-
     @media (min-width: 500px) { body { max-width: 480px; margin: 0 auto; } }
   </style>
 </head>
 <body>
-
   <header>
     <h1>ET Water Market</h1>
   </header>
-
   <div class="search-bar">
     <input type="text" placeholder="Search water brands..." disabled>
   </div>
-
   <div class="categories">
     <div class="category-tile" onclick="showBrand('gold')">
       <img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold">
@@ -230,26 +178,31 @@
       <span>Arki Water</span>
     </div>
   </div>
-
-  <!-- Brand sections -->
+  <!-- Brand sections - each has 3 sizes/prices -->
   <div id="gold-section" class="brand-section">
     <div class="brand-header">Gold Water – Pure & Healthy</div>
     <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <div class="variant-info">
+        <div class="variant-size">0.3L</div>
+        <div class="variant-price">140 Birr</div>
+      </div>
       <button class="add-btn" onclick="addToCart('Gold Water', '0.3L', 140)">+</button>
     </div>
     <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <div class="variant-info">
+        <div class="variant-size">0.6L</div>
+        <div class="variant-price">150 Birr</div>
+      </div>
       <button class="add-btn" onclick="addToCart('Gold Water', '0.6L', 150)">+</button>
     </div>
     <div class="variant">
-      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <div class="variant-info">
+        <div class="variant-size">2L</div>
+        <div class="variant-price">160 Birr</div>
+      </div>
       <button class="add-btn" onclick="addToCart('Gold Water', '2L', 160)">+</button>
     </div>
   </div>
-
-  <!-- Repeat the same structure for One, Africa, Yes, Dega, Fham, Arki -->
-  <!-- Example for One Water (copy-paste and change name for others) -->
   <div id="one-section" class="brand-section">
     <div class="brand-header">One Water – Fresh Daily</div>
     <div class="variant">
@@ -265,9 +218,81 @@
       <button class="add-btn" onclick="addToCart('One Water', '2L', 160)">+</button>
     </div>
   </div>
-
-  <!-- Add africa, yes, dega, fham, arki sections here following the same pattern -->
-
+  <div id="africa-section" class="brand-section">
+    <div class="brand-header">Africa Water – Clean & Safe</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '2L', 160)">+</button>
+    </div>
+  </div>
+  <div id="yes-section" class="brand-section">
+    <div class="brand-header">Yes Water – Natural Taste</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '2L', 160)">+</button>
+    </div>
+  </div>
+  <div id="dega-section" class="brand-section">
+    <div class="brand-header">Dega Water – Mountain Fresh</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '2L', 160)">+</button>
+    </div>
+  </div>
+  <div id="fham-section" class="brand-section">
+    <div class="brand-header">Fham Water – Pure Natural</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '2L', 160)">+</button>
+    </div>
+  </div>
+  <div id="arki-section" class="brand-section">
+    <div class="brand-header">Arki Water – Mineral Rich</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '2L', 160)">+</button>
+    </div>
+  </div>
   <div id="cart-summary">
     <div class="cart-header">
       <h2>Your Cart</h2>
@@ -276,60 +301,42 @@
     <ul id="cart-items"></ul>
     <div id="total">Total: 0 Birr</div>
     <div id="empty">Cart is empty – choose a brand! 💧</div>
-    <button class="contact-btn" onclick="contactSeller()">Contact Seller: 0984748168</button>
-  </div>
-
-  <!-- Footer with contact info -->
-  <div class="footer-contact">
-    For orders, delivery in Waliso, or questions:<br>
-    <strong>Call / WhatsApp: 0984748168</strong>
   </div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
-
-    tg.MainButton.setParams({ text: 'Checkout', color: '#0066FF', text_color: '#ffffff' });
+    tg.MainButton.setParams({ text: 'Checkout', color: '#00b140', text_color: '#ffffff' });
     tg.MainButton.hide();
-
-    const CONTACT_NUMBER = "0984748168";
-
     let cart = [];
-
     function showBrand(brandId) {
       document.querySelectorAll('.brand-section').forEach(sec => sec.classList.remove('active'));
       document.getElementById(brandId + '-section').classList.add('active');
       tg.HapticFeedback.impactOccurred('light');
       window.scrollTo({ top: 220, behavior: 'smooth' });
     }
-
     function addToCart(brand, size, price) {
       const existing = cart.find(item => item.brand === brand && item.size === size);
       if (existing) existing.qty++;
       else cart.push({ brand, size, price, qty: 1 });
-
       renderCart();
       tg.HapticFeedback.impactOccurred('medium');
     }
-
     function changeQty(index, delta) {
       cart[index].qty += delta;
       if (cart[index].qty <= 0) cart.splice(index, 1);
       renderCart();
     }
-
     function renderCart() {
       const list = document.getElementById('cart-items');
       const totalEl = document.getElementById('total');
       const countEl = document.getElementById('cart-count');
       const emptyEl = document.getElementById('empty');
       const summary = document.getElementById('cart-summary');
-
       list.innerHTML = '';
       let total = 0;
       let count = 0;
-
       if (cart.length === 0) {
         emptyEl.style.display = 'block';
         countEl.textContent = '0';
@@ -338,15 +345,12 @@
         tg.MainButton.hide();
         return;
       }
-
       emptyEl.style.display = 'none';
       summary.classList.add('visible');
-
       cart.forEach((item, index) => {
         const lineTotal = item.price * item.qty;
         total += lineTotal;
         count += item.qty;
-
         const li = document.createElement('li');
         li.className = 'cart-item';
         li.innerHTML = `
@@ -356,53 +360,37 @@
         `;
         list.appendChild(li);
       });
-
       countEl.textContent = count;
       totalEl.textContent = `Total: ${total} Birr`;
-
       tg.MainButton.setText(`Checkout • ${total} Birr`);
       tg.MainButton.show();
     }
-
-    function contactSeller() {
-      alert(
-        `Contact Seller\n\n` +
-        `Phone / WhatsApp: ${CONTACT_NUMBER}\n\n` +
-        `Call or message for:\n` +
-        `- Place your order\n` +
-        `- Ask about delivery in Waliso\n` +
-        `- Any questions\n\n` +
-        `We are ready to serve you! 💧`
-      );
-      tg.HapticFeedback.notificationOccurred('success');
-    }
-
     tg.MainButton.onClick(() => {
       if (cart.length === 0) return;
-
-      let text = "Order summary:\n\n";
+      let text = "Order summary:\n";
       let grand = 0;
       cart.forEach(i => {
         const lt = i.price * i.qty;
         text += `${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
         grand += lt;
       });
-      text += `\nTotal Amount: ${grand} Birr\n\n`;
-      text += `To complete your order, please contact:\nPhone/WhatsApp: ${CONTACT_NUMBER}\n\n`;
-      text += `(Delivery available in Waliso)`;
-
-      alert(text);
-
+      text += `\nTotal: ${grand} Birr`;
+      alert(text + "\n\n(Contact seller for delivery in Waliso!)");
       setTimeout(() => {
-        alert(`Thank you for your order! 💧\n\nSeller will contact you soon on ${CONTACT_NUMBER}`);
+        alert("Order placed! Thank you! 💧");
         cart = [];
         renderCart();
       }, 800);
     });
-
     // Init
     renderCart();
   </script>
+
+  <!-- Contact number added at the very end of the page -->
+  <div style="text-align:center; padding:20px 16px; color:#555; font-size:14px; background:#f8f8f8; border-top:1px solid #ddd;">
+    Contact for orders & delivery in Waliso:<br>
+    <strong style="color:#0066FF; font-size:16px;">0984748168</strong>
+  </div>
 
 </body>
 </html>
