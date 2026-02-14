@@ -76,8 +76,8 @@
 
     select {
       width: 100%;
-      padding: 10px;
-      margin: 12px 0;
+      padding: 12px;
+      margin: 12px 0 16px;
       border-radius: 8px;
       border: 1px solid var(--hint);
       font-size: 16px;
@@ -135,7 +135,7 @@
     }
 
     .cart-item-name { flex: 1; font-weight: 500; }
-    .cart-item-price { font-weight: bold; color: var(--accent); min-width: 100px; text-align: right; }
+    .cart-item-price { font-weight: bold; color: var(--accent); min-width: 110px; text-align: right; }
 
     .remove-btn {
       color: var(--danger);
@@ -210,8 +210,8 @@
   <div class="product" id="product-card">
     <img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold Water">
     <h2>Gold Water</h2>
-    <div class="desc">Premium gold-infused spring water – luxurious hydration with a refreshing and crisp taste.</div>
-    <div class="price-info">Choose your size below</div>
+    <div class="desc">Gold Water – pure and healthy drinking water from trusted source in Ethiopia. Available in convenient sizes for daily use.</div>
+    <div class="price-info">Tap to see sizes and order</div>
     <div class="qty-controls">
       <div class="qty-btn" onclick="addToCart()">+</div>
     </div>
@@ -238,11 +238,11 @@
       <h2>Gold Water</h2>
       <img class="modal-img" src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold Water">
       <p class="modal-desc">
-        Premium gold-infused spring water – luxurious hydration with a refreshing and crisp taste.<br><br>
-        Select your preferred bottle size and add to cart.
+        Gold Water – pure and healthy drinking water from trusted source in Ethiopia.<br><br>
+        Select your preferred size to order with daily prices.
       </p>
 
-      <label for="size-select">Choose Size:</label>
+      <label for="size-select">Select size to order:</label>
       <select id="size-select">
         <option value="0">0.3L – 140 Birr</option>
         <option value="1" selected>0.6L – 150 Birr</option>
@@ -280,11 +280,11 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Single product with 3 variants (sizes & prices in Birr)
+    // Single product with 3 variants (daily prices in Birr)
     const product = {
       name: "Gold Water",
       image: "https://i.postimg.cc/xTXcXRGR/gold-water-image.webp",
-      desc: "Premium gold-infused spring water – luxurious hydration with a refreshing and crisp taste.",
+      desc: "Gold Water – pure and healthy drinking water from trusted source in Ethiopia. Available in convenient sizes for daily use.",
       variants: [
         { size: "0.3L", price: 140 },
         { size: "0.6L", price: 150 },
@@ -421,7 +421,7 @@
       closeModal();
     };
 
-    // Checkout simulation
+    // Checkout simulation with amount calculation
     tg.MainButton.onClick(() => {
       if (cart.length === 0) return;
 
@@ -433,12 +433,12 @@
         summaryText += `${product.name} ${v.size} × ${item.qty} = ${v.price * item.qty} Birr\n`;
       });
       const grandTotal = cart.reduce((s, i) => s + product.variants[i.variantIndex].price * i.qty, 0);
-      summaryText += `\nTotal: ${grandTotal} Birr\n\n(Real version would process payment here – e.g. via local gateway or Telegram Stars)`; 
+      summaryText += `\nTotal Amount: ${grandTotal} Birr\n\n(Real payment would be processed here – contact seller for delivery in Waliso!)`;
 
       alert(summaryText);
 
       setTimeout(() => {
-        alert("Payment simulation: SUCCESS! Thank you for choosing Gold Water! 💧✨");
+        alert("Order simulation: SUCCESS! Thank you for choosing Gold Water! 💧 We will contact you soon.");
         cart = [];
         saveCart();
         renderCart();
