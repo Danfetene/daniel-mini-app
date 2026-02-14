@@ -9,7 +9,7 @@
 
   <style>
     :root {
-      --green: #00b140;       /* JiJi green */
+      --green: #00b140;
       --dark-green: #009933;
       --bg: #f8f9fa;
       --text: #333;
@@ -38,10 +38,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    header h1 {
-      font-size: 22px;
-      margin: 0;
-    }
+    header h1 { font-size: 22px; margin: 0; }
 
     .search-bar {
       background: white;
@@ -63,7 +60,7 @@
 
     .categories {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
       gap: 12px;
       padding: 16px;
       background: white;
@@ -110,6 +107,7 @@
       font-size: 20px;
       margin-bottom: 16px;
       color: var(--green);
+      text-align: center;
     }
 
     .variant {
@@ -123,29 +121,18 @@
       align-items: center;
     }
 
-    .variant-info {
-      flex: 1;
-    }
-
-    .variant-size {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .variant-price {
-      font-size: 20px;
-      color: var(--accent);
-      font-weight: bold;
-    }
+    .variant-info { flex: 1; }
+    .variant-size { font-size: 18px; font-weight: 600; }
+    .variant-price { font-size: 20px; color: var(--accent); font-weight: bold; }
 
     .add-btn {
       background: var(--green);
       color: white;
       border: none;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 24px;
+      width: 44px;
+      height: 44px;
+      font-size: 26px;
       cursor: pointer;
     }
 
@@ -162,7 +149,7 @@
 
     #cart-summary.visible { transform: translateY(0); }
 
-    #cart-items { list-style: none; margin: 8px 0; max-height: 140px; overflow-y: auto; }
+    #cart-items { list-style: none; margin: 8px 0; max-height: 160px; overflow-y: auto; }
     .cart-item {
       display: flex;
       justify-content: space-between;
@@ -175,9 +162,7 @@
 
     #empty { text-align: center; color: var(--hint); padding: 20px; }
 
-    @media (min-width: 500px) {
-      body { max-width: 480px; margin: 0 auto; }
-    }
+    @media (min-width: 500px) { body { max-width: 480px; margin: 0 auto; } }
   </style>
 </head>
 <body>
@@ -195,22 +180,33 @@
       <img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold">
       <span>Gold Water</span>
     </div>
-    <div class="category-tile" onclick="showBrand('top')">
-      <img src="https://via.placeholder.com/60?text=Top" alt="Top">
-      <span>Top Water</span>
+    <div class="category-tile" onclick="showBrand('one')">
+      <img src="https://via.placeholder.com/60?text=One" alt="One">
+      <span>One Water</span>
     </div>
-    <div class="category-tile" onclick="showBrand('daily')">
-      <img src="https://via.placeholder.com/60?text=Daily" alt="Daily">
-      <span>Daily Water</span>
+    <div class="category-tile" onclick="showBrand('africa')">
+      <img src="https://via.placeholder.com/60?text=Africa" alt="Africa">
+      <span>Africa Water</span>
     </div>
-    <div class="category-tile" onclick="showBrand('aqua')">
-      <img src="https://via.placeholder.com/60?text=Aqua" alt="Aqua">
-      <span>Aqua Addis</span>
+    <div class="category-tile" onclick="showBrand('yes')">
+      <img src="https://via.placeholder.com/60?text=Yes" alt="Yes">
+      <span>Yes Water</span>
     </div>
-    <!-- You can add more brands here -->
+    <div class="category-tile" onclick="showBrand('dega')">
+      <img src="https://via.placeholder.com/60?text=Dega" alt="Dega">
+      <span>Dega Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('fham')">
+      <img src="https://via.placeholder.com/60?text=Fham" alt="Fham">
+      <span>Fham Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('arki')">
+      <img src="https://via.placeholder.com/60?text=Arki" alt="Arki">
+      <span>Arki Water</span>
+    </div>
   </div>
 
-  <!-- Brand detail sections -->
+  <!-- Brand sections - each has 3 sizes/prices -->
   <div id="gold-section" class="brand-section">
     <div class="brand-header">Gold Water – Pure & Healthy</div>
     <div class="variant">
@@ -236,19 +232,101 @@
     </div>
   </div>
 
-  <div id="top-section" class="brand-section">
-    <div class="brand-header">Top Water – Premium Quality</div>
+  <div id="one-section" class="brand-section">
+    <div class="brand-header">One Water – Fresh Daily</div>
     <div class="variant">
-      <div class="variant-info">
-        <div class="variant-size">0.3L</div>
-        <div class="variant-price">145 Birr</div>
-      </div>
-      <button class="add-btn" onclick="addToCart('Top Water', '0.3L', 145)">+</button>
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('One Water', '0.3L', 140)">+</button>
     </div>
-    <!-- Add other sizes for Top Water -->
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('One Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('One Water', '2L', 160)">+</button>
+    </div>
   </div>
 
-  <!-- Repeat similar blocks for other brands with their prices -->
+  <div id="africa-section" class="brand-section">
+    <div class="brand-header">Africa Water – Clean & Safe</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="yes-section" class="brand-section">
+    <div class="brand-header">Yes Water – Natural Taste</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="dega-section" class="brand-section">
+    <div class="brand-header">Dega Water – Mountain Fresh</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="fham-section" class="brand-section">
+    <div class="brand-header">Fham Water – Pure Natural</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="arki-section" class="brand-section">
+    <div class="brand-header">Arki Water – Mineral Rich</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '2L', 160)">+</button>
+    </div>
+  </div>
 
   <div id="cart-summary">
     <div class="cart-header">
@@ -270,11 +348,11 @@
 
     let cart = [];
 
-    function showBrand(brand) {
+    function showBrand(brandId) {
       document.querySelectorAll('.brand-section').forEach(sec => sec.classList.remove('active'));
-      document.getElementById(`${brand}-section`).classList.add('active');
+      document.getElementById(brandId + '-section').classList.add('active');
       tg.HapticFeedback.impactOccurred('light');
-      window.scrollTo({ top: 300, behavior: 'smooth' });
+      window.scrollTo({ top: 220, behavior: 'smooth' });
     }
 
     function addToCart(brand, size, price) {
