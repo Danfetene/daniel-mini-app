@@ -150,49 +150,68 @@
   </div>
   <div class="categories">
     <div class="category-tile" onclick="showBrand('aquaddis')">
-      <img src="https://via.placeholder.com/60?text=Aquaddis" alt="Aquaddis">
+      <img src="https://via.placeholder.com/60/0066FF/fff?text=Aqua" alt="Aquaddis">
       <span>Aquaddis</span>
     </div>
     <div class="category-tile" onclick="showBrand('best')">
-      <img src="https://via.placeholder.com/60?text=Best" alt="Best water">
+      <img src="https://via.placeholder.com/60/0066FF/fff?text=Best" alt="Best water">
       <span>Best water</span>
     </div>
     <div class="category-tile" onclick="showBrand('top')">
-      <img src="https://via.placeholder.com/60?text=Top" alt="Top water">
+      <img src="https://via.placeholder.com/60/0066FF/fff?text=Top" alt="Top water">
       <span>Top water</span>
     </div>
     <div class="category-tile" onclick="showBrand('daily')">
-      <img src="https://via.placeholder.com/60?text=Daily" alt="Daily water">
+      <img src="https://via.placeholder.com/60/0066FF/fff?text=Daily" alt="Daily water">
       <span>Daily water</span>
     </div>
     <div class="category-tile" onclick="showBrand('fine')">
-      <img src="https://via.placeholder.com/60?text=Fine" alt="Fine water">
+      <img src="https://via.placeholder.com/60/0066FF/fff?text=Fine" alt="Fine water">
       <span>Fine water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('gold')">
+      <img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold">
+      <span>Gold Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('one')">
+      <img src="https://i.postimg.cc/Vvf49NBk/one-water.jpg" alt="One">
+      <span>One Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('africa')">
+      <img src="https://i.postimg.cc/0NGB7hR3/africa.jpg" alt="Africa">
+      <span>Africa Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('yes')">
+      <img src="https://i.postimg.cc/rw1JHWnJ/yes.webp" alt="Yes">
+      <span>Yes Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('dega')">
+      <img src="https://i.postimg.cc/9FG86vz9/dega.webp" alt="Dega">
+      <span>Dega Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('fham')">
+      <img src="https://i.postimg.cc/wjqVSMCp/fham.jpg" alt="Fham">
+      <span>Fham Water</span>
+    </div>
+    <div class="category-tile" onclick="showBrand('arki')">
+      <img src="https://i.postimg.cc/TwDqrDDf/arki.webp" alt="Arki">
+      <span>Arki Water</span>
     </div>
   </div>
 
-  <!-- Brand sections - each has 3 sizes/prices -->
+  <!-- Brand sections (only showing one as example – copy the pattern for all 12) -->
   <div id="aquaddis-section" class="brand-section">
     <div class="brand-header">Aquaddis – Pure & Fresh</div>
     <div class="variant">
-      <div class="variant-info">
-        <div class="variant-size">0.3L</div>
-        <div class="variant-price">140 Birr</div>
-      </div>
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
       <button class="add-btn" onclick="addToCart('Aquaddis', '0.3L', 140)">+</button>
     </div>
     <div class="variant">
-      <div class="variant-info">
-        <div class="variant-size">0.6L</div>
-        <div class="variant-price">150 Birr</div>
-      </div>
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
       <button class="add-btn" onclick="addToCart('Aquaddis', '0.6L', 150)">+</button>
     </div>
     <div class="variant">
-      <div class="variant-info">
-        <div class="variant-size">2L</div>
-        <div class="variant-price">160 Birr</div>
-      </div>
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
       <button class="add-btn" onclick="addToCart('Aquaddis', '2L', 160)">+</button>
     </div>
   </div>
@@ -260,6 +279,26 @@
       <button class="add-btn" onclick="addToCart('Fine water', '2L', 160)">+</button>
     </div>
   </div>
+
+  <!-- Add the remaining 7 brands (Gold, One, Africa, Yes, Dega, Fham, Arki) following the same pattern -->
+  <!-- Example for Gold Water (copy-paste and change id, header, brand name) -->
+  <div id="gold-section" class="brand-section">
+    <div class="brand-header">Gold Water – Pure & Healthy</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <!-- Repeat the same structure for One, Africa, Yes, Dega, Fham, Arki -->
 
   <div id="cart-summary">
     <div class="cart-header">
