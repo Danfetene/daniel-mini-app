@@ -27,7 +27,6 @@
       min-height: 100vh;
       padding: 16px;
       padding-bottom: 90px;
-      transition: background 0.4s, color 0.4s;
     }
 
     h1 { font-size: 26px; text-align: center; margin: 0 0 24px; }
@@ -55,12 +54,7 @@
 
     .product h2 { font-size: 22px; margin-bottom: 8px; }
     .product .desc { color: var(--hint); font-size: 15px; margin-bottom: 12px; line-height: 1.4; }
-    .product .price {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
+    .product .price-info { font-size: 16px; color: var(--accent); margin-bottom: 12px; }
 
     .added-flash {
       position: absolute;
@@ -79,6 +73,17 @@
     }
 
     .added-flash.show { opacity: 1; }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      border-radius: 8px;
+      border: 1px solid var(--hint);
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text);
+    }
 
     .qty-controls {
       display: flex;
@@ -99,7 +104,6 @@
       text-align: center;
       cursor: pointer;
       user-select: none;
-      transition: background 0.2s;
     }
 
     .qty-btn:active { background: #006699; }
@@ -131,7 +135,7 @@
     }
 
     .cart-item-name { flex: 1; font-weight: 500; }
-    .cart-item-price { font-weight: bold; color: var(--accent); min-width: 90px; text-align: right; }
+    .cart-item-price { font-weight: bold; color: var(--accent); min-width: 100px; text-align: right; }
 
     .remove-btn {
       color: var(--danger);
@@ -152,7 +156,6 @@
 
     #empty { text-align: center; color: var(--hint); padding: 40px 0; font-size: 16px; }
 
-    /* Modal */
     #modal {
       position: fixed;
       inset: 0;
@@ -208,7 +211,7 @@
     <img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold Water">
     <h2>Gold Water</h2>
     <div class="desc">Premium gold-infused spring water – luxurious hydration with a refreshing and crisp taste.</div>
-    <div class="price">45 Stars</div>
+    <div class="price-info">Choose your size below</div>
     <div class="qty-controls">
       <div class="qty-btn" onclick="addToCart()">+</div>
     </div>
@@ -223,12 +226,12 @@
 
     <ul id="cart-items"></ul>
 
-    <div id="total">Total: 0 Stars</div>
+    <div id="total">Total: 0 Birr</div>
 
     <div id="empty">Your cart is empty – add Gold Water! 💧</div>
   </div>
 
-  <!-- Details Modal -->
+  <!-- Details Modal with Size Selection -->
   <div id="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeModal()">×</span>
@@ -236,11 +239,18 @@
       <img class="modal-img" src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold Water">
       <p class="modal-desc">
         Premium gold-infused spring water – luxurious hydration with a refreshing and crisp taste.<br><br>
-        Perfect for those who want something special and elegant in every sip.
+        Select your preferred bottle size and add to cart.
       </p>
-      <p class="price">45 Stars</p>
-      <div class="qty-controls" style="justify-content: center; margin-top: 16px;">
-        <div class="qty-btn" onclick="addToCart()">Add to Cart</div>
+
+      <label for="size-select">Choose Size:</label>
+      <select id="size-select">
+        <option value="0">0.3L – 140 Birr</option>
+        <option value="1" selected>0.6L – 150 Birr</option>
+        <option value="2">2L – 160 Birr</option>
+      </select>
+
+      <div class="qty-controls" style="justify-content: center; margin-top: 20px;">
+        <div class="qty-btn" onclick="addToCartFromModal()">Add to Cart</div>
       </div>
     </div>
   </div>
@@ -257,7 +267,7 @@
     });
     tg.MainButton.hide();
 
-    // Theme
+    // Theme sync
     function applyTheme() {
       const th = tg.themeParams;
       document.documentElement.style.setProperty('--bg', th.bg_color || '#ffffff');
@@ -270,18 +280,21 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Single product data
+    // Single product with 3 variants (sizes & prices in Birr)
     const product = {
-      id: 1,
       name: "Gold Water",
-      price: 45,
+      image: "https://i.postimg.cc/xTXcXRGR/gold-water-image.webp",
       desc: "Premium gold-infused spring water – luxurious hydration with a refreshing and crisp taste.",
-      image: "https://i.postimg.cc/xTXcXRGR/gold-water-image.webp"
+      variants: [
+        { size: "0.3L", price: 140 },
+        { size: "0.6L", price: 150 },
+        { size: "2L",   price: 160 }
+      ]
     };
 
-    let cart = []; // will only contain multiples of this one product
+    let cart = []; // Array of {variantIndex, qty}
 
-    // ─── Cart persistence ────────────────────────────────
+    // Cart persistence
     function loadCart() {
       tg.CloudStorage.getItem('gold_cart', (err, val) => {
         if (!err && val) {
@@ -296,13 +309,13 @@
       tg.CloudStorage.setItem('gold_cart', JSON.stringify(cart));
     }
 
-    // ─── Cart logic ──────────────────────────────────────
-    function addToCart() {
-      let item = cart[0];
-      if (item) {
-        item.qty++;
+    // Add selected variant
+    function addToCart(variantIndex = 1) {  // default to 0.6L
+      const existing = cart.find(item => item.variantIndex === variantIndex);
+      if (existing) {
+        existing.qty++;
       } else {
-        cart = [{ ...product, qty: 1 }];
+        cart.push({ variantIndex, qty: 1 });
       }
 
       saveCart();
@@ -310,25 +323,23 @@
       renderCart();
       updateMainButton();
 
-      // Flash
       const flash = document.getElementById('flash');
       flash.classList.add('show');
       setTimeout(() => flash.classList.remove('show'), 900);
     }
 
-    function changeQty(delta) {
-      let item = cart[0];
+    function changeQty(variantIndex, delta) {
+      const item = cart.find(i => i.variantIndex === variantIndex);
       if (!item) return;
       item.qty = Math.max(0, item.qty + delta);
       if (item.qty === 0) {
-        cart = [];
+        cart = cart.filter(i => i.variantIndex !== variantIndex);
       }
       saveCart();
       renderCart();
       tg.HapticFeedback.impactOccurred('light');
     }
 
-    // ─── Rendering ───────────────────────────────────────
     function renderCart() {
       const list = document.getElementById('cart-items');
       const totalEl = document.getElementById('total');
@@ -337,11 +348,13 @@
       const summary = document.getElementById('cart-summary');
 
       list.innerHTML = '';
+      let total = 0;
+      let itemCount = 0;
 
       if (cart.length === 0) {
         emptyEl.style.display = 'block';
         countEl.textContent = '0';
-        totalEl.textContent = 'Total: 0 Stars';
+        totalEl.textContent = 'Total: 0 Birr';
         summary.classList.remove('visible');
         tg.MainButton.hide();
         return;
@@ -350,25 +363,29 @@
       emptyEl.style.display = 'none';
       summary.classList.add('visible');
 
-      const item = cart[0];
-      const total = item.price * item.qty;
+      cart.forEach(cartItem => {
+        const variant = product.variants[cartItem.variantIndex];
+        const lineTotal = variant.price * cartItem.qty;
+        total += lineTotal;
+        itemCount += cartItem.qty;
 
-      const li = document.createElement('li');
-      li.className = 'cart-item';
-      li.innerHTML = `
-        <span class="cart-item-name">${item.name}</span>
-        <div class="qty-controls" style="margin:0; width:auto;">
-          <div class="qty-btn" onclick="changeQty(-1)">−</div>
-          <span style="min-width:30px; text-align:center; font-size:16px;">${item.qty}</span>
-          <div class="qty-btn" onclick="changeQty(1)">+</div>
-        </div>
-        <span class="cart-item-price">${total} Stars</span>
-        <span class="remove-btn" onclick="changeQty(-999)">×</span>
-      `;
-      list.appendChild(li);
+        const li = document.createElement('li');
+        li.className = 'cart-item';
+        li.innerHTML = `
+          <span class="cart-item-name">${product.name} ${variant.size}</span>
+          <div class="qty-controls" style="margin:0; width:auto;">
+            <div class="qty-btn" onclick="changeQty(${cartItem.variantIndex}, -1)">−</div>
+            <span style="min-width:30px; text-align:center; font-size:16px;">${cartItem.qty}</span>
+            <div class="qty-btn" onclick="changeQty(${cartItem.variantIndex}, 1)">+</div>
+          </div>
+          <span class="cart-item-price">${lineTotal} Birr</span>
+          <span class="remove-btn" onclick="changeQty(${cartItem.variantIndex}, -999)">×</span>
+        `;
+        list.appendChild(li);
+      });
 
-      countEl.textContent = item.qty;
-      totalEl.textContent = `Total: ${total} Stars`;
+      countEl.textContent = itemCount;
+      totalEl.textContent = `Total: ${total} Birr`;
 
       updateMainButton();
     }
@@ -379,13 +396,15 @@
         return;
       }
 
-      const qty = cart[0].qty;
-      const total = cart[0].price * qty;
-      tg.MainButton.setText(`Checkout • ${total} Stars (${qty})`);
+      const total = cart.reduce((sum, item) => {
+        return sum + product.variants[item.variantIndex].price * item.qty;
+      }, 0);
+
+      tg.MainButton.setText(`Checkout • ${total} Birr`);
       tg.MainButton.show();
     }
 
-    // ─── Modal ───────────────────────────────────────────
+    // Modal show
     function showDetails() {
       document.getElementById('modal').classList.add('show');
       tg.HapticFeedback.impactOccurred('light');
@@ -395,14 +414,28 @@
       document.getElementById('modal').classList.remove('show');
     }
 
-    // ─── Checkout simulation ─────────────────────────────
+    window.addToCartFromModal = () => {
+      const select = document.getElementById('size-select');
+      const variantIndex = parseInt(select.value);
+      addToCart(variantIndex);
+      closeModal();
+    };
+
+    // Checkout simulation
     tg.MainButton.onClick(() => {
       if (cart.length === 0) return;
 
       tg.HapticFeedback.impactOccurred('heavy');
 
-      const item = cart[0];
-      alert(`Order summary:\n${item.name} × ${item.qty} = ${item.price * item.qty} Stars\n\n(Real version would open Telegram Stars invoice here)`);
+      let summaryText = "Order summary:\n";
+      cart.forEach(item => {
+        const v = product.variants[item.variantIndex];
+        summaryText += `${product.name} ${v.size} × ${item.qty} = ${v.price * item.qty} Birr\n`;
+      });
+      const grandTotal = cart.reduce((s, i) => s + product.variants[i.variantIndex].price * i.qty, 0);
+      summaryText += `\nTotal: ${grandTotal} Birr\n\n(Real version would process payment here – e.g. via local gateway or Telegram Stars)`; 
+
+      alert(summaryText);
 
       setTimeout(() => {
         alert("Payment simulation: SUCCESS! Thank you for choosing Gold Water! 💧✨");
@@ -413,7 +446,7 @@
       }, 900);
     });
 
-    // ─── Start ───────────────────────────────────────────
+    // Start
     document.getElementById('product-card').addEventListener('click', showDetails);
     loadCart();
     renderCart();
