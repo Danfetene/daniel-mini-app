@@ -117,28 +117,42 @@
       font-size: 26px;
       cursor: pointer;
     }
+
+    .nutrition {
+      margin-top: 24px;
+      padding: 16px;
+      background: #f0f8f5;
+      border-radius: 12px;
+      border: 1px solid #d4e8df;
+    }
+    .nutrition h3 {
+      margin: 0 0 12px 0;
+      color: var(--accent);
+      font-size: 16px;
+      text-align: center;
+    }
     .nutrition-table {
       width: 100%;
       border-collapse: collapse;
-      margin: 16px 0;
       font-size: 14px;
-      background: #f0f8f0;
-      border-radius: 8px;
-      overflow: hidden;
     }
-    .nutrition-table th, .nutrition-table td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #d0e8d0;
+    .nutrition-table td {
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
     }
-    .nutrition-table th {
-      background: #e0f0e0;
-      font-weight: bold;
-      color: var(--accent);
+    .nutrition-table td:first-child {
+      font-weight: 500;
+      color: #444;
+    }
+    .nutrition-table td:last-child {
+      text-align: right;
+      color: #0066FF;
+      font-weight: 600;
     }
     .nutrition-table tr:last-child td {
       border-bottom: none;
     }
+
     #cart-summary {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -174,10 +188,10 @@
 
   <div class="categories">
     <div class="category-tile" onclick="showBrand('aquaddis')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Aqua" alt="Aquaddis"><span>Aquaddis</span></div>
-    <div class="category-tile" onclick="showBrand('best')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Best" alt="Best water"><span>Best water</span></div>
-    <div class="category-tile" onclick="showBrand('top')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Top" alt="Top water"><span>Top water</span></div>
-    <div class="category-tile" onclick="showBrand('daily')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Daily" alt="Daily water"><span>Daily water</span></div>
-    <div class="category-tile" onclick="showBrand('fine')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Fine" alt="Fine water"><span>Fine water</span></div>
+    <div class="category-tile" onclick="showBrand('best')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Best" alt="Best"><span>Best water</span></div>
+    <div class="category-tile" onclick="showBrand('top')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Top" alt="Top"><span>Top water</span></div>
+    <div class="category-tile" onclick="showBrand('daily')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Daily" alt="Daily"><span>Daily water</span></div>
+    <div class="category-tile" onclick="showBrand('fine')"><img src="https://via.placeholder.com/60/0066FF/fff?text=Fine" alt="Fine"><span>Fine water</span></div>
     <div class="category-tile" onclick="showBrand('gold')"><img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold"><span>Gold Water</span></div>
     <div class="category-tile" onclick="showBrand('one')"><img src="https://i.postimg.cc/Vvf49NBk/one-water.jpg" alt="One"><span>One Water</span></div>
     <div class="category-tile" onclick="showBrand('africa')"><img src="https://i.postimg.cc/0NGB7hR3/africa.jpg" alt="Africa"><span>Africa Water</span></div>
@@ -187,133 +201,215 @@
     <div class="category-tile" onclick="showBrand('arki')"><img src="https://i.postimg.cc/TwDqrDDf/arki.webp" alt="Arki"><span>Arki Water</span></div>
   </div>
 
-  <!-- Brand sections -->
+  <!-- ─────────────────────────────────────────────── -->
+  <!--                  BRAND SECTIONS                  -->
+  <!-- ─────────────────────────────────────────────── -->
 
   <div id="aquaddis-section" class="brand-section">
     <div class="brand-header">Aquaddis</div>
-    
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Aquaddis', '0.3L', 140)">+</button>
-    </div>
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Aquaddis', '0.6L', 150)">+</button>
-    </div>
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Aquaddis', '2L', 160)">+</button>
-    </div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Aquaddis', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Aquaddis', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Aquaddis', '2L', 160)">+</button></div>
 
-    <table class="nutrition-table">
-      <thead>
-        <tr><th>Nutrition Facts (per liter)</th><th>Value</th></tr>
-      </thead>
-      <tbody>
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
         <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
         <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
         <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
-        <tr><td>TDS (Total Dissolved Solids)</td><td>20 mg/L</td></tr>
-      </tbody>
-    </table>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
   </div>
 
   <div id="best-section" class="brand-section">
     <div class="brand-header">Best Water</div>
-    
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Best Water', '0.3L', 140)">+</button>
-    </div>
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Best Water', '0.6L', 150)">+</button>
-    </div>
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Best Water', '2L', 160)">+</button>
-    </div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Best Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Best Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Best Water', '2L', 160)">+</button></div>
 
-    <table class="nutrition-table">
-      <thead>
-        <tr><th>Nutrition Facts (per liter)</th><th>Value</th></tr>
-      </thead>
-      <tbody>
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
         <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
         <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
         <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
-        <tr><td>TDS (Total Dissolved Solids)</td><td>20 mg/L</td></tr>
-      </tbody>
-    </table>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
   </div>
 
   <div id="top-section" class="brand-section">
     <div class="brand-header">Top Water</div>
-    
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Top Water', '0.3L', 140)">+</button>
-    </div>
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Top Water', '0.6L', 150)">+</button>
-    </div>
-    <div class="variant">
-      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
-      <button class="add-btn" onclick="addToCart('Top Water', '2L', 160)">+</button>
-    </div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Top Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Top Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Top Water', '2L', 160)">+</button></div>
 
-    <table class="nutrition-table">
-      <thead>
-        <tr><th>Nutrition Facts (per liter)</th><th>Value</th></tr>
-      </thead>
-      <tbody>
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
         <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
         <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
         <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
-        <tr><td>TDS (Total Dissolved Solids)</td><td>20 mg/L</td></tr>
-      </tbody>
-    </table>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
   </div>
-
-  <!-- Repeat the same pattern (variants + nutrition table) for all other brands: daily, fine, gold, one, africa, yes, dega, fham, arki -->
 
   <div id="daily-section" class="brand-section">
     <div class="brand-header">Daily Water</div>
-    <div class="variant"> <!-- 0.3L --> <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '0.3L', 140)">+</button></div>
-    <div class="variant"> <!-- 0.6L --> <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '0.6L', 150)">+</button></div>
-    <div class="variant"> <!-- 2L   --> <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '2L', 160)">+</button></div>
-    <table class="nutrition-table">
-      <thead><tr><th>Nutrition Facts (per liter)</th><th>Value</th></tr></thead>
-      <tbody>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
         <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
         <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
         <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
-        <tr><td>TDS (Total Dissolved Solids)</td><td>20 mg/L</td></tr>
-      </tbody>
-    </table>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
   </div>
 
-  <!-- Add similar blocks for fine, gold, one, africa, yes, dega, fham, arki – just copy-paste and change brand name / addToCart string -->
+  <div id="fine-section" class="brand-section">
+    <div class="brand-header">Fine Water</div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Fine Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Fine Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Fine Water', '2L', 160)">+</button></div>
 
-  <!-- Example for the last one -->
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
+        <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
+        <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
+        <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="gold-section" class="brand-section">
+    <div class="brand-header">Gold Water</div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Gold Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Gold Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Gold Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
+        <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
+        <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
+        <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="one-section" class="brand-section">
+    <div class="brand-header">One Water</div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('One Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('One Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('One Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
+        <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
+        <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
+        <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="africa-section" class="brand-section">
+    <div class="brand-header">Africa Water</div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Africa Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Africa Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Africa Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
+        <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
+        <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
+        <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="yes-section" class="brand-section">
+    <div class="brand-header">Yes Water</div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Yes Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Yes Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Yes Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
+        <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
+        <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
+        <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="dega-section" class="brand-section">
+    <div class="brand-header">Dega Water</div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Dega Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Dega Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Dega Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
+        <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
+        <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
+        <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="fham-section" class="brand-section">
+    <div class="brand-header">Fham Water</div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Fham Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Fham Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Fham Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
+        <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
+        <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
+        <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+
   <div id="arki-section" class="brand-section">
     <div class="brand-header">Arki Water</div>
-    <div class="variant"><div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.3L', 140)">+</button></div>
-    <div class="variant"><div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.6L', 150)">+</button></div>
-    <div class="variant"><div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '2L', 160)">+</button></div>
-    <table class="nutrition-table">
-      <thead><tr><th>Nutrition Facts (per liter)</th><th>Value</th></tr></thead>
-      <tbody>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.3L', 140)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.6L', 150)">+</button></div>
+    <div class="variant"><div class="variant-info"><div class="variant-size">2 L</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '2L', 160)">+</button></div>
+
+    <div class="nutrition">
+      <h3>Nutrition Facts (per liter)</h3>
+      <table class="nutrition-table">
         <tr><td>Calcium</td><td>0.4 mg/L</td></tr>
         <tr><td>Magnesium</td><td>1.3 mg/L</td></tr>
         <tr><td>Sodium</td><td>2.3 mg/L</td></tr>
-        <tr><td>TDS (Total Dissolved Solids)</td><td>20 mg/L</td></tr>
-      </tbody>
-    </table>
+        <tr><td>TDS</td><td>20 mg/L</td></tr>
+      </table>
+    </div>
   </div>
 
-  <!-- Cart summary remains the same -->
+  <!-- Cart -->
   <div id="cart-summary">
     <div class="cart-header">
       <h2>Your Cart</h2>
@@ -325,7 +421,6 @@
   </div>
 
   <script>
-    // Your existing script remains unchanged
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
@@ -409,7 +504,7 @@
         grand += lt;
       });
       text += `\nTotal: ${grand} Birr`;
-      alert(text + "\n\n(Contact seller for delivery!)");
+      alert(text + "\n\n(Contact seller for delivery in Waliso!)");
       setTimeout(() => {
         alert("Order placed! Thank you! 💧");
         cart = [];
