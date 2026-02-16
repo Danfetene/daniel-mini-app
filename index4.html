@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ET Water Market for best price offer • Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --green: #0066FF;
+      --dark-green: #009933;
+      --bg: #F8F9F9;
+      --text: #333;
+      --hint: #777;
+      --accent: #2e7d32;
+      --danger: #d32f2f;
+      --white: #ffffff;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      background: var(--green);
+      color: white;
+      padding: 12px 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header h1 { font-size: 22px; margin: 0; }
+    .search-bar {
+      background: white;
+      border-radius: 8px;
+      margin: 12px 16px;
+      padding: 10px 16px;
+      display: flex; 
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .search-bar input {
+      border: none;
+      flex: 1;
+      font-size: 16px;
+      outline: none;
+    }
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      background: white;
+    }
+    .category-tile {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .category-tile:active { transform: scale(0.95); }
+    .category-tile img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 8px;
+    }
+    .category-tile span {
+      font-size: 13px;
+      display: block;
+      color: var(--text);
+    }
+    .brand-section {
+      display: none;
+      padding: 16px;
+      background: white;
+      margin: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .brand-section.active { display: block; }
+    .brand-header {
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: var(--green);
+      text-align: center;
+    }
+    .variant {
+      background: #f8fff8;
+      border: 1px solid #e0f0e0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .variant-info { flex: 1; }
+    .variant-size { font-size: 18px; font-weight: 600; }
+    .variant-price { font-size: 20px; color: var(--accent); font-weight: bold; }
+    .add-btn {
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 26px;
+      cursor: pointer;
+    }
+    #cart-summary {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--white);
+      border-top: 1px solid #ddd;
+      padding: 12px 16px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+      transform: translateY(100%);
+      transition: transform 0.4s;
+    }
+    #cart-summary.visible { transform: translateY(0); }
+    #cart-items { list-style: none; margin: 8px 0; max-height: 160px; overflow-y: auto; }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    #total { font-weight: bold; text-align: right; font-size: 18px; margin: 8px 0; }
+    #empty { text-align: center; color: var(--hint); padding: 20px; }
+    @media (min-width: 500px) { body { max-width: 480px; margin: 0 auto; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ET Water Market</h1>
+  </header>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search water brands..." disabled>
+  </div>
+
+  <div class="categories">
+    <div class="category-tile" onclick="showBrand('aquaddis')"><img src="https://i.postimg.cc/dVD0gdmt/aquaddis.webp" alt="Aquaddis"><span>Aquaddis</span></div>
+    <div class="category-tile" onclick="showBrand('best')"><img src="https://i.postimg.cc/bYFW3tJV/forest.webp" alt="Forest water"><span>Forest water</span></div>
+    <div class="category-tile" onclick="showBrand('top')"><img src="https://i.postimg.cc/4dGs4htb/top.webp" alt="Top water"><span>Top water</span></div>
+    <div class="category-tile" onclick="showBrand('daily')"><img src="https://i.postimg.cc/TYMSzXV0/kiya.webp" alt="Kiya water"><span>Kiya water</span></div>
+    <div class="category-tile" onclick="showBrand('fine')"><img src="https://i.postimg.cc/9McHHHH5/sport.webp" alt="Sport water"><span>Sport water</span></div>
+    <div class="category-tile" onclick="showBrand('gold')"><img src="https://i.postimg.cc/xTXcXRGR/gold-water-image.webp" alt="Gold"><span>Gold Water</span></div>
+    <div class="category-tile" onclick="showBrand('one')"><img src="https://i.postimg.cc/Vvf49NBk/one-water.jpg" alt="One"><span>One Water</span></div>
+    <div class="category-tile" onclick="showBrand('africa')"><img src="https://i.postimg.cc/0NGB7hR3/africa.jpg" alt="Africa"><span>Africa Water</span></div>
+    <div class="category-tile" onclick="showBrand('yes')"><img src="https://i.postimg.cc/rw1JHWnJ/yes.webp" alt="Yes"><span>Yes Water</span></div>
+    <div class="category-tile" onclick="showBrand('dega')"><img src="https://i.postimg.cc/9FG86vz9/dega.webp" alt="Dega"><span>Dega Water</span></div>
+    <div class="category-tile" onclick="showBrand('fham')"><img src="https://i.postimg.cc/wjqVSMCp/fham.jpg" alt="Fham"><span>Fham Water</span></div>
+    <div class="category-tile" onclick="showBrand('arki')"><img src="https://i.postimg.cc/TwDqrDDf/arki.webp" alt="Arki"><span>Arki Water</span></div>
+  </div>
+
+  <!-- Brand sections – all using same compact style -->
+
+  <div id="aquaddis-section" class="brand-section">
+    <div class="brand-header">Aquaddis</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L/Pack</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Aquaddis', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L/Pack</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Aquaddis', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L/Pack</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Aquaddis', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="best-section" class="brand-section">
+    <div class="brand-header">Best Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L/Pack</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Best Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L/Pack</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Best Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L/Pack</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Best Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="top-section" class="brand-section">
+    <div class="brand-header">Top Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L/Pack</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Top Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L/Pack</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Top Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L/Pack</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Top Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="daily-section" class="brand-section">
+    <div class="brand-header">Daily Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L/Pack</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Daily Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L/Pack</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Daily Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L/Pack</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Daily Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="fine-section" class="brand-section">
+    <div class="brand-header">Fine Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L/Pack</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fine Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L/Pack</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fine Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L/Pack</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fine Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="gold-section" class="brand-section">
+    <div class="brand-header">Gold Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Gold Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="one-section" class="brand-section">
+    <div class="brand-header">One Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('One Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('One Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('One Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="africa-section" class="brand-section">
+    <div class="brand-header">Africa Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Africa Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="yes-section" class="brand-section">
+    <div class="brand-header">Yes Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Yes Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="dega-section" class="brand-section">
+    <div class="brand-header">Dega Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Dega Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="fham-section" class="brand-section">
+    <div class="brand-header">Fham Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Fham Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <div id="arki-section" class="brand-section">
+    <div class="brand-header">Arki Water</div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.3L</div><div class="variant-price">140 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '0.3L', 140)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">0.6L</div><div class="variant-price">150 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '0.6L', 150)">+</button>
+    </div>
+    <div class="variant">
+      <div class="variant-info"><div class="variant-size">2L</div><div class="variant-price">160 Birr</div></div>
+      <button class="add-btn" onclick="addToCart('Arki Water', '2L', 160)">+</button>
+    </div>
+  </div>
+
+  <!-- Cart summary -->
+  <div id="cart-summary">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <span id="cart-count">0</span>
+    </div>
+    <ul id="cart-items"></ul>
+    <div id="total">Total: 0 Birr</div>
+    <div id="empty">Cart is empty – choose a brand! 💧</div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.MainButton.setParams({ text: 'Checkout', color: '#00b140', text_color: '#ffffff' });
+    tg.MainButton.hide();
+
+    let cart = [];
+
+    function showBrand(brandId) {
+      document.querySelectorAll('.brand-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(brandId + '-section').classList.add('active');
+      tg.HapticFeedback.impactOccurred('light');
+      window.scrollTo({ top: 220, behavior: 'smooth' });
+    }
+
+    function addToCart(brand, size, price) {
+      const existing = cart.find(item => item.brand === brand && item.size === size);
+      if (existing) existing.qty++;
+      else cart.push({ brand, size, price, qty: 1 });
+      renderCart();
+      tg.HapticFeedback.impactOccurred('medium');
+    }
+
+    function changeQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) cart.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cart-items');
+      const totalEl = document.getElementById('total');
+      const countEl = document.getElementById('cart-count');
+      const emptyEl = document.getElementById('empty');
+      const summary = document.getElementById('cart-summary');
+
+      list.innerHTML = '';
+      let total = 0;
+      let count = 0;
+
+      if (cart.length === 0) {
+        emptyEl.style.display = 'block';
+        countEl.textContent = '0';
+        totalEl.textContent = 'Total: 0 Birr';
+        summary.classList.remove('visible');
+        tg.MainButton.hide();
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      summary.classList.add('visible');
+
+      cart.forEach((item, index) => {
+        const lineTotal = item.price * item.qty;
+        total += lineTotal;
+        count += item.qty;
+
+        const li = document.createElement('li');
+        li.className = 'cart-item';
+        li.innerHTML = `
+          <span>${item.brand} ${item.size} × ${item.qty}</span>
+          <span>${lineTotal} Birr</span>
+          <span style="color:var(--danger);font-size:20px;cursor:pointer;" onclick="changeQty(${index}, -1)">×</span>
+        `;
+        list.appendChild(li);
+      });
+
+      countEl.textContent = count;
+      totalEl.textContent = `Total: ${total} Birr`;
+      tg.MainButton.setText(`Checkout • ${total} Birr`);
+      tg.MainButton.show();
+    }
+
+    tg.MainButton.onClick(() => {
+      if (cart.length === 0) return;
+      let text = "Order summary:\n";
+      let grand = 0;
+      cart.forEach(i => {
+        const lt = i.price * i.qty;
+        text += `${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
+        grand += lt;
+      });
+      text += `\nTotal: ${grand} Birr`;
+      alert(text + "\n\n(Contact seller for delivery in Waliso!)");
+      setTimeout(() => {
+        alert("Order placed! Thank you! 💧");
+        cart = [];
+        renderCart();
+      }, 800);
+    });
+
+    renderCart();
+  </script>
+
+  <div style="text-align:center; padding:20px 16px; color:#555; font-size:14px; background:#f8f8f8; border-top:1px solid #ddd;">
+    Contact us for your request<br>
+    <strong style="color:#0066FF; font-size:16px;">0984748168</strong>
+  </div>
+
+</body>
+</html>
