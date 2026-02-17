@@ -713,6 +713,12 @@
     });
 
     renderCart();
+    function hideCart() {
+     document.getElementById('cart-summary').classList.remove('visible');
+     tg.HapticFeedback.impactOccurred('light');
+        // Optional: scroll back a bit to see products better
+     window.scrollTo({ top: 100, behavior: 'smooth' });
+     }
   </script>
 
   <div style="text-align:center; padding:20px 16px; color:#555; font-size:14px; background:#f8f8f8; border-top:1px solid #ddd;">
