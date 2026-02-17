@@ -267,7 +267,7 @@
 
   <div id="no-results">No brands found matching your search 💧</div>
 
-  <!-- Brand sections – keeping your original content -->
+  <!-- Brand sections -->
   <div id="aquaddis-section" class="brand-section">
     <div class="brand-header">Aquaddis</div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/Pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Aquaddis', '0.3L', 140)">+</button></div>
@@ -460,7 +460,7 @@
     </div>
   </div>
 
-  <!-- Cart – IMPROVED VERSION -->
+  <!-- Cart -->
   <div id="cart-summary">
     <div class="cart-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h2>Your Cart</h2>
@@ -559,23 +559,45 @@
 
     tg.MainButton.onClick(() => {
       if (cart.length === 0) return;
-      let text = "Order summary:\n\n";
+
+      // Ask for phone number
+      const phone = prompt("📞 Enter your phone number for delivery in Addis Ababa\n(Example: 0912345678)", "");
+
+      if (!phone || phone.trim().length < 9) {
+        alert("❌ Please enter a valid phone number to place the order.");
+        return;
+      }
+
+      let text = "New Order – ET Water shop\n\n";
+      text += "📱 Phone: " + phone.trim() + "\n";
+      text += "📍 Delivery: Addis Ababa\n\n";
+      text += "Order items:\n";
+
       let grand = 0;
       cart.forEach(i => {
         const lt = i.price * i.qty;
-        text += `${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
+        text += `• ${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
         grand += lt;
       });
-      text += `\nTotal: ${grand} Birr`;
-      alert(text + "\n\nContact for delivery in Addis Ababa!");
-      setTimeout(() => {
-        alert("Order placed! Thank you! 💧");
-        cart = [];
-        renderCart();
-      }, 800);
+
+      text += `\nTotal amount: ${grand} Birr`;
+
+      // Show confirmation
+      const confirmed = confirm(text + "\n\nConfirm & place order?");
+
+      if (!confirmed) {
+        return;
+      }
+
+      // Success message
+      alert("✅ Order placed successfully!\nWe will contact you on " + phone.trim() + " for delivery.\nThank you! 💧");
+
+      // Clear cart
+      cart = [];
+      renderCart();
     });
 
-    // Search functionality (unchanged)
+    // Search functionality
     document.addEventListener('DOMContentLoaded', function() {
       const searchInput = document.getElementById('searchInput');
       const tiles = document.querySelectorAll('.category-tile');
@@ -619,7 +641,7 @@
   </script>
 
   <div style="text-align:center; padding:20px 16px; color:#555; font-size:14px; background:#f8f8f8; border-top:1px solid #ddd;">
-    Contact us for your request<br>
+    Contact us for your request / delivery in Addis Ababa<br>
     <strong style="color:#0066FF; font-size:16px;">0984748168</strong>
   </div>
 
