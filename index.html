@@ -158,22 +158,70 @@
       bottom: 0; left: 0; right: 0;
       background: var(--white);
       border-top: 1px solid #ddd;
-      padding: 12px 16px;
+      padding: 16px;
       box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
       transform: translateY(100%);
       transition: transform 0.4s;
     }
     #cart-summary.visible { transform: translateY(0); }
-    #cart-items { list-style: none; margin: 8px 0; max-height: 160px; overflow-y: auto; }
+    #cart-items { list-style: none; margin: 8px 0 16px 0; max-height: 220px; overflow-y: auto; }
     .cart-item {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      font-size: 15px;
-      padding: 8px 0;
+      padding: 12px 0;
       border-bottom: 1px solid #eee;
+      font-size: 15px;
     }
-    #total { font-weight: bold; text-align: right; font-size: 18px; margin: 8px 0; }
-    #empty { text-align: center; color: var(--hint); padding: 20px; }
+    .cart-item-name { flex: 1; font-weight: 500; }
+    .cart-qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 16px;
+    }
+    .qty-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .qty-minus { background: #ffebee; color: var(--danger); }
+    .qty-plus  { background: #e0f0e0; color: var(--accent); }
+    .qty-display {
+      min-width: 32px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .cart-item-total {
+      min-width: 90px;
+      text-align: right;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    #total {
+      font-weight: bold;
+      text-align: right;
+      font-size: 20px;
+      margin: 12px 0 8px 0;
+      padding-top: 12px;
+      border-top: 2px solid #eee;
+    }
+    #empty { text-align: center; color: var(--hint); padding: 40px 0; font-size: 16px; }
+    #cart-count {
+      background: #e0f0e0;
+      color: #006633;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 15px;
+    }
 
     #no-results {
       display: none;
@@ -191,8 +239,7 @@
 </head>
 <body>
   <header>
-    <h1>ET Water shop(+350 Agents)
-    </h1>
+    <h1>ET Water shop(+350 Agents)</h1>
   </header>
 
   <div class="search-bar">
@@ -220,16 +267,12 @@
 
   <div id="no-results">No brands found matching your search 💧</div>
 
-  <!-- ─────────────────────────────────────────────── -->
-  <!--                  BRAND SECTIONS                  -->
-  <!-- ─────────────────────────────────────────────── -->
-
+  <!-- Brand sections – keeping your original content -->
   <div id="aquaddis-section" class="brand-section">
     <div class="brand-header">Aquaddis</div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/Pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Aquaddis', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Aquaddis', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Aquaddis', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -246,7 +289,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Best Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Best Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Best Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -263,7 +305,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Top Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Top Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Top Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -280,7 +321,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Daily Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -297,7 +337,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Fine Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Fine Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Fine Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -314,7 +353,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Gold Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Gold Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Gold Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -331,7 +369,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('One Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('One Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('One Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -348,7 +385,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Africa Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Africa Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Africa Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -365,7 +401,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Yes Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Yes Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Yes Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -382,7 +417,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Dega Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Dega Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Dega Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -399,7 +433,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Fham Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Fham Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Fham Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -416,7 +449,6 @@
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '2L', 160)">+</button></div>
-
     <div class="nutrition">
       <h3>Nutrition Facts (per liter)</h3>
       <table class="nutrition-table">
@@ -428,11 +460,11 @@
     </div>
   </div>
 
-  <!-- Cart -->
+  <!-- Cart – IMPROVED VERSION -->
   <div id="cart-summary">
-    <div class="cart-header">
+    <div class="cart-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h2>Your Cart</h2>
-      <span id="cart-count">0</span>
+      <span id="cart-count" class="cart-count">0</span>
     </div>
     <ul id="cart-items"></ul>
     <div id="total">Total: 0 Birr</div>
@@ -457,16 +489,22 @@
 
     function addToCart(brand, size, price) {
       const existing = cart.find(item => item.brand === brand && item.size === size);
-      if (existing) existing.qty++;
-      else cart.push({ brand, size, price, qty: 1 });
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ brand, size, price, qty: 1 });
+      }
       renderCart();
       tg.HapticFeedback.impactOccurred('medium');
     }
 
     function changeQty(index, delta) {
       cart[index].qty += delta;
-      if (cart[index].qty <= 0) cart.splice(index, 1);
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
       renderCart();
+      tg.HapticFeedback.impactOccurred('light');
     }
 
     function renderCart() {
@@ -478,7 +516,7 @@
 
       list.innerHTML = '';
       let total = 0;
-      let count = 0;
+      let packCount = 0;
 
       if (cart.length === 0) {
         emptyEl.style.display = 'block';
@@ -495,19 +533,25 @@
       cart.forEach((item, index) => {
         const lineTotal = item.price * item.qty;
         total += lineTotal;
-        count += item.qty;
+        packCount += item.qty;
 
         const li = document.createElement('li');
         li.className = 'cart-item';
         li.innerHTML = `
-          <span>${item.brand} ${item.size} × ${item.qty}</span>
-          <span>${lineTotal} Birr</span>
-          <span style="color:var(--danger);font-size:20px;cursor:pointer;" onclick="changeQty(${index}, -1)">×</span>
+          <div class="cart-item-name">${item.brand} ${item.size}</div>
+          
+          <div class="cart-qty-controls">
+            <button class="qty-btn qty-minus" onclick="changeQty(${index}, -1)">−</button>
+            <span class="qty-display">${item.qty}</span>
+            <button class="qty-btn qty-plus" onclick="changeQty(${index}, 1)">+</button>
+          </div>
+          
+          <div class="cart-item-total">${lineTotal} Birr</div>
         `;
         list.appendChild(li);
       });
 
-      countEl.textContent = count;
+      countEl.textContent = packCount;
       totalEl.textContent = `Total: ${total} Birr`;
       tg.MainButton.setText(`Checkout • ${total} Birr`);
       tg.MainButton.show();
@@ -515,7 +559,7 @@
 
     tg.MainButton.onClick(() => {
       if (cart.length === 0) return;
-      let text = "Order summary:\n";
+      let text = "Order summary:\n\n";
       let grand = 0;
       cart.forEach(i => {
         const lt = i.price * i.qty;
@@ -531,7 +575,7 @@
       }, 800);
     });
 
-    // ─────────────── Search functionality ───────────────
+    // Search functionality (unchanged)
     document.addEventListener('DOMContentLoaded', function() {
       const searchInput = document.getElementById('searchInput');
       const tiles = document.querySelectorAll('.category-tile');
@@ -541,7 +585,6 @@
 
       searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-
         let visibleCount = 0;
 
         tiles.forEach(tile => {
@@ -564,7 +607,6 @@
         noResults.style.display = (query.length > 0 && visibleCount === 0) ? 'block' : 'none';
       });
 
-      // Clear with Escape key
       searchInput.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
           this.value = '';
@@ -578,7 +620,7 @@
 
   <div style="text-align:center; padding:20px 16px; color:#555; font-size:14px; background:#f8f8f8; border-top:1px solid #ddd;">
     Contact us for your request<br>
-    <strong style="color:#0066FF; font-size:16px;"> 0984748168 </strong>
+    <strong style="color:#0066FF; font-size:16px;">0984748168</strong>
   </div>
 
 </body>
