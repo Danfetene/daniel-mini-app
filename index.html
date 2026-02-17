@@ -174,6 +174,18 @@
     }
     #total { font-weight: bold; text-align: right; font-size: 18px; margin: 8px 0; }
     #empty { text-align: center; color: var(--hint); padding: 20px; }
+
+    #no-results {
+      display: none;
+      text-align: center;
+      padding: 30px 20px;
+      color: #777;
+      font-size: 16px;
+      background: white;
+      margin: 0 16px 16px;
+      border-radius: 12px;
+    }
+
     @media (min-width: 500px) { body { max-width: 480px; margin: 0 auto; } }
   </style>
 </head>
@@ -183,7 +195,11 @@
   </header>
 
   <div class="search-bar">
-    <input type="text" placeholder="Search By price or brand..." disabled>
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="Search by brand or price (140, 150, 160)..." 
+    >
   </div>
 
   <div class="categories">
@@ -200,6 +216,8 @@
     <div class="category-tile" onclick="showBrand('fham')"><img src="https://i.postimg.cc/wjqVSMCp/fham.jpg" alt="Fham"><span>Fham Water</span></div>
     <div class="category-tile" onclick="showBrand('arki')"><img src="https://i.postimg.cc/TwDqrDDf/arki.webp" alt="Arki"><span>Arki Water</span></div>
   </div>
+
+  <div id="no-results">No brands found matching your search 💧</div>
 
   <!-- ─────────────────────────────────────────────── -->
   <!--                  BRAND SECTIONS                  -->
@@ -510,6 +528,48 @@
         cart = [];
         renderCart();
       }, 800);
+    });
+
+    // ─────────────── Search functionality ───────────────
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      const tiles = document.querySelectorAll('.category-tile');
+      const noResults = document.getElementById('no-results');
+
+      if (!searchInput) return;
+
+      searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+
+        let visibleCount = 0;
+
+        tiles.forEach(tile => {
+          const nameElement = tile.querySelector('span');
+          if (!nameElement) return;
+
+          const brandName = nameElement.textContent.toLowerCase();
+
+          const matchesName = brandName.includes(query);
+          const matchesPrice = 
+            query === '140' || query === '150' || query === '160' ||
+            query.includes('140') || query.includes('150') || query.includes('160');
+
+          const show = matchesName || matchesPrice;
+
+          tile.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+
+        noResults.style.display = (query.length > 0 && visibleCount === 0) ? 'block' : 'none';
+      });
+
+      // Clear with Escape key
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          this.value = '';
+          this.dispatchEvent(new Event('input'));
+        }
+      });
     });
 
     renderCart();
