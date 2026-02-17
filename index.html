@@ -503,7 +503,7 @@
 
   </div>
     <div id="konjo-section" class="brand-section">
-    <div class="brand-header">Konjoo Water</div>
+    <div class="brand-header">Konjo Water</div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.3 L/pack</div><div class="variant-price">140 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.3L', 140)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">0.6 L/pack</div><div class="variant-price">150 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '0.6L', 150)">+</button></div>
     <div class="variant"><div class="variant-info"><div class="variant-size">2 L/pack</div><div class="variant-price">160 Birr</div></div><button class="add-btn" onclick="addToCart('Arki Water', '2L', 160)">+</button></div>
@@ -537,6 +537,7 @@
 
   <!-- Cart -->
   <div id="cart-summary">
+    <button class="cart-close-btn" onclick="closeCart()">×</button>
     <div class="cart-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h2>Your Cart</h2>
       <span id="cart-count" class="cart-count">0</span>
@@ -570,6 +571,13 @@
         cart.push({ brand, size, price, qty: 1 });
       }
       renderCart();
+      function closeCart() {
+     document.getElementById('cart-summary').classList.remove('visible');
+     tg.MainButton.hide();
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+     tg.HapticFeedback.impactOccurred('light');
+     }
+      
       tg.HapticFeedback.impactOccurred('medium');
     }
 
