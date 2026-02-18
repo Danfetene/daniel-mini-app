@@ -540,13 +540,38 @@
     // ────────────────────────────────────────────────
     // Navigation
     // ────────────────────────────────────────────────
+    function showBrandView() {
+     document.querySelector('.search-bar').style.display = 'none';
+     document.querySelector('.categories').style.display = 'none';
+     document.querySelector('#no-results').style.display = 'none';
+     tg.BackButton.show();
+    }
+
+    function hideBrandView() {
+      document.querySelector('.search-bar').style.display = '';
+      document.querySelector('.categories').style.display = 'grid';
+      document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
+      tg.BackButton.hide();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
     function showBrand(id) {
+      // Hide main list
+     showBrandView();
+
+     // Show selected brand
       document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
       const section = document.getElementById(`${id}-section`);
-      if (section) section.classList.add('active');
-      tg.HapticFeedback.impactOccurred('light');
-      window.scrollTo({ top: 180, behavior: 'smooth' });
-      tg.BackButton.show();
+      if (section) {
+      section.classList.add('active');
+     }
+
+     tg.HapticFeedback.impactOccurred('light');
+
+     // Optional: small delay + smooth appear
+     setTimeout(() => {
+     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+     }, 80);
     }
 
     function hideBrandView() {
@@ -557,13 +582,13 @@
 
     // Use native Back button
     tg.BackButton.onClick(() => {
-      if (document.querySelector('.brand-section.active')) {
-        hideBrandView();
-      } else if (document.getElementById('cart-summary').classList.contains('visible')) {
-        document.getElementById('cart-summary').classList.remove('visible');
-        tg.BackButton.hide();
-      }
-      tg.HapticFeedback.impactOccurred('light');
+     if (document.querySelector('.brand-section.active')) {
+      hideBrandView();
+     } else if (document.getElementById('cart-summary').classList.contains('visible')) {
+     document.getElementById('cart-summary').classList.remove('visible');
+     tg.BackButton.hide();
+     }
+     tg.HapticFeedback.impactOccurred('light');
     });
 
     // ────────────────────────────────────────────────
