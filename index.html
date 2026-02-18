@@ -541,28 +541,36 @@
     // Navigation
     // ────────────────────────────────────────────────
     function showBrandView() {
-      // Hide main screen elements
-      document.querySelector('.search-bar').style.display = 'none';
-      document.querySelector('.categories').style.display = 'none';
-      document.getElementById('no-results').style.display = 'none';
+      // Hide main screen parts explicitly
+      const searchBar = document.querySelector('.search-bar');
+      const categories = document.querySelector('.categories');
+      const noResults = document.getElementById('no-results');
 
-      // Show Back button
+      if (searchBar)   searchBar.style.display = 'none';
+      if (categories)  categories.style.display = 'none';
+      if (noResults)   noResults.style.display = 'none';
+
       tg.BackButton.show();
     }
 
     function hideBrandView() {
-     // Restore main screen
-     document.querySelector('.search-bar').style.display = '';
-     document.querySelector('.categories').style.display = 'grid';
-     document.getElementById('no-results').style.display = 'none'; // or keep logic if search active
+     // Restore main screen parts with CORRECT display values
+     const searchBar = document.querySelector('.search-bar');
+     const categories = document.querySelector('.categories');
+     const noResults = document.getElementById('no-results');
 
-     // Hide all brand sections
+     if (searchBar)   searchBar.style.display = 'flex';       // search bar uses flex
+     if (categories)  categories.style.display = 'grid';      // categories use grid
+     if (noResults)   noResults.style.display = 'none';       // usually hidden unless search active
+
+     // Hide brand sections
      document.querySelectorAll('.brand-section').forEach(section => {
       section.classList.remove('active');
      });
 
-     // Hide Back button (unless cart is open)
-     if (!document.getElementById('cart-summary').classList.contains('visible')) {
+     // Hide Back button only if cart is NOT visible
+     const cartVisible = document.getElementById('cart-summary').classList.contains('visible');
+     if (!cartVisible) {
       tg.BackButton.hide();
      }
 
@@ -571,6 +579,7 @@
 
      tg.HapticFeedback.impactOccurred('light');
     }
+
     
     function showBrand(id) {
      showBrandView();  // ← this line is important
@@ -597,22 +606,17 @@
 
     // Use native Back button
     tg.BackButton.onClick(() => {
-     const activeBrand = document.querySelector('.brand-section.active');
-     const cartVisible = document.getElementById('cart-summary').classList.contains('visible');
+     const activeBrandSection = document.querySelector('.brand-section.active');
+     const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
 
-     if (activeBrand) {
-      // We are in brand detail view → go back to main list
-     hideBrandView();
-     } else if (cartVisible) {
-      // Cart is open → close cart
+     if (activeBrandSection) {
+      // Priority: close brand detail first
+      hideBrandView();
+     } 
+     else if (cartIsVisible) {
+      // Then close cart if open
       document.getElementById('cart-summary').classList.remove('visible');
-      // Only hide BackButton if no brand is active
-      if (!document.querySelector('.brand-section.active')) {
-       tg.BackButton.hide();
-      }
-     } else {
-      // Fallback: if nothing else, hide the button
-      tg.BackButton.hide();
+      tg.BackButton.hide();  // safe to hide here (no brand active)
      }
 
      tg.HapticFeedback.impactOccurred('light');
