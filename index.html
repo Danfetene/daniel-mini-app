@@ -541,37 +541,52 @@
     // Navigation
     // ────────────────────────────────────────────────
     function showBrandView() {
-     document.querySelector('.search-bar').style.display = 'none';
-     document.querySelector('.categories').style.display = 'none';
-     document.querySelector('#no-results').style.display = 'none';
-     tg.BackButton.show();
+      // Hide main screen elements
+      document.querySelector('.search-bar').style.display = 'none';
+      document.querySelector('.categories').style.display = 'none';
+      document.getElementById('no-results').style.display = 'none';
+
+      // Show Back button
+      tg.BackButton.show();
     }
 
     function hideBrandView() {
-      document.querySelector('.search-bar').style.display = '';
-      document.querySelector('.categories').style.display = 'grid';
-      document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
+     // Restore main screen
+     document.querySelector('.search-bar').style.display = '';
+     document.querySelector('.categories').style.display = 'grid';
+     document.getElementById('no-results').style.display = 'none'; // or keep logic if search active
+
+     // Hide all brand sections
+     document.querySelectorAll('.brand-section').forEach(section => {
+      section.classList.remove('active');
+     });
+
+     // Hide Back button (unless cart is open)
+     if (!document.getElementById('cart-summary').classList.contains('visible')) {
       tg.BackButton.hide();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+     }
+
+     // Scroll to top
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+     tg.HapticFeedback.impactOccurred('light');
     }
     
     function showBrand(id) {
-      // Hide main list
-     showBrandView();
+     showBrandView();  // ← this line is important
 
-     // Show selected brand
-      document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
-      const section = document.getElementById(`${id}-section`);
-      if (section) {
+     document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
+     const section = document.getElementById(`${id}-section`);
+     if (section) {
       section.classList.add('active');
      }
 
      tg.HapticFeedback.impactOccurred('light');
 
-     // Optional: small delay + smooth appear
+     // Optional: small smooth appear
      setTimeout(() => {
-     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-     }, 80);
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+     }, 100);
     }
 
     function hideBrandView() {
