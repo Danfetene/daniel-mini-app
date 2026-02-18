@@ -132,18 +132,27 @@
     .variant-size { font-size: 18px; font-weight: 600; }
     .variant-price { font-size: 20px; color: var(--accent); font-weight: bold; }
 
-    .add-btn {
+    /* ──────────────────────────────────────────────── */
+    /* Changed: Order button instead of + */
+    .order-btn {
       background: var(--tg-button-color);
       color: var(--tg-button-text-color);
       border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      font-size: 28px;
+      border-radius: 12px;
+      padding: 10px 24px;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      transition: transform 0.15s;
+      transition: transform 0.15s, opacity 0.2s;
+      min-width: 100px;
+      text-align: center;
     }
-    .add-btn:active { transform: scale(0.92); }
+
+    .order-btn:active {
+      transform: scale(0.96);
+      opacity: 0.92;
+    }
+    /* ──────────────────────────────────────────────── */
 
     .nutrition {
       margin-top: 28px;
@@ -408,7 +417,7 @@
               <div class="variant-size">${v.size}/Pack</div>
               <div class="variant-price">${v.price} Birr</div>
             </div>
-            <button class="add-btn" data-brand="${brand.brandDisplay}" data-size="${v.size}" data-price="${v.price}">+</button>
+            <button class="order-btn" data-brand="${brand.brandDisplay}" data-size="${v.size}" data-price="${v.price}">Order</button>
           </div>`;
       });
 
@@ -519,16 +528,12 @@
       tg.MainButton.show();
     }
 
-    // ────────────────────────────────────────────────
-    // Navigation – FIXED VERSION
-    // ────────────────────────────────────────────────
+    // Navigation
     function showBrandDetail(brandId) {
-      // Hide main view
       document.querySelector('.search-bar').style.display   = 'none';
       document.querySelector('.categories').style.display  = 'none';
       document.getElementById('no-results').style.display   = 'none';
 
-      // Show selected brand
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(`${brandId}-section`);
       if (target) target.classList.add('active');
@@ -538,15 +543,12 @@
     }
 
     function returnToMainView() {
-      // Hide brand sections
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
 
-      // Restore main view – EXPLICIT display values
       document.querySelector('.search-bar').style.display   = 'flex';
       document.querySelector('.categories').style.display  = 'grid';
       document.getElementById('no-results').style.display   = 'none';
 
-      // Hide back button unless cart is visible
       if (!document.getElementById('cart-summary').classList.contains('visible')) {
         tg.BackButton.hide();
       }
@@ -559,7 +561,6 @@
       showBrandDetail(id);
     }
 
-    // Native Back button handler
     tg.BackButton.onClick(() => {
       const brandIsVisible = !!document.querySelector('.brand-section.active');
       const cartIsVisible  = document.getElementById('cart-summary').classList.contains('visible');
@@ -575,11 +576,11 @@
       tg.HapticFeedback.impactOccurred('light');
     });
 
-    // Event delegation for buttons
+    // Event delegation – updated to order-btn
     document.addEventListener('click', e => {
       const t = e.target;
 
-      if (t.classList.contains('add-btn')) {
+      if (t.classList.contains('order-btn')) {
         const { brand, size, price } = t.dataset;
         addToCart(brand, size, Number(price));
       }
