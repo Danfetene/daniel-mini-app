@@ -44,15 +44,29 @@
     header h1 { font-size: 22px; margin: 0; }
     .moto { font-size: 14px; opacity: 0.9; }
 
+    /* Combined search + filter row */
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px 8px;
+      background: var(--tg-bg-color);
+      position: sticky;
+      top: 56px; /* approx header height */
+      z-index: 9;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
     .search-bar {
+      flex: 1;
       background: var(--tg-bg-color);
       border: 1px solid var(--tg-hint-color);
       border-radius: 12px;
-      margin: 12px 16px;
       padding: 10px 14px;
       display: flex;
       align-items: center;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      min-width: 0;
     }
     .search-bar input {
       background: transparent;
@@ -61,30 +75,32 @@
       font-size: 16px;
       color: var(--tg-text-color);
       outline: none;
+      min-width: 0;
     }
 
-    /* New: Filter/Sort menu */
-    .filter-bar {
-      padding: 0 16px 12px;
-      background: var(--tg-bg-color);
-      display: flex;
-      justify-content: flex-end;
+    .filter-wrapper {
+      flex-shrink: 0;
     }
-    .filter-bar select {
+    .filter-wrapper select {
       background: var(--tg-bg-color);
       color: var(--tg-text-color);
       border: 1px solid var(--tg-hint-color);
       border-radius: 10px;
-      padding: 8px 12px;
+      padding: 10px 12px;
       font-size: 14px;
-      max-width: 180px;
+      max-width: 160px;
+      cursor: pointer;
+    }
+    .filter-wrapper select:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(82,136,193,0.3);
     }
 
     .categories {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
       gap: 12px;
-      padding: 0 16px 16px;
+      padding: 16px;
       background: var(--tg-bg-color);
     }
 
@@ -162,7 +178,6 @@
       min-width: 100px;
       text-align: center;
     }
-
     .order-btn:active {
       transform: scale(0.96);
       opacity: 0.92;
@@ -281,16 +296,17 @@
     <div class="moto">To your need • Addis Ababa delivery</div>
   </header>
 
-  <div class="search-bar">
-    <input id="searchInput" type="text" placeholder="Search Water brands " />
-  </div>
-
-  <!-- New: Sort/Filter menu -->
-  <div class="filter-bar">
-    <select id="sortFilter">
-      <option value="default">Filter by</option>
-      <option value="price-low-high">Price: Low to High</option>
-    </select>
+  <!-- Combined search + filter row -->
+  <div class="top-controls">
+    <div class="search-bar">
+      <input id="searchInput" type="text" placeholder="Search brand or max price (140, 150, 160)" />
+    </div>
+    <div class="filter-wrapper">
+      <select id="sortFilter">
+        <option value="default">Default</option>
+        <option value="price-low-high">Price: Low → High</option>
+      </select>
+    </div>
   </div>
 
   <div class="categories" id="categories"></div>
@@ -554,12 +570,10 @@
       tg.MainButton.show();
     }
 
-    // Navigation
+    // Navigation – updated to hide/show top-controls
     function showBrandDetail(brandId) {
-      document.querySelector('.search-bar').style.display   = 'none';
-      document.querySelector('.categories').style.display  = 'none';
-      document.querySelector('.filter-bar').style.display  = 'none'; // hide filter when entering brand
-      document.getElementById('no-results').style.display   = 'none';
+      document.querySelector('.top-controls').style.display = 'none';
+      document.getElementById('no-results').style.display = 'none';
 
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(`${brandId}-section`);
@@ -572,10 +586,8 @@
     function returnToMainView() {
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
 
-      document.querySelector('.search-bar').style.display   = 'flex';
-      document.querySelector('.categories').style.display  = 'grid';
-      document.querySelector('.filter-bar').style.display  = 'flex'; // show filter again
-      document.getElementById('no-results').style.display   = 'none';
+      document.querySelector('.top-controls').style.display = 'flex';
+      document.getElementById('no-results').style.display = 'none';
 
       if (!document.getElementById('cart-summary').classList.contains('visible')) {
         tg.BackButton.hide();
@@ -583,9 +595,6 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       tg.HapticFeedback.impactOccurred('light');
-
-      // Re-apply current sort/filter after returning
-      applyCurrentSort();
     }
 
     function showBrand(id) {
@@ -623,82 +632,47 @@
       }
     });
 
-    // ────────────────────────────────────────────────
-    // Search + Sort by price low to high
-    // ────────────────────────────────────────────────
-    let currentSort = 'default';
+    // Sort filter
+    document.getElementById('sortFilter').addEventListener('change', e => {
+      const value = e.target.value;
+      const tiles = Array.from(document.querySelectorAll('.category-tile'));
+      const container = document.getElementById('categories');
 
-    // Apply current sort when returning or changing filter
-    function applyCurrentSort() {
-      if (currentSort === 'price-low-high') {
-        const tiles = Array.from(document.querySelectorAll('.category-tile'));
-        const container = document.getElementById('categories');
-
+      if (value === 'price-low-high') {
         tiles.sort((a, b) => {
           const pA = parseInt(a.getAttribute('data-min-price') || '9999', 10);
           const pB = parseInt(b.getAttribute('data-min-price') || '9999', 10);
           return pA - pB;
         });
-
         tiles.forEach(tile => container.appendChild(tile));
+      } else {
+        // Reset to original order (you can store original order if needed)
+        brands.forEach(brand => {
+          const tile = document.querySelector(`[data-brand-id="${brand.id}"]`);
+          if (tile) container.appendChild(tile);
+        });
       }
-    }
-
-    // Sort filter dropdown
-    document.getElementById('sortFilter').addEventListener('change', e => {
-      currentSort = e.target.value;
-      applyCurrentSort();
     });
 
-    // Search (with price filter + auto-sort when price is entered)
+    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
-        const query = e.target.value.trim().toLowerCase();
-        const tiles = Array.from(document.querySelectorAll('.category-tile'));
-        let visibleCount = 0;
-
-        const priceFilter = parseInt(query.replace(/\D/g, ''), 10);
-        const isPriceFilter = !isNaN(priceFilter) && priceFilter > 0;
+        const q = e.target.value.toLowerCase().trim();
+        const tiles = document.querySelectorAll('.category-tile');
+        let visible = 0;
 
         tiles.forEach(tile => {
-          const brandName = tile.querySelector('span').textContent.toLowerCase();
-          const minPrice = parseInt(tile.getAttribute('data-min-price') || '9999', 10);
-
-          let matches = false;
-
-          if (query === '') {
-            matches = true;
-          } else if (isPriceFilter) {
-            matches = minPrice <= priceFilter;
-          } else {
-            matches = brandName.includes(query);
-          }
-
-          tile.style.display = matches ? '' : 'none';
-          if (matches) visibleCount++;
+          const name = tile.querySelector('span').textContent.toLowerCase();
+          const show = name.includes(q) || ['140','150','160'].some(p => q.includes(p));
+          tile.style.display = show ? '' : 'none';
+          if (show) visible++;
         });
 
-        // Auto-sort low to high if price filter is active
-        if (isPriceFilter && visibleCount > 1) {
-          const container = document.getElementById('categories');
-          const visibleTiles = tiles.filter(t => t.style.display !== 'none');
-
-          visibleTiles.sort((a, b) => {
-            const pA = parseInt(a.getAttribute('data-min-price') || '9999', 10);
-            const pB = parseInt(b.getAttribute('data-min-price') || '9999', 10);
-            return pA - pB;
-          });
-
-          visibleTiles.forEach(tile => container.appendChild(tile));
-        } else if (currentSort === 'price-low-high') {
-          applyCurrentSort();
-        }
-
         document.getElementById('no-results').style.display =
-          (query && visibleCount === 0) ? 'block' : 'none';
-      }, 300);
+          (q && visible === 0) ? 'block' : 'none';
+      }, 280);
     });
 
     // Init
