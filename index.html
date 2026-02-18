@@ -581,21 +581,52 @@
     }
 
     
-    function showBrand(id) {
-     showBrandView();  // ← this line is important
+    function showBrandDetail(brandId) {
+    // 1. Hide main view
+    const searchBar   = document.querySelector('.search-bar');
+    const categories  = document.querySelector('.categories');
+    const noResults   = document.getElementById('no-results');
 
-     document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
-     const section = document.getElementById(`${id}-section`);
-     if (section) {
-      section.classList.add('active');
+    if (searchBar)   searchBar.style.display   = 'none';
+    if (categories)  categories.style.display  = 'none';
+    if (noResults)   noResults.style.display   = 'none';
+
+    // 2. Show the selected brand section
+    document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById(brandId + '-section');
+    if (target) {
+      target.classList.add('active');
+    }
+
+    // 3. Show Telegram's native back button
+    tg.BackButton.show();
+
+    tg.HapticFeedback.impactOccurred('light');
+}
+
+   function returnToMainView() {
+     // 1. Hide all brand sections
+     document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+
+     // 2. Show main view elements – use EXACT original display values
+     const searchBar   = document.querySelector('.search-bar');
+     const categories  = document.querySelector('.categories');
+     const noResults   = document.getElementById('no-results');
+
+     if (searchBar)   searchBar.style.display   = 'flex';     // ← important: search uses flex
+     if (categories)  categories.style.display  = 'grid';     // ← important: categories use grid
+     // noResults usually stays 'none' unless active search
+
+     // 3. Hide back button unless cart is open
+     const cartIsOpen = document.getElementById('cart-summary')?.classList.contains('visible');
+     if (!cartIsOpen) {
+      tg.BackButton.hide();
      }
 
-     tg.HapticFeedback.impactOccurred('light');
+     // 4. Scroll to top
+     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-     // Optional: small smooth appear
-     setTimeout(() => {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-     }, 100);
+     tg.HapticFeedback.impactOccurred('light');
     }
 
     function hideBrandView() {
@@ -606,17 +637,15 @@
 
     // Use native Back button
     tg.BackButton.onClick(() => {
-     const activeBrandSection = document.querySelector('.brand-section.active');
-     const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
+     const anyBrandVisible = document.querySelector('.brand-section.active') !== null;
+     const cartVisible     = document.getElementById('cart-summary')?.classList.contains('visible') || false;
 
-     if (activeBrandSection) {
-      // Priority: close brand detail first
-      hideBrandView();
-     } 
-     else if (cartIsVisible) {
-      // Then close cart if open
+     if (anyBrandVisible) {
+      returnToMainView();
+     }
+     else if (cartVisible) {
       document.getElementById('cart-summary').classList.remove('visible');
-      tg.BackButton.hide();  // safe to hide here (no brand active)
+      tg.BackButton.hide();
      }
 
      tg.HapticFeedback.impactOccurred('light');
