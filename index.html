@@ -582,12 +582,24 @@
 
     // Use native Back button
     tg.BackButton.onClick(() => {
-     if (document.querySelector('.brand-section.active')) {
-      hideBrandView();
-     } else if (document.getElementById('cart-summary').classList.contains('visible')) {
-     document.getElementById('cart-summary').classList.remove('visible');
-     tg.BackButton.hide();
+     const activeBrand = document.querySelector('.brand-section.active');
+     const cartVisible = document.getElementById('cart-summary').classList.contains('visible');
+
+     if (activeBrand) {
+      // We are in brand detail view → go back to main list
+       hideBrandView();
+     } else if (cartVisible) {
+      // Cart is open → close cart
+      document.getElementById('cart-summary').classList.remove('visible');
+      // Only hide BackButton if no brand is active
+      if (!document.querySelector('.brand-section.active')) {
+       tg.BackButton.hide();
+      }
+     } else {
+      // Fallback: if nothing else, hide the button
+      tg.BackButton.hide();
      }
+
      tg.HapticFeedback.impactOccurred('light');
     });
 
