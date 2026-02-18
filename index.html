@@ -295,9 +295,7 @@
     });
     tg.MainButton.hide();
 
-    // ────────────────────────────────────────────────
     // Theme synchronization
-    // ────────────────────────────────────────────────
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -317,9 +315,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // ────────────────────────────────────────────────
-    // Brands data (central source of truth)
-    // ────────────────────────────────────────────────
+    // Brands data
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -329,8 +325,6 @@
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'TDS', val:'8.5 mg/L'}, {label:'Calcium', val:'1.6 mg/L'}, {label:'Magnesium', val:'0.8 mg/L'}, {label:'Potassium', val:'8.5 mg/L'}, {label:'Sodium', val:'0.9 mg/L'}]
       },
-      // Add the rest of brands here in the same format...
-      // For brevity I show only 2 – copy-paste pattern for others
       { id: 'top', name: 'Top water', img: 'https://i.postimg.cc/4dGs4htb/top.webp', brandDisplay: 'Top Water',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
@@ -386,22 +380,13 @@
       { id: 'eden', name: 'Eden water', img: 'https://i.postimg.cc/xCnkHL01/eden.webp', brandDisplay: 'Eden Water',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
-      },
-      { id: 'top', name: 'Top water', img: 'https://i.postimg.cc/4dGs4htb/top.webp', brandDisplay: 'Top Water',
-        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
-        nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
-      },
-      // ... continue for one, africa, yes, dega, arki, forest, kiya, sport, fham, care, wow, konjo, eden
-      // You can copy your existing data and adjust brandDisplay / nutrition
+      }
     ];
 
-    // ────────────────────────────────────────────────
     // Generate UI dynamically
-    // ────────────────────────────────────────────────
     const categoriesEl = document.getElementById('categories');
 
     brands.forEach(brand => {
-      // Category tile
       const tile = document.createElement('div');
       tile.className = 'category-tile';
       tile.innerHTML = `
@@ -411,7 +396,6 @@
       tile.addEventListener('click', () => showBrand(brand.id));
       categoriesEl.appendChild(tile);
 
-      // Brand section
       const section = document.createElement('div');
       section.id = `${brand.id}-section`;
       section.className = 'brand-section';
@@ -448,9 +432,7 @@
       document.body.appendChild(section);
     });
 
-    // ────────────────────────────────────────────────
     // Cart logic + Cloud persistence
-    // ────────────────────────────────────────────────
     let cart = [];
 
     function loadCart() {
@@ -538,91 +520,62 @@
     }
 
     // ────────────────────────────────────────────────
-    // Navigation
+    // Navigation – FIXED VERSION
     // ────────────────────────────────────────────────
-    function showBrandView() {
-      // Hide main screen elements
-      document.querySelector('.search-bar').style.display = 'none';
-      document.querySelector('.categories').style.display = 'none';
-      document.getElementById('no-results').style.display = 'none';
+    function showBrandDetail(brandId) {
+      // Hide main view
+      document.querySelector('.search-bar').style.display   = 'none';
+      document.querySelector('.categories').style.display  = 'none';
+      document.getElementById('no-results').style.display   = 'none';
 
-      // Show Back button
+      // Show selected brand
+      document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(`${brandId}-section`);
+      if (target) target.classList.add('active');
+
       tg.BackButton.show();
+      tg.HapticFeedback.impactOccurred('light');
     }
 
-    function hideBrandView() {
-     // Restore main screen
-     document.querySelector('.search-bar').style.display = '';
-     document.querySelector('.categories').style.display = 'grid';
-     document.getElementById('no-results').style.display = 'none'; // or keep logic if search active
+    function returnToMainView() {
+      // Hide brand sections
+      document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
 
-     // Hide all brand sections
-     document.querySelectorAll('.brand-section').forEach(section => {
-      section.classList.remove('active');
-     });
+      // Restore main view – EXPLICIT display values
+      document.querySelector('.search-bar').style.display   = 'flex';
+      document.querySelector('.categories').style.display  = 'grid';
+      document.getElementById('no-results').style.display   = 'none';
 
-     // Hide Back button (unless cart is open)
-     if (!document.getElementById('cart-summary').classList.contains('visible')) {
-      tg.BackButton.hide();
-     }
-
-     // Scroll to top
-     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-     tg.HapticFeedback.impactOccurred('light');
-    }
-    
-    function showBrand(id) {
-      // Hide main list
-     showBrandView();
-
-     // Show selected brand
-      document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
-      const section = document.getElementById(`${id}-section`);
-      if (section) {
-      section.classList.add('active');
-     }
-
-     tg.HapticFeedback.impactOccurred('light');
-
-     // Optional: small delay + smooth appear
-     setTimeout(() => {
-     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-     }, 80);
-    }
-
-    function hideBrandView() {
-      document.querySelectorAll('.brand-section').forEach(s => s.classList.remove('active'));
-      tg.BackButton.hide();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Use native Back button
-    tg.BackButton.onClick(() => {
-     const activeBrand = document.querySelector('.brand-section.active');
-     const cartVisible = document.getElementById('cart-summary').classList.contains('visible');
-
-     if (activeBrand) {
-      // We are in brand detail view → go back to main list
-     hideBrandView();
-     } else if (cartVisible) {
-      // Cart is open → close cart
-      document.getElementById('cart-summary').classList.remove('visible');
-      // Only hide BackButton if no brand is active
-      if (!document.querySelector('.brand-section.active')) {
-       tg.BackButton.hide();
+      // Hide back button unless cart is visible
+      if (!document.getElementById('cart-summary').classList.contains('visible')) {
+        tg.BackButton.hide();
       }
-     } else {
-      // Fallback: if nothing else, hide the button
-      tg.BackButton.hide();
-     }
 
-     tg.HapticFeedback.impactOccurred('light');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function showBrand(id) {
+      showBrandDetail(id);
+    }
+
+    // Native Back button handler
+    tg.BackButton.onClick(() => {
+      const brandIsVisible = !!document.querySelector('.brand-section.active');
+      const cartIsVisible  = document.getElementById('cart-summary').classList.contains('visible');
+
+      if (brandIsVisible) {
+        returnToMainView();
+      }
+      else if (cartIsVisible) {
+        document.getElementById('cart-summary').classList.remove('visible');
+        tg.BackButton.hide();
+      }
+
+      tg.HapticFeedback.impactOccurred('light');
     });
 
-    // ────────────────────────────────────────────────
-    // Event listeners (delegation)
-    // ────────────────────────────────────────────────
+    // Event delegation for buttons
     document.addEventListener('click', e => {
       const t = e.target;
 
