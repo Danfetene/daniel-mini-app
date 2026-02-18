@@ -595,7 +595,7 @@
     document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
     const target = document.getElementById(brandId + '-section');
     if (target) {
-      target.classList.add('active');
+        target.classList.add('active');
     }
 
     // 3. Show Telegram's native back button
@@ -637,15 +637,17 @@
 
     // Use native Back button
     tg.BackButton.onClick(() => {
-     const anyBrandVisible = document.querySelector('.brand-section.active') !== null;
-     const cartVisible     = document.getElementById('cart-summary')?.classList.contains('visible') || false;
+     const activeBrandSection = document.querySelector('.brand-section.active');
+     const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
 
-     if (anyBrandVisible) {
-      returnToMainView();
-     }
-     else if (cartVisible) {
+     if (activeBrandSection) {
+      // Priority: close brand detail first
+      hideBrandView();
+     } 
+     else if (cartIsVisible) {
+      // Then close cart if open
       document.getElementById('cart-summary').classList.remove('visible');
-      tg.BackButton.hide();
+      tg.BackButton.hide();  // safe to hide here (no brand active)
      }
 
      tg.HapticFeedback.impactOccurred('light');
