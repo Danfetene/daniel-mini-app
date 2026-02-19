@@ -327,7 +327,7 @@
     });
     tg.MainButton.hide();
 
-    // Theme
+    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -347,7 +347,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Brands (all 16)
+    // All brands
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -415,7 +415,6 @@
       }
     ];
 
-    // Generate UI
     const categoriesEl = document.getElementById('categories');
 
     brands.forEach(brand => {
@@ -471,7 +470,7 @@
     // ────────────────────────────────────────────────
     // CART – never saved, always starts empty
     // ────────────────────────────────────────────────
-    let cart = [];  // always empty at start
+    let cart = [];
 
     function addToCart(brand, size, price) {
       const key = `${brand}|${size}`;
@@ -572,6 +571,8 @@
       const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
 
       if (cartIsVisible) {
+        // When closing cart (without ordering) → clear data
+        clearCart();
         document.getElementById('cart-summary').classList.remove('visible');
         tg.MainButton.hide();
         tg.BackButton.hide();
@@ -582,6 +583,7 @@
       tg.HapticFeedback.impactOccurred('light');
     });
 
+    // Event delegation
     document.addEventListener('click', e => {
       const t = e.target;
 
@@ -597,6 +599,7 @@
       }
     });
 
+    // Sort filter
     document.getElementById('sortFilter').addEventListener('change', e => {
       const value = e.target.value;
       const tiles = Array.from(document.querySelectorAll('.category-tile'));
@@ -617,6 +620,7 @@
       }
     });
 
+    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
@@ -637,7 +641,7 @@
       }, 280);
     });
 
-    // Start with empty cart – no loading from cloud
+    // Init – cart always starts empty
     renderCart();
 
     tg.MainButton.onClick(() => {
@@ -662,13 +666,13 @@
 
       tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
 
-      // After order: clear cart and return to main page
+      // After order: completely reset cart and return to main page
       cart = [];
       document.getElementById('cart-summary').classList.remove('visible');
       tg.MainButton.hide();
       tg.BackButton.hide();
 
-      // Go back to brands list
+      // Go back to first page (brands grid)
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
       document.querySelector('.top-controls').style.display = 'flex';
       document.querySelector('.categories').style.display = 'grid';
