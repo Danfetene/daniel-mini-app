@@ -212,45 +212,6 @@
     }
     #cart-summary.visible { transform: translateY(0); }
 
-    .cart-close-btn {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      width: 36px;
-      height: 36px;
-      background: transparent;
-      border: none;
-      border-radius: 50%;
-      font-size: 28px;
-      font-weight: 300;
-      color: var(--tg-text-color);
-      opacity: 0.7;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      line-height: 1;
-      z-index: 10;
-      transition: all 0.18s ease;
-    }
-
-    .cart-close-btn:hover,
-    .cart-close-btn:focus {
-      opacity: 1;
-      background: rgba(0,0,0,0.08);
-    }
-
-    body.dark .cart-close-btn:hover,
-    body.dark .cart-close-btn:focus {
-      background: rgba(255,255,255,0.12);
-    }
-
-    .cart-close-btn:active {
-      transform: scale(0.92);
-      opacity: 0.9;
-    }
-
     #cart-items { list-style: none; margin: 12px 0 20px; max-height: 260px; overflow-y: auto; }
     .cart-item {
       display: flex;
@@ -338,10 +299,8 @@
 
   <div id="no-results">No brands found</div>
 
-  <!-- Cart -->
+  <!-- Cart panel – no custom X button anymore -->
   <div id="cart-summary">
-    <button id="close-cart-btn" class="cart-close-btn">×</button>
-
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <h2 style="margin:0; font-size:20px;">Your Cart</h2>
     </div>
@@ -388,7 +347,6 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // All brands
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -456,7 +414,6 @@
       }
     ];
 
-    // Generate UI dynamically
     const categoriesEl = document.getElementById('categories');
 
     brands.forEach(brand => {
@@ -509,7 +466,6 @@
       document.body.appendChild(section);
     });
 
-    // Cart logic
     let cart = [];
 
     function loadCart() {
@@ -591,7 +547,6 @@
       tg.MainButton.show();
     }
 
-    // Navigation
     function showBrand(id) {
       document.querySelector('.top-controls').style.display = 'none';
       document.querySelector('.categories').style.display = 'none';
@@ -621,23 +576,26 @@
       tg.HapticFeedback.impactOccurred('light');
     }
 
+    // ────────────────────────────────────────────────
+    // Main navigation logic – now handles cart closing too
+    // ────────────────────────────────────────────────
     tg.BackButton.onClick(() => {
       const brandIsVisible = !!document.querySelector('.brand-section.active');
       const cartIsVisible  = document.getElementById('cart-summary').classList.contains('visible');
 
-      if (brandIsVisible) {
-        returnToMainView();
-      }
-      else if (cartIsVisible) {
+      if (cartIsVisible) {
+        // Close cart panel using Back button
         document.getElementById('cart-summary').classList.remove('visible');
+        tg.MainButton.hide();
         tg.BackButton.hide();
-        tg.MainButton.hide();  // also hide checkout when BackButton closes cart
+      } else if (brandIsVisible) {
+        // Go back from brand detail to main list
+        returnToMainView();
       }
 
       tg.HapticFeedback.impactOccurred('light');
     });
 
-    // Event delegation – now hides MainButton when × is clicked
     document.addEventListener('click', e => {
       const t = e.target;
 
@@ -651,16 +609,8 @@
         const delta = Number(t.dataset.delta);
         if (!isNaN(index)) changeQty(index, delta);
       }
-
-      if (t.id === 'close-cart-btn') {
-        document.getElementById('cart-summary').classList.remove('visible');
-        tg.BackButton.hide();
-        tg.MainButton.hide();               // ← this is the key fix
-        tg.HapticFeedback.impactOccurred('light');
-      }
     });
 
-    // Sort filter
     document.getElementById('sortFilter').addEventListener('change', e => {
       const value = e.target.value;
       const tiles = Array.from(document.querySelectorAll('.category-tile'));
@@ -681,7 +631,6 @@
       }
     });
 
-    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
