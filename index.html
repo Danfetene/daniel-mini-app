@@ -299,7 +299,7 @@
 
   <div id="no-results">No brands found</div>
 
-  <!-- Cart panel – no custom X button anymore -->
+  <!-- Cart panel -->
   <div id="cart-summary">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <h2 style="margin:0; font-size:20px;">Your Cart</h2>
@@ -327,7 +327,6 @@
     });
     tg.MainButton.hide();
 
-    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -466,18 +465,19 @@
       document.body.appendChild(section);
     });
 
+    // ────────────────────────────────────────────────
+    // CART LOGIC – now resets on every close
+    // ────────────────────────────────────────────────
     let cart = [];
 
     function loadCart() {
-      tg.CloudStorage.getItem('cart', (err, saved) => {
-        if (!err && saved) {
-          try { cart = JSON.parse(saved); } catch(e) {}
-        }
-        renderCart();
-      });
+      // We no longer load saved cart from cloud
+      // Every session starts fresh
+      renderCart();
     }
 
     function saveCart() {
+      // We can keep saving during session, but it will be cleared on close
       tg.CloudStorage.setItem('cart', JSON.stringify(cart));
     }
 
@@ -500,6 +500,12 @@
       renderCart();
       saveCart();
       tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function clearCart() {
+      cart = [];
+      tg.CloudStorage.setItem('cart', '[]');
+      renderCart();
     }
 
     function renderCart() {
@@ -576,20 +582,17 @@
       tg.HapticFeedback.impactOccurred('light');
     }
 
-    // ────────────────────────────────────────────────
-    // Main navigation logic – now handles cart closing too
-    // ────────────────────────────────────────────────
     tg.BackButton.onClick(() => {
       const brandIsVisible = !!document.querySelector('.brand-section.active');
       const cartIsVisible  = document.getElementById('cart-summary').classList.contains('visible');
 
       if (cartIsVisible) {
-        // Close cart panel using Back button
+        // Close cart + CLEAR contents
         document.getElementById('cart-summary').classList.remove('visible');
+        clearCart();                        // ← this is the key change
         tg.MainButton.hide();
         tg.BackButton.hide();
       } else if (brandIsVisible) {
-        // Go back from brand detail to main list
         returnToMainView();
       }
 
@@ -651,8 +654,8 @@
       }, 280);
     });
 
-    // Init
-    loadCart();
+    // Init – start with empty cart every time
+    clearCart();  // force start fresh
 
     tg.MainButton.onClick(() => {
       if (!cart.length) return;
@@ -675,9 +678,7 @@
       if (!confirm(msg + "\n\nConfirm order?")) return;
 
       tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
-      cart = [];
-      renderCart();
-      saveCart();
+      clearCart();  // also clear after successful order
     });
 
   </script>
