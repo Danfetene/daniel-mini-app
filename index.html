@@ -338,7 +338,7 @@
 
   <div id="no-results">No brands found</div>
 
-  <!-- Cart – no count badge -->
+  <!-- Cart -->
   <div id="cart-summary">
     <button id="close-cart-btn" class="cart-close-btn">×</button>
 
@@ -368,6 +368,7 @@
     });
     tg.MainButton.hide();
 
+    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -387,6 +388,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
+    // All brands
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -454,6 +456,7 @@
       }
     ];
 
+    // Generate UI dynamically
     const categoriesEl = document.getElementById('categories');
 
     brands.forEach(brand => {
@@ -506,6 +509,7 @@
       document.body.appendChild(section);
     });
 
+    // Cart logic
     let cart = [];
 
     function loadCart() {
@@ -587,6 +591,7 @@
       tg.MainButton.show();
     }
 
+    // Navigation
     function showBrand(id) {
       document.querySelector('.top-controls').style.display = 'none';
       document.querySelector('.categories').style.display = 'none';
@@ -626,11 +631,13 @@
       else if (cartIsVisible) {
         document.getElementById('cart-summary').classList.remove('visible');
         tg.BackButton.hide();
+        tg.MainButton.hide();  // also hide checkout when BackButton closes cart
       }
 
       tg.HapticFeedback.impactOccurred('light');
     });
 
+    // Event delegation – now hides MainButton when × is clicked
     document.addEventListener('click', e => {
       const t = e.target;
 
@@ -648,10 +655,12 @@
       if (t.id === 'close-cart-btn') {
         document.getElementById('cart-summary').classList.remove('visible');
         tg.BackButton.hide();
+        tg.MainButton.hide();               // ← this is the key fix
         tg.HapticFeedback.impactOccurred('light');
       }
     });
 
+    // Sort filter
     document.getElementById('sortFilter').addEventListener('change', e => {
       const value = e.target.value;
       const tiles = Array.from(document.querySelectorAll('.category-tile'));
@@ -672,6 +681,7 @@
       }
     });
 
+    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
@@ -692,6 +702,7 @@
       }, 280);
     });
 
+    // Init
     loadCart();
 
     tg.MainButton.onClick(() => {
