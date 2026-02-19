@@ -327,6 +327,7 @@
     });
     tg.MainButton.hide();
 
+    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -346,6 +347,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
+    // Brands data
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -413,6 +415,7 @@
       }
     ];
 
+    // Generate UI dynamically
     const categoriesEl = document.getElementById('categories');
 
     brands.forEach(brand => {
@@ -465,19 +468,19 @@
       document.body.appendChild(section);
     });
 
-    // ────────────────────────────────────────────────
-    // CART LOGIC – now resets on every close
-    // ────────────────────────────────────────────────
+    // Cart logic
     let cart = [];
 
     function loadCart() {
-      // We no longer load saved cart from cloud
-      // Every session starts fresh
-      renderCart();
+      tg.CloudStorage.getItem('cart', (err, saved) => {
+        if (!err && saved) {
+          try { cart = JSON.parse(saved); } catch(e) {}
+        }
+        renderCart();
+      });
     }
 
     function saveCart() {
-      // We can keep saving during session, but it will be cleared on close
       tg.CloudStorage.setItem('cart', JSON.stringify(cart));
     }
 
@@ -502,12 +505,6 @@
       tg.HapticFeedback.impactOccurred('light');
     }
 
-    function clearCart() {
-      cart = [];
-      tg.CloudStorage.setItem('cart', '[]');
-      renderCart();
-    }
-
     function renderCart() {
       const list = document.getElementById('cart-items');
       const totalEl = document.getElementById('total');
@@ -516,6 +513,7 @@
 
       list.innerHTML = '';
       let total = 0;
+      let itemsCount = 0;
 
       if (cart.length === 0) {
         emptyEl.style.display = 'block';
@@ -533,6 +531,7 @@
       cart.forEach((item, i) => {
         const line = item.price * item.qty;
         total += line;
+        itemsCount += item.qty;
 
         const li = document.createElement('li');
         li.className = 'cart-item';
@@ -553,14 +552,21 @@
       tg.MainButton.show();
     }
 
+    // Navigation logic
+    let currentBrandId = null;  // remember which brand detail is open
+
     function showBrand(id) {
+      currentBrandId = id;
+
       document.querySelector('.top-controls').style.display = 'none';
       document.querySelector('.categories').style.display = 'none';
       document.getElementById('no-results').style.display = 'none';
 
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
       const section = document.getElementById(`${id}-section`);
-      if (section) section.classList.add('active');
+      if (section) {
+        section.classList.add('active');
+      }
 
       tg.BackButton.show();
       tg.HapticFeedback.impactOccurred('light');
@@ -568,37 +574,52 @@
     }
 
     function returnToMainView() {
+      currentBrandId = null;
+
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
 
       document.querySelector('.top-controls').style.display = 'flex';
       document.querySelector('.categories').style.display = 'grid';
       document.getElementById('no-results').style.display = 'none';
 
-      if (!document.getElementById('cart-summary').classList.contains('visible')) {
-        tg.BackButton.hide();
-      }
-
+      tg.BackButton.hide();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       tg.HapticFeedback.impactOccurred('light');
     }
 
     tg.BackButton.onClick(() => {
-      const brandIsVisible = !!document.querySelector('.brand-section.active');
+      const brandIsVisible = !!currentBrandId;
       const cartIsVisible  = document.getElementById('cart-summary').classList.contains('visible');
 
       if (cartIsVisible) {
-        // Close cart + CLEAR contents
+        // Close cart → go back to previous view (brand or main)
         document.getElementById('cart-summary').classList.remove('visible');
-        clearCart();                        // ← this is the key change
         tg.MainButton.hide();
-        tg.BackButton.hide();
+
+        if (brandIsVisible) {
+          // Was in brand detail before cart → return to that brand
+          document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+          const section = document.getElementById(`${currentBrandId}-section`);
+          if (section) section.classList.add('active');
+          document.querySelector('.top-controls').style.display = 'none';
+          document.querySelector('.categories').style.display = 'none';
+        } else {
+          // Was in main list → return to main list
+          document.querySelector('.top-controls').style.display = 'flex';
+          document.querySelector('.categories').style.display = 'grid';
+          tg.BackButton.hide();
+        }
       } else if (brandIsVisible) {
+        // Close brand detail → back to main list
         returnToMainView();
+      } else {
+        // On main list → let Telegram close the Mini App
       }
 
       tg.HapticFeedback.impactOccurred('light');
     });
 
+    // Event delegation
     document.addEventListener('click', e => {
       const t = e.target;
 
@@ -614,6 +635,7 @@
       }
     });
 
+    // Sort filter
     document.getElementById('sortFilter').addEventListener('change', e => {
       const value = e.target.value;
       const tiles = Array.from(document.querySelectorAll('.category-tile'));
@@ -634,6 +656,7 @@
       }
     });
 
+    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
@@ -654,9 +677,8 @@
       }, 280);
     });
 
-    // Init – start with empty cart every time
-    clearCart();  // force start fresh
-
+    // Init
+    loadCart();
     tg.MainButton.onClick(() => {
       if (!cart.length) return;
 
@@ -678,7 +700,9 @@
       if (!confirm(msg + "\n\nConfirm order?")) return;
 
       tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
-      clearCart();  // also clear after successful order
+      cart = [];
+      renderCart();
+      saveCart();
     });
 
   </script>
