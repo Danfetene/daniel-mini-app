@@ -327,7 +327,6 @@
     });
     tg.MainButton.hide();
 
-    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -347,7 +346,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // All brands
+    // Brands data
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -467,9 +466,7 @@
       document.body.appendChild(section);
     });
 
-    // ────────────────────────────────────────────────
-    // CART – never saved, always starts empty
-    // ────────────────────────────────────────────────
+    // Cart logic
     let cart = [];
 
     function addToCart(brand, size, price) {
@@ -489,11 +486,6 @@
       if (cart[index].qty <= 0) cart.splice(index, 1);
       renderCart();
       tg.HapticFeedback.impactOccurred('light');
-    }
-
-    function clearCart() {
-      cart = [];
-      renderCart();
     }
 
     function renderCart() {
@@ -541,7 +533,14 @@
       tg.MainButton.show();
     }
 
+    // Navigation state
+    let previousView = 'main'; // 'main' or 'brand'
+    let lastBrandId = null;
+
     function showBrand(id) {
+      previousView = 'brand';
+      lastBrandId = id;
+
       document.querySelector('.top-controls').style.display = 'none';
       document.querySelector('.categories').style.display = 'none';
       document.getElementById('no-results').style.display = 'none';
@@ -556,6 +555,9 @@
     }
 
     function returnToMainView() {
+      previousView = 'main';
+      lastBrandId = null;
+
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
 
       document.querySelector('.top-controls').style.display = 'flex';
@@ -567,17 +569,34 @@
       tg.HapticFeedback.impactOccurred('light');
     }
 
+    function returnToLastBrand() {
+      if (lastBrandId) {
+        document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+        const section = document.getElementById(`${lastBrandId}-section`);
+        if (section) section.classList.add('active');
+
+        document.querySelector('.top-controls').style.display = 'none';
+        document.querySelector('.categories').style.display = 'none';
+        tg.BackButton.show();
+      } else {
+        returnToMainView();
+      }
+    }
+
     tg.BackButton.onClick(() => {
       const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
 
       if (cartIsVisible) {
-        // When closing cart (without ordering) → clear data
-        clearCart();
+        // Back from cart → go to last brand detail (or main if no brand was open)
         document.getElementById('cart-summary').classList.remove('visible');
         tg.MainButton.hide();
-        tg.BackButton.hide();
-      } else {
+
+        returnToLastBrand();
+      } else if (previousView === 'brand') {
+        // Back from brand detail → go to main brands page
         returnToMainView();
+      } else {
+        // On main page → Telegram will close the app
       }
 
       tg.HapticFeedback.impactOccurred('light');
@@ -641,7 +660,7 @@
       }, 280);
     });
 
-    // Init – cart always starts empty
+    // Init
     renderCart();
 
     tg.MainButton.onClick(() => {
@@ -666,18 +685,13 @@
 
       tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
 
-      // After order: completely reset cart and return to main page
+      // After order: clear cart + return to main page
       cart = [];
       document.getElementById('cart-summary').classList.remove('visible');
       tg.MainButton.hide();
       tg.BackButton.hide();
 
-      // Go back to first page (brands grid)
-      document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-      document.querySelector('.top-controls').style.display = 'flex';
-      document.querySelector('.categories').style.display = 'grid';
-      document.getElementById('no-results').style.display = 'none';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      returnToMainView();
     });
 
   </script>
