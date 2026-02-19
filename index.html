@@ -327,7 +327,7 @@
     });
     tg.MainButton.hide();
 
-    // Theme synchronization
+    // Theme
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -347,7 +347,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Brands data (all 16 brands)
+    // Brands (all 16)
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -390,15 +390,15 @@
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
       { id: 'sport', name: 'Sport water', img: 'https://i.postimg.cc/9McHHHH5/sport.webp', brandDisplay: 'Sport Water/ Agents',
-        variants: [{size:'0.3L', price:120}, {size:'0.6L', price:150}, {size:'2L', price:160}],
+        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
       { id: 'fham', name: 'Fham water', img: 'https://i.postimg.cc/wjqVSMCp/fham.jpg', brandDisplay: 'Fham Water/ Agents',
-        variants: [{size:'0.3L', price:110}, {size:'0.6L', price:150}, {size:'2L', price:160}],
+        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
       { id: 'care', name: 'Care water', img: 'https://i.postimg.cc/15NtYv7K/care.webp', brandDisplay: 'Care Water/ Agents',
-        variants: [{size:'0.3L', price:121}, {size:'0.6L', price:150}, {size:'2L', price:160}],
+        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
       { id: 'wow', name: 'Wow water', img: 'https://i.postimg.cc/Gh1fD2DQ/wow.webp', brandDisplay: 'Wow Water/ Agents',
@@ -406,15 +406,16 @@
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
       { id: 'konjo', name: 'Konjo water', img: 'https://i.postimg.cc/gkYDd68Y/konjo.jpg', brandDisplay: 'Konjo Water/ Agents',
-        variants: [{size:'0.3L', price:131}, {size:'0.6L', price:150}, {size:'2L', price:160}],
+        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
       { id: 'eden', name: 'Eden water', img: 'https://i.postimg.cc/xCnkHL01/eden.webp', brandDisplay: 'Eden Water/ Agents',
-        variants: [{size:'0.3L', price:111}, {size:'0.6L', price:150}, {size:'2L', price:160}],
+        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       }
     ];
 
+    // Generate UI
     const categoriesEl = document.getElementById('categories');
 
     brands.forEach(brand => {
@@ -467,21 +468,10 @@
       document.body.appendChild(section);
     });
 
-    // Cart logic
-    let cart = [];
-
-    function loadCart() {
-      tg.CloudStorage.getItem('cart', (err, saved) => {
-        if (!err && saved) {
-          try { cart = JSON.parse(saved); } catch(e) {}
-        }
-        renderCart();
-      });
-    }
-
-    function saveCart() {
-      tg.CloudStorage.setItem('cart', JSON.stringify(cart));
-    }
+    // ────────────────────────────────────────────────
+    // CART – never saved, always starts empty
+    // ────────────────────────────────────────────────
+    let cart = [];  // always empty at start
 
     function addToCart(brand, size, price) {
       const key = `${brand}|${size}`;
@@ -492,7 +482,6 @@
         cart.push({ brand, size, price, qty: 1 });
       }
       renderCart();
-      saveCart();
       tg.HapticFeedback.impactOccurred('medium');
     }
 
@@ -500,23 +489,12 @@
       cart[index].qty += delta;
       if (cart[index].qty <= 0) cart.splice(index, 1);
       renderCart();
-      saveCart();
       tg.HapticFeedback.impactOccurred('light');
     }
 
-    function clearCartAndReturnToMain() {
+    function clearCart() {
       cart = [];
-      saveCart();
-      document.getElementById('cart-summary').classList.remove('visible');
-      tg.MainButton.hide();
-      tg.BackButton.hide();
-
-      // Return to main brands page
-      document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-      document.querySelector('.top-controls').style.display = 'flex';
-      document.querySelector('.categories').style.display = 'grid';
-      document.getElementById('no-results').style.display = 'none';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderCart();
     }
 
     function renderCart() {
@@ -604,7 +582,6 @@
       tg.HapticFeedback.impactOccurred('light');
     });
 
-    // Event delegation
     document.addEventListener('click', e => {
       const t = e.target;
 
@@ -620,7 +597,6 @@
       }
     });
 
-    // Sort filter
     document.getElementById('sortFilter').addEventListener('change', e => {
       const value = e.target.value;
       const tiles = Array.from(document.querySelectorAll('.category-tile'));
@@ -641,7 +617,6 @@
       }
     });
 
-    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
@@ -662,8 +637,8 @@
       }, 280);
     });
 
-    // Init
-    loadCart();
+    // Start with empty cart – no loading from cloud
+    renderCart();
 
     tg.MainButton.onClick(() => {
       if (!cart.length) return;
@@ -687,24 +662,19 @@
 
       tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
 
-      // After order: clear cart + return to main brands page
-      clearCartAndReturnToMain();
-    });
-
-    function clearCartAndReturnToMain() {
+      // After order: clear cart and return to main page
       cart = [];
-      saveCart();
       document.getElementById('cart-summary').classList.remove('visible');
       tg.MainButton.hide();
       tg.BackButton.hide();
 
-      // Force return to main brands page
+      // Go back to brands list
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
       document.querySelector('.top-controls').style.display = 'flex';
       document.querySelector('.categories').style.display = 'grid';
       document.getElementById('no-results').style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    });
 
   </script>
 </body>
