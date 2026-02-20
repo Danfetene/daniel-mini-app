@@ -583,23 +583,60 @@
       }
     }
 
-    tg.BackButton.onClick(() => {
-      const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
+    tg.MainButton.onClick(() => {
+     if (!cart.length) return;
 
-      if (cartIsVisible) {
-        // Back from cart → go to last brand detail (or main if no brand was open)
-        document.getElementById('cart-summary').classList.remove('visible');
-        tg.MainButton.hide();
+     const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 0912345678", "");
+     if (!phone || phone.trim().length < 9) {
+     tg.showAlert("Please enter a valid phone number.");
+     return;
+     }
 
-        returnToLastBrand();
-      } else if (previousView === 'brand') {
-        // Back from brand detail → go to main brands page
-        returnToMainView();
-      } else {
-        // On main page → Telegram will close the app
-      }
+     // Build confirmation message for the user
+     let msg = `New Order – ET Water\nPhone: ${phone.trim()}\nDelivery: Addis Ababa\n\nItems:\n`;
+     let sum = 0;
+     cart.forEach(i => {
+     const lt = i.price * i.qty;
+      msg += `• ${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
+     sum += lt;
+     });
+     msg += `\nTotal: ${sum} Birr`;
 
-      tg.HapticFeedback.impactOccurred('light');
+     if (!confirm(msg + "\n\nConfirm order?")) return;
+
+     // ────────────────────────────────────────────────
+     // Prepare order data to send to your bot
+     // ────────────────────────────────────────────────
+     const orderData = {
+      phone: phone.trim(),
+      total: sum,
+      items: cart.map(item => ({
+       brand: item.brand,
+        size: item.size,
+       qty: item.qty,
+       price: item.price
+      })),
+      timestamp: new Date().toISOString()
+     };
+
+     // Send the JSON data to your bot (this closes Mini App automatically)
+     tg.sendData(JSON.stringify(orderData));
+
+     // Show success message to user
+     tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
+
+     // Clear cart & reset UI (so next time cart starts empty)
+     cart = [];
+     document.getElementById('cart-summary').classList.remove('visible');
+     tg.MainButton.hide();
+     tg.BackButton.hide();
+
+     // Return to main brands page
+     document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+     document.querySelector('.top-controls').style.display = 'flex';
+     document.querySelector('.categories').style.display = 'grid';
+     document.getElementById('no-results').style.display = 'none';
+     window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     // Event delegation
