@@ -583,54 +583,27 @@
       }
     }
 
-    tg.MainButton.onClick(() => {
-     if (!cart.length) return;
+    tg.BackButton.onClick(() => {
+      const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
 
-     const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 0912345678", "");
-     if (!phone || phone.trim().length < 9) {
-     tg.showAlert("Please enter a valid phone number.");
-     return;
-     }
+      if (cartIsVisible) {
+        // Back from cart → go to last brand detail (or main if no brand was open)
+        document.getElementById('cart-summary').classList.remove('visible');
+        tg.MainButton.hide();
 
-     let msg = `New Order – ET Water\nPhone: ${phone.trim()}\nDelivery: Addis Ababa\n\nItems:\n`;
-     let sum = 0;
-     cart.forEach(i => {
-     const lt = i.price * i.qty;
-     msg += `• ${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
-     sum += lt;
-     });
-     msg += `\nTotal: ${sum} Birr`;
+        returnToLastBrand();
+      } else if (previousView === 'brand') {
+        // Back from brand detail → go to main brands page
+        returnToMainView();
+      } else {
+        // On main page → Telegram will close the app
+      }
 
-     if (!confirm(msg + "\n\nConfirm order?")) return;
+      tg.HapticFeedback.impactOccurred('light');
+    });
 
-     // ────────────────────────────────────────────────
-     // Prepare clean data object to send to your bot
-     // ────────────────────────────────────────────────
-     const orderData = {
-      phone: phone.trim(),
-      total: sum,
-      items: cart.map(item => ({
-      brand: item.brand,
-      size: item.size,
-      qty: item.qty,
-      price: item.price
-     })),
-      timestamp: new Date().toISOString()
-     };
-
-      // Send JSON string to your bot
-     tg.sendData(JSON.stringify(orderData));
-
-     // Show success message (user sees it before app closes)
-     tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
-
-     // Cart is automatically cleared on next open (no persistence)
-     cart = [];
-     renderCart();
-     });
-
-     // Event delegation
-     document.addEventListener('click', e => {
+    // Event delegation
+    document.addEventListener('click', e => {
       const t = e.target;
 
       if (t.classList.contains('order-btn')) {
