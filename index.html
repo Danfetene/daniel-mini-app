@@ -664,6 +664,7 @@
     // Checkout: send order to your bot when confirmed
     // ────────────────────────────────────────────────
     tg.MainButton.onClick(() => {
+      console.log('DEBUG: Checkout button clicked!');
       if (!cart.length) return;
 
       const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 0912345678", "");
@@ -682,7 +683,7 @@
       });
       msg += `\nTotal: ${sum} Birr`;
 
-      if (!confirm(msg + "\n\nConfirm order?")) return;
+      //if (!confirm(msg + "\n\nConfirm order?")) return;
 
       // Prepare order data
       const orderData = {
