@@ -327,6 +327,7 @@
     });
     tg.MainButton.hide();
 
+    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -587,16 +588,12 @@
       const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
 
       if (cartIsVisible) {
-        // Back from cart → go to last brand detail (or main if no brand was open)
         document.getElementById('cart-summary').classList.remove('visible');
         tg.MainButton.hide();
 
         returnToLastBrand();
       } else if (previousView === 'brand') {
-        // Back from brand detail → go to main brands page
         returnToMainView();
-      } else {
-        // On main page → Telegram will close the app
       }
 
       tg.HapticFeedback.impactOccurred('light');
@@ -663,6 +660,9 @@
     // Init
     renderCart();
 
+    // ────────────────────────────────────────────────
+    // Checkout: send order to your bot when confirmed
+    // ────────────────────────────────────────────────
     tg.MainButton.onClick(() => {
       if (!cart.length) return;
 
@@ -672,6 +672,7 @@
         return;
       }
 
+      // Build confirmation message for the user
       let msg = `New Order – ET Water\nPhone: ${phone.trim()}\nDelivery: Addis Ababa\n\nItems:\n`;
       let sum = 0;
       cart.forEach(i => {
@@ -683,15 +684,37 @@
 
       if (!confirm(msg + "\n\nConfirm order?")) return;
 
+      // Prepare order data
+      const orderData = {
+        phone: phone.trim(),
+        total: sum,
+        items: cart.map(item => ({
+          brand: item.brand,
+          size: item.size,
+          qty: item.qty,
+          price: item.price
+        })),
+        timestamp: new Date().toISOString()
+      };
+
+      // Send to your bot (this closes the Mini App automatically)
+      tg.sendData(JSON.stringify(orderData));
+
+      // Success message
       tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
 
-      // After order: clear cart + return to main page
+      // Clear cart & reset UI
       cart = [];
       document.getElementById('cart-summary').classList.remove('visible');
       tg.MainButton.hide();
       tg.BackButton.hide();
 
-      returnToMainView();
+      // Return to main brands page
+      document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+      document.querySelector('.top-controls').style.display = 'flex';
+      document.querySelector('.categories').style.display = 'grid';
+      document.getElementById('no-results').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
   </script>
