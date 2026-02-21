@@ -44,15 +44,28 @@
     header h1 { font-size: 22px; margin: 0; }
     .moto { font-size: 14px; opacity: 0.9; }
 
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px 8px;
+      background: var(--tg-bg-color);
+      position: sticky;
+      top: 56px;
+      z-index: 9;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
     .search-bar {
+      flex: 1;
       background: var(--tg-bg-color);
       border: 1px solid var(--tg-hint-color);
       border-radius: 12px;
-      margin: 12px 16px;
       padding: 10px 14px;
       display: flex;
       align-items: center;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      min-width: 0;
     }
     .search-bar input {
       background: transparent;
@@ -61,30 +74,28 @@
       font-size: 16px;
       color: var(--tg-text-color);
       outline: none;
+      min-width: 0;
     }
 
-    /* New: Filter/Sort menu */
-    .filter-bar {
-      padding: 0 16px 12px;
-      background: var(--tg-bg-color);
-      display: flex;
-      justify-content: flex-end;
+    .filter-wrapper {
+      flex-shrink: 0;
     }
-    .filter-bar select {
+    .filter-wrapper select {
       background: var(--tg-bg-color);
       color: var(--tg-text-color);
       border: 1px solid var(--tg-hint-color);
       border-radius: 10px;
-      padding: 8px 12px;
+      padding: 10px 12px;
       font-size: 14px;
-      max-width: 180px;
+      max-width: 160px;
+      cursor: pointer;
     }
 
     .categories {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
       gap: 12px;
-      padding: 0 16px 16px;
+      padding: 16px;
       background: var(--tg-bg-color);
     }
 
@@ -112,25 +123,18 @@
 
     .brand-section {
       display: none;
-      padding: 16px;
+      padding: 16px 16px 120px;
       background: var(--tg-bg-color);
-      margin: 12px 16px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.3s, transform 0.3s;
+      margin: 0;
     }
     .brand-section.active {
       display: block;
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .brand-header {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
       color: var(--tg-button-color);
       text-align: center;
     }
@@ -140,54 +144,52 @@
       border: 1px solid rgba(82,136,193,0.2);
       border-radius: 16px;
       padding: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .variant-info { flex: 1; }
     .variant-size { font-size: 18px; font-weight: 600; }
-    .variant-price { font-size: 20px; color: var(--accent); font-weight: bold; }
+    .variant-price { font-size: 22px; color: var(--accent); font-weight: bold; }
 
     .order-btn {
       background: var(--tg-button-color);
       color: var(--tg-button-text-color);
       border: none;
       border-radius: 12px;
-      padding: 10px 24px;
+      padding: 12px 28px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       transition: transform 0.15s, opacity 0.2s;
-      min-width: 100px;
-      text-align: center;
+      min-width: 110px;
     }
-
     .order-btn:active {
       transform: scale(0.96);
       opacity: 0.92;
     }
 
     .nutrition {
-      margin-top: 28px;
-      padding: 16px;
+      margin-top: 32px;
+      padding: 20px;
       background: rgba(46,125,50,0.08);
       border-radius: 16px;
       border: 1px solid rgba(46,125,50,0.2);
     }
     .nutrition h3 {
-      margin: 0 0 12px;
+      margin: 0 0 16px;
       color: var(--accent);
-      font-size: 16px;
+      font-size: 18px;
       text-align: center;
     }
     .nutrition-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      font-size: 15px;
     }
     .nutrition-table td {
-      padding: 8px 0;
+      padding: 10px 0;
       border-bottom: 1px solid rgba(0,0,0,0.08);
     }
     .nutrition-table td:first-child { font-weight: 500; }
@@ -281,16 +283,16 @@
     <div class="moto">To your need • Addis Ababa delivery</div>
   </header>
 
-  <div class="search-bar">
-    <input id="searchInput" type="text" placeholder="Search Water brands " />
-  </div>
-
-  <!-- New: Sort/Filter menu -->
-  <div class="filter-bar">
-    <select id="sortFilter">
-      <option value="default">Filter by</option>
-      <option value="price-low-high">Price: Low to High</option>
-    </select>
+  <div class="top-controls">
+    <div class="search-bar">
+      <input id="searchInput" type="text" placeholder="Search brands" />
+    </div>
+    <div class="filter-wrapper">
+      <select id="sortFilter">
+        <option value="default">Filter by</option>
+        <option value="price-low-high">Price:Low </option>
+      </select>
+    </div>
   </div>
 
   <div class="categories" id="categories"></div>
@@ -301,7 +303,6 @@
   <div id="cart-summary">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <h2 style="margin:0; font-size:20px;">Your Cart</h2>
-      <span id="cart-count" style="background:rgba(46,125,50,0.2); color:var(--accent); padding:6px 14px; border-radius:20px; font-weight:bold;">0</span>
     </div>
     <ul id="cart-items"></ul>
     <div id="total">Total: 0 Birr</div>
@@ -326,7 +327,6 @@
     });
     tg.MainButton.hide();
 
-    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -348,73 +348,72 @@
 
     // Brands data
     const brands = [
-      { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis',
+      { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'gold', name: 'Gold Water', img: 'https://i.postimg.cc/nr7cPzVK/gold-w.webp', brandDisplay: 'Gold Water - For Golden life',
+      { id: 'gold', name: 'Gold Water', img: 'https://i.postimg.cc/nr7cPzVK/gold-w.webp', brandDisplay: 'Gold Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'TDS', val:'8.5 mg/L'}, {label:'Calcium', val:'1.6 mg/L'}, {label:'Magnesium', val:'0.8 mg/L'}, {label:'Potassium', val:'8.5 mg/L'}, {label:'Sodium', val:'0.9 mg/L'}]
       },
-      { id: 'top', name: 'Top water', img: 'https://i.postimg.cc/4dGs4htb/top.webp', brandDisplay: 'Top Water',
+      { id: 'top', name: 'Top water', img: 'https://i.postimg.cc/4dGs4htb/top.webp', brandDisplay: 'Top Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'one', name: 'One water', img: 'https://i.postimg.cc/Vvf49NBk/one-water.jpg', brandDisplay: 'One Water',
+      { id: 'one', name: 'One water', img: 'https://i.postimg.cc/Vvf49NBk/one-water.jpg', brandDisplay: 'One Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'africa', name: 'Africa water', img: 'https://i.postimg.cc/0NGB7hR3/africa.jpg', brandDisplay: 'Africa Water',
+      { id: 'africa', name: 'Africa water', img: 'https://i.postimg.cc/0NGB7hR3/africa.jpg', brandDisplay: 'Africa Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'yes', name: 'Yes water', img: 'https://i.postimg.cc/rw1JHWnJ/yes.webp', brandDisplay: 'Yes Water',
+      { id: 'yes', name: 'Yes water', img: 'https://i.postimg.cc/rw1JHWnJ/yes.webp', brandDisplay: 'Yes Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'dega', name: 'Dega water', img: 'https://i.postimg.cc/9FG86vz9/dega.webp', brandDisplay: 'Dega Water',
+      { id: 'dega', name: 'Dega water', img: 'https://i.postimg.cc/9FG86vz9/dega.webp', brandDisplay: 'Dega Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'arki', name: 'Arki water', img: 'https://i.postimg.cc/TwDqrDDf/arki.webp', brandDisplay: 'Arki Water',
+      { id: 'arki', name: 'Arki water', img: 'https://i.postimg.cc/TwDqrDDf/arki.webp', brandDisplay: 'Arki Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'forest', name: 'Forest water', img: 'https://i.postimg.cc/bYFW3tJV/forest.webp', brandDisplay: 'Forest Water',
+      { id: 'forest', name: 'Forest water', img: 'https://i.postimg.cc/bYFW3tJV/forest.webp', brandDisplay: 'Forest Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'kiya', name: 'kiya water', img: 'https://i.postimg.cc/TYMSzXV0/kiya.webp', brandDisplay: 'Kiya Water',
+      { id: 'kiya', name: 'kiya water', img: 'https://i.postimg.cc/TYMSzXV0/kiya.webp', brandDisplay: 'Kiya Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'sport', name: 'Sport water', img: 'https://i.postimg.cc/9McHHHH5/sport.webp', brandDisplay: 'Sport Water',
+      { id: 'sport', name: 'Sport water', img: 'https://i.postimg.cc/9McHHHH5/sport.webp', brandDisplay: 'Sport Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'fham', name: 'Fham water', img: 'https://i.postimg.cc/wjqVSMCp/fham.jpg', brandDisplay: 'Fham Water',
+      { id: 'fham', name: 'Fham water', img: 'https://i.postimg.cc/wjqVSMCp/fham.jpg', brandDisplay: 'Fham Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'care', name: 'Care water', img: 'https://i.postimg.cc/15NtYv7K/care.webp', brandDisplay: 'Care Water',
+      { id: 'care', name: 'Care water', img: 'https://i.postimg.cc/15NtYv7K/care.webp', brandDisplay: 'Care Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'wow', name: 'Wow water', img: 'https://i.postimg.cc/Gh1fD2DQ/wow.webp', brandDisplay: 'Wow Water',
+      { id: 'wow', name: 'Wow water', img: 'https://i.postimg.cc/Gh1fD2DQ/wow.webp', brandDisplay: 'Wow Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'konjo', name: 'Konjo water', img: 'https://i.postimg.cc/gkYDd68Y/konjo.jpg', brandDisplay: 'Konjo Water',
+      { id: 'konjo', name: 'Konjo water', img: 'https://i.postimg.cc/gkYDd68Y/konjo.jpg', brandDisplay: 'Konjo Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       },
-      { id: 'eden', name: 'Eden water', img: 'https://i.postimg.cc/xCnkHL01/eden.webp', brandDisplay: 'Eden Water',
+      { id: 'eden', name: 'Eden water', img: 'https://i.postimg.cc/xCnkHL01/eden.webp', brandDisplay: 'Eden Water/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'},{label:'Magnesium', val:'1.3 mg/L'},{label:'Sodium', val:'2.3 mg/L'},{label:'TDS', val:'20 mg/L'}]
       }
     ];
 
-    // Generate UI dynamically
     const categoriesEl = document.getElementById('categories');
 
     brands.forEach(brand => {
@@ -467,21 +466,8 @@
       document.body.appendChild(section);
     });
 
-    // Cart logic + Cloud persistence
+    // Cart logic
     let cart = [];
-
-    function loadCart() {
-      tg.CloudStorage.getItem('cart', (err, saved) => {
-        if (!err && saved) {
-          try { cart = JSON.parse(saved); } catch(e) {}
-        }
-        renderCart();
-      });
-    }
-
-    function saveCart() {
-      tg.CloudStorage.setItem('cart', JSON.stringify(cart));
-    }
 
     function addToCart(brand, size, price) {
       const key = `${brand}|${size}`;
@@ -492,7 +478,6 @@
         cart.push({ brand, size, price, qty: 1 });
       }
       renderCart();
-      saveCart();
       tg.HapticFeedback.impactOccurred('medium');
     }
 
@@ -500,24 +485,20 @@
       cart[index].qty += delta;
       if (cart[index].qty <= 0) cart.splice(index, 1);
       renderCart();
-      saveCart();
       tg.HapticFeedback.impactOccurred('light');
     }
 
     function renderCart() {
       const list = document.getElementById('cart-items');
       const totalEl = document.getElementById('total');
-      const countEl = document.getElementById('cart-count');
       const emptyEl = document.getElementById('empty');
       const summary = document.getElementById('cart-summary');
 
       list.innerHTML = '';
       let total = 0;
-      let itemsCount = 0;
 
       if (cart.length === 0) {
         emptyEl.style.display = 'block';
-        countEl.textContent = '0';
         totalEl.textContent = 'Total: 0 Birr';
         summary.classList.remove('visible');
         tg.MainButton.hide();
@@ -532,7 +513,6 @@
       cart.forEach((item, i) => {
         const line = item.price * item.qty;
         total += line;
-        itemsCount += item.qty;
 
         const li = document.createElement('li');
         li.className = 'cart-item';
@@ -548,60 +528,75 @@
         list.appendChild(li);
       });
 
-      countEl.textContent = itemsCount;
       totalEl.textContent = `Total: ${total} Birr`;
       tg.MainButton.setText(`Checkout • ${total} Birr`);
       tg.MainButton.show();
     }
 
-    // Navigation
-    function showBrandDetail(brandId) {
-      document.querySelector('.search-bar').style.display   = 'none';
-      document.querySelector('.categories').style.display  = 'none';
-      document.querySelector('.filter-bar').style.display  = 'none'; // hide filter when entering brand
-      document.getElementById('no-results').style.display   = 'none';
+    // Navigation state
+    let previousView = 'main'; // 'main' or 'brand'
+    let lastBrandId = null;
+
+    function showBrand(id) {
+      previousView = 'brand';
+      lastBrandId = id;
+
+      document.querySelector('.top-controls').style.display = 'none';
+      document.querySelector('.categories').style.display = 'none';
+      document.getElementById('no-results').style.display = 'none';
 
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-      const target = document.getElementById(`${brandId}-section`);
-      if (target) target.classList.add('active');
+      const section = document.getElementById(`${id}-section`);
+      if (section) section.classList.add('active');
 
       tg.BackButton.show();
       tg.HapticFeedback.impactOccurred('light');
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
     function returnToMainView() {
+      previousView = 'main';
+      lastBrandId = null;
+
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
 
-      document.querySelector('.search-bar').style.display   = 'flex';
-      document.querySelector('.categories').style.display  = 'grid';
-      document.querySelector('.filter-bar').style.display  = 'flex'; // show filter again
-      document.getElementById('no-results').style.display   = 'none';
+      document.querySelector('.top-controls').style.display = 'flex';
+      document.querySelector('.categories').style.display = 'grid';
+      document.getElementById('no-results').style.display = 'none';
 
-      if (!document.getElementById('cart-summary').classList.contains('visible')) {
-        tg.BackButton.hide();
-      }
-
+      tg.BackButton.hide();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       tg.HapticFeedback.impactOccurred('light');
-
-      // Re-apply current sort/filter after returning
-      applyCurrentSort();
     }
 
-    function showBrand(id) {
-      showBrandDetail(id);
+    function returnToLastBrand() {
+      if (lastBrandId) {
+        document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+        const section = document.getElementById(`${lastBrandId}-section`);
+        if (section) section.classList.add('active');
+
+        document.querySelector('.top-controls').style.display = 'none';
+        document.querySelector('.categories').style.display = 'none';
+        tg.BackButton.show();
+      } else {
+        returnToMainView();
+      }
     }
 
     tg.BackButton.onClick(() => {
-      const brandIsVisible = !!document.querySelector('.brand-section.active');
-      const cartIsVisible  = document.getElementById('cart-summary').classList.contains('visible');
+      const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
 
-      if (brandIsVisible) {
-        returnToMainView();
-      }
-      else if (cartIsVisible) {
+      if (cartIsVisible) {
+        // Back from cart → go to last brand detail (or main if no brand was open)
         document.getElementById('cart-summary').classList.remove('visible');
-        tg.BackButton.hide();
+        tg.MainButton.hide();
+
+        returnToLastBrand();
+      } else if (previousView === 'brand') {
+        // Back from brand detail → go to main brands page
+        returnToMainView();
+      } else {
+        // On main page → Telegram will close the app
       }
 
       tg.HapticFeedback.impactOccurred('light');
@@ -623,86 +618,51 @@
       }
     });
 
-    // ────────────────────────────────────────────────
-    // Search + Sort by price low to high
-    // ────────────────────────────────────────────────
-    let currentSort = 'default';
+    // Sort filter
+    document.getElementById('sortFilter').addEventListener('change', e => {
+      const value = e.target.value;
+      const tiles = Array.from(document.querySelectorAll('.category-tile'));
+      const container = document.getElementById('categories');
 
-    // Apply current sort when returning or changing filter
-    function applyCurrentSort() {
-      if (currentSort === 'price-low-high') {
-        const tiles = Array.from(document.querySelectorAll('.category-tile'));
-        const container = document.getElementById('categories');
-
+      if (value === 'price-low-high') {
         tiles.sort((a, b) => {
           const pA = parseInt(a.getAttribute('data-min-price') || '9999', 10);
           const pB = parseInt(b.getAttribute('data-min-price') || '9999', 10);
           return pA - pB;
         });
-
         tiles.forEach(tile => container.appendChild(tile));
+      } else {
+        brands.forEach(brand => {
+          const tile = document.querySelector(`[data-brand-id="${brand.id}"]`);
+          if (tile) container.appendChild(tile);
+        });
       }
-    }
-
-    // Sort filter dropdown
-    document.getElementById('sortFilter').addEventListener('change', e => {
-      currentSort = e.target.value;
-      applyCurrentSort();
     });
 
-    // Search (with price filter + auto-sort when price is entered)
+    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
-        const query = e.target.value.trim().toLowerCase();
-        const tiles = Array.from(document.querySelectorAll('.category-tile'));
-        let visibleCount = 0;
-
-        const priceFilter = parseInt(query.replace(/\D/g, ''), 10);
-        const isPriceFilter = !isNaN(priceFilter) && priceFilter > 0;
+        const q = e.target.value.toLowerCase().trim();
+        const tiles = document.querySelectorAll('.category-tile');
+        let visible = 0;
 
         tiles.forEach(tile => {
-          const brandName = tile.querySelector('span').textContent.toLowerCase();
-          const minPrice = parseInt(tile.getAttribute('data-min-price') || '9999', 10);
-
-          let matches = false;
-
-          if (query === '') {
-            matches = true;
-          } else if (isPriceFilter) {
-            matches = minPrice <= priceFilter;
-          } else {
-            matches = brandName.includes(query);
-          }
-
-          tile.style.display = matches ? '' : 'none';
-          if (matches) visibleCount++;
+          const name = tile.querySelector('span').textContent.toLowerCase();
+          const show = name.includes(q) || ['140','150','160'].some(p => q.includes(p));
+          tile.style.display = show ? '' : 'none';
+          if (show) visible++;
         });
 
-        // Auto-sort low to high if price filter is active
-        if (isPriceFilter && visibleCount > 1) {
-          const container = document.getElementById('categories');
-          const visibleTiles = tiles.filter(t => t.style.display !== 'none');
-
-          visibleTiles.sort((a, b) => {
-            const pA = parseInt(a.getAttribute('data-min-price') || '9999', 10);
-            const pB = parseInt(b.getAttribute('data-min-price') || '9999', 10);
-            return pA - pB;
-          });
-
-          visibleTiles.forEach(tile => container.appendChild(tile));
-        } else if (currentSort === 'price-low-high') {
-          applyCurrentSort();
-        }
-
         document.getElementById('no-results').style.display =
-          (query && visibleCount === 0) ? 'block' : 'none';
-      }, 300);
+          (q && visible === 0) ? 'block' : 'none';
+      }, 280);
     });
 
     // Init
-    loadCart();
+    renderCart();
+
     tg.MainButton.onClick(() => {
       if (!cart.length) return;
 
@@ -724,9 +684,14 @@
       if (!confirm(msg + "\n\nConfirm order?")) return;
 
       tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
+
+      // After order: clear cart + return to main page
       cart = [];
-      renderCart();
-      saveCart();
+      document.getElementById('cart-summary').classList.remove('visible');
+      tg.MainButton.hide();
+      tg.BackButton.hide();
+
+      returnToMainView();
     });
 
   </script>
