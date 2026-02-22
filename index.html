@@ -3,17 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>1 vs 2</title>
-  
-  <!-- This is the official Telegram Mini App script (still current in 2026) -->
+  <title>1 vs 2 – Mini App</title>
+
+  <!-- Official Telegram Web App script -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
+
   <style>
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --button: #2481cc;
+      --button-text: #ffffff;
+      --success: #2ecc71;
+      --error: #e74c3c;
+    }
+
     body {
       margin: 0;
+      padding: 0;
       height: 100vh;
-      background: var(--tg-theme-bg-color, #000);
-      color: var(--tg-theme-text-color, #fff);
+      background: var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, sans-serif;
       display: flex;
       flex-direction: column;
@@ -21,75 +31,150 @@
       justify-content: center;
       gap: 60px;
       touch-action: manipulation;
+      user-select: none;
     }
+
     h1 {
-      font-size: 5rem;
+      font-size: 5.5rem;
+      font-weight: 900;
       margin: 0;
-      font-weight: 800;
-      letter-spacing: -4px;
+      letter-spacing: -5px;
     }
+
     .buttons {
       display: flex;
       gap: 50px;
     }
+
     button {
-      width: 140px;
-      height: 140px;
-      font-size: 5.5rem;
+      width: 150px;
+      height: 150px;
+      font-size: 6rem;
       font-weight: bold;
+      background: var(--button);
+      color: var(--button-text);
       border: none;
-      border-radius: 28px;
-      background: var(--tg-theme-button-color, #2481cc);
-      color: white;
+      border-radius: 30px;
       cursor: pointer;
-      transition: transform 0.08s, opacity 0.15s;
-      touch-action: manipulation;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform 0.12s, opacity 0.15s;
     }
+
     button:active {
       transform: scale(0.92);
-      opacity: 0.85;
+      opacity: 0.9;
     }
+
+    #status {
+      font-size: 1.3rem;
+      text-align: center;
+      max-width: 85%;
+      min-height: 3em;
+      padding: 0 20px;
+    }
+
+    .success { color: var(--success); }
+    .error   { color: var(--error);   }
   </style>
 </head>
 <body>
 
-  <h1>Pick</h1>
+  <h1>1 vs 2</h1>
 
   <div class="buttons">
     <button onclick="pick(1)">1</button>
     <button onclick="pick(2)">2</button>
   </div>
 
-  <script>
-    // Tell Telegram we're ready (very important)
-    if (window.Telegram?.WebApp) {
-      Telegram.WebApp.ready();
-      Telegram.WebApp.expand();           // make it full-screen
-      Telegram.WebApp.isClosingConfirmationEnabled = true;
+  <div id="status">Tap a number</div>
 
-      // Auto-adapt to Telegram's current theme (light/dark)
-      const theme = Telegram.WebApp.themeParams;
-      document.documentElement.style.setProperty('--tg-theme-bg-color', theme.bg_color);
-      document.documentElement.style.setProperty('--tg-theme-text-color', theme.text_color);
-      document.documentElement.style.setProperty('--tg-theme-button-color', theme.button_color);
-      document.documentElement.style.setProperty('--tg-theme-button-text-color', theme.button_text_color);
+  <script>
+    // ────────────────────────────────────────────────
+    // TELEGRAM MINI APP INITIALIZATION
+    // ────────────────────────────────────────────────
+
+    const tg = window.Telegram?.WebApp;
+    const statusEl = document.getElementById('status');
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.enableClosingConfirmation();
+
+      // Apply Telegram theme
+      const theme = tg.themeParams || {};
+      document.documentElement.style.setProperty('--bg',          theme.bg_color          || '#000000');
+      document.documentElement.style.setProperty('--text',        theme.text_color        || '#ffffff');
+      document.documentElement.style.setProperty('--button',      theme.button_color      || '#2481cc');
+      document.documentElement.style.setProperty('--button-text', theme.button_text_color || '#ffffff');
+
+      // Greeting with user name if available
+      const user = tg.initDataUnsafe?.user || {};
+      if (user.first_name) {
+        statusEl.textContent = `Hey ${user.first_name}, pick one!`;
+      }
+    } else {
+      statusEl.textContent = 'Not running in Telegram Mini App';
     }
 
-    function pick(num) {
-      // Show nice native Telegram popup
-      Telegram.WebApp.showPopup({
-        title: "You chose",
-        message: num + " !",
-        buttons: [{ type: "ok" }]
-      });
+    // ────────────────────────────────────────────────
+    // SEND CHOICE TO YOUR VERCEL BACKEND
+    // ────────────────────────────────────────────────
 
-      // Optional: vibrate phone (works on mobile)
-      if (Telegram.WebApp.HapticFeedback) {
-        Telegram.WebApp.HapticFeedback.impactOccurred("medium");
+    async function pick(number) {
+      // ────────────────────────────────────────────────
+      // CHANGE THIS TO YOUR REAL VERCEL API ENDPOINT
+      // Example: https://your-project-name.vercel.app/api/send-choice
+      const backendUrl = "https://danorder-js.vercel.app/";
+      // ────────────────────────────────────────────────
+
+      if (!backendUrl || backendUrl.includes('your-project-name')) {
+        statusEl.textContent = 'Please update backendUrl in the code';
+        statusEl.className = 'error';
+        return;
       }
 
-      // Optional: send number back to bot (uncomment if you have backend)
-      // Telegram.WebApp.sendData(num.toString());
+      const payload = {
+        choice: number,
+        user_id: tg?.initDataUnsafe?.user?.id || 'unknown',
+        username: tg?.initDataUnsafe?.user?.username || 'no-username',
+        first_name: tg?.initDataUnsafe?.user?.first_name || 'User',
+        text: `Picked **${number}** 🎯 from mini app`
+      };
+
+      statusEl.textContent = `Sending ${number}...`;
+      statusEl.className = '';
+
+      try {
+        const response = await fetch(backendUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Telegram-Init-Data': tg?.initData || ''
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          statusEl.textContent = `Sent ${number} successfully! ✓ Check your chat with the bot.`;
+          statusEl.className = 'success';
+          tg?.HapticFeedback?.impactOccurred('success');
+        } else {
+          let errorMsg = `HTTP ${response.status}`;
+          try {
+            const errData = await response.json();
+            errorMsg = errData.error || errorMsg;
+          } catch {}
+          statusEl.textContent = `Failed: ${errorMsg}`;
+          statusEl.className = 'error';
+          tg?.HapticFeedback?.notificationOccurred('error');
+        }
+      } catch (err) {
+        statusEl.textContent = `Network error: ${err.message || 'failed to connect'}`;
+        statusEl.className = 'error';
+        tg?.HapticFeedback?.notificationOccurred('error');
+        console.error('Fetch error:', err);
+      }
     }
   </script>
 
