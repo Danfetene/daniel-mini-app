@@ -6,9 +6,6 @@
   <title>ET Water Market • Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    /* ────────────────────────────────────────────────
-       Your original styles – completely unchanged
-    ──────────────────────────────────────────────── */
     :root {
       --tg-bg-color: #f0f0f0;
       --tg-text-color: #000;
@@ -330,7 +327,7 @@
     });
     tg.MainButton.hide();
 
-    // Theme synchronization (unchanged)
+    // Theme synchronization
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
       document.body.classList.toggle('dark', isDark);
@@ -350,7 +347,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Brands data – your full list (unchanged)
+    // Brands data
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -470,7 +467,7 @@
       document.body.appendChild(section);
     });
 
-    // Cart logic (unchanged)
+    // Cart logic
     let cart = [];
 
     function addToCart(brand, size, price) {
@@ -537,18 +534,22 @@
       tg.MainButton.show();
     }
 
-    // Navigation (unchanged)
-    let previousView = 'main';
+    // Navigation state
+    let previousView = 'main'; // 'main' or 'brand'
     let lastBrandId = null;
 
     function showBrand(id) {
       previousView = 'brand';
       lastBrandId = id;
+
       document.querySelector('.top-controls').style.display = 'none';
       document.querySelector('.categories').style.display = 'none';
       document.getElementById('no-results').style.display = 'none';
+
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-      document.getElementById(`${id}-section`)?.classList.add('active');
+      const section = document.getElementById(`${id}-section`);
+      if (section) section.classList.add('active');
+
       tg.BackButton.show();
       tg.HapticFeedback.impactOccurred('light');
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -557,10 +558,13 @@
     function returnToMainView() {
       previousView = 'main';
       lastBrandId = null;
+
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
+
       document.querySelector('.top-controls').style.display = 'flex';
       document.querySelector('.categories').style.display = 'grid';
       document.getElementById('no-results').style.display = 'none';
+
       tg.BackButton.hide();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       tg.HapticFeedback.impactOccurred('light');
@@ -569,31 +573,41 @@
     function returnToLastBrand() {
       if (lastBrandId) {
         document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-        document.getElementById(`${lastBrandId}-section`)?.classList.add('active');
+        const section = document.getElementById(`${lastBrandId}-section`);
+        if (section) section.classList.add('active');
+
         document.querySelector('.top-controls').style.display = 'none';
         document.querySelector('.categories').style.display = 'none';
         tg.BackButton.show();
-      } else returnToMainView();
+      } else {
+        returnToMainView();
+      }
     }
 
     tg.BackButton.onClick(() => {
-      if (document.getElementById('cart-summary').classList.contains('visible')) {
+      const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
+
+      if (cartIsVisible) {
         document.getElementById('cart-summary').classList.remove('visible');
         tg.MainButton.hide();
+
         returnToLastBrand();
       } else if (previousView === 'brand') {
         returnToMainView();
       }
+
       tg.HapticFeedback.impactOccurred('light');
     });
 
-    // Event delegation (unchanged)
+    // Event delegation
     document.addEventListener('click', e => {
       const t = e.target;
+
       if (t.classList.contains('order-btn')) {
         const { brand, size, price } = t.dataset;
         addToCart(brand, size, Number(price));
       }
+
       if (t.classList.contains('qty-minus') || t.classList.contains('qty-plus')) {
         const index = Number(t.dataset.index);
         const delta = Number(t.dataset.delta);
@@ -601,103 +615,121 @@
       }
     });
 
-    // Sort & search (unchanged)
+    // Sort filter
     document.getElementById('sortFilter').addEventListener('change', e => {
       const value = e.target.value;
       const tiles = Array.from(document.querySelectorAll('.category-tile'));
       const container = document.getElementById('categories');
+
       if (value === 'price-low-high') {
-        tiles.sort((a, b) => parseInt(a.dataset.minPrice || 9999) - parseInt(b.dataset.minPrice || 9999));
+        tiles.sort((a, b) => {
+          const pA = parseInt(a.getAttribute('data-min-price') || '9999', 10);
+          const pB = parseInt(b.getAttribute('data-min-price') || '9999', 10);
+          return pA - pB;
+        });
         tiles.forEach(tile => container.appendChild(tile));
       } else {
-        brands.forEach(b => {
-          const tile = document.querySelector(`[data-brand-id="${b.id}"]`);
+        brands.forEach(brand => {
+          const tile = document.querySelector(`[data-brand-id="${brand.id}"]`);
           if (tile) container.appendChild(tile);
         });
       }
     });
 
+    // Search (debounced)
     let searchTimeout;
     document.getElementById('searchInput').addEventListener('input', e => {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
         const q = e.target.value.toLowerCase().trim();
+        const tiles = document.querySelectorAll('.category-tile');
         let visible = 0;
-        document.querySelectorAll('.category-tile').forEach(tile => {
+
+        tiles.forEach(tile => {
           const name = tile.querySelector('span').textContent.toLowerCase();
           const show = name.includes(q) || ['140','150','160'].some(p => q.includes(p));
           tile.style.display = show ? '' : 'none';
           if (show) visible++;
         });
-        document.getElementById('no-results').style.display = (q && visible === 0) ? 'block' : 'none';
+
+        document.getElementById('no-results').style.display =
+          (q && visible === 0) ? 'block' : 'none';
       }, 280);
     });
 
+    // Init
     renderCart();
 
     // ────────────────────────────────────────────────
-    // Checkout – send order via fetch to your backend
+    // Checkout – using Telegram native popups (showPopup)
     // ────────────────────────────────────────────────
     tg.MainButton.onClick(async () => {
-      console.log('[FETCH-CHECKOUT] Button clicked – cart length:', cart.length);
+      console.log('[CHECKOUT] Button clicked – cart has', cart.length, 'items');
 
       if (cart.length === 0) {
-        tg.showAlert("Your cart is empty.");
-        console.log('[FETCH-CHECKOUT] Cart empty → abort');
+        tg.showAlert("Your cart is empty. Add some water first! 💧");
+        console.log('[CHECKOUT] Cart is empty → stopped');
         return;
       }
 
-      // 1. Phone input popup
-      const phoneRes = await tg.showPopup({
-        title: "Delivery Phone",
-        message: "Enter your Addis Ababa number\nExample: 0912345678",
+      // 1. Native Telegram popup for phone number
+      console.log('[CHECKOUT] Opening phone input popup...');
+      const phonePopup = await tg.showPopup({
+        title: "Delivery Phone Number",
+        message: "Please enter your Addis Ababa phone number\nExample: 0912345678",
         buttons: [
-          { id: 'ok', type: 'ok', text: 'Confirm' },
-          { type: 'cancel' }
-        ]
-      });
-
-      console.log('[FETCH-CHECKOUT] Phone popup result:', phoneRes);
-
-      if (phoneRes.button_id !== 'ok' || !phoneRes.input_value?.trim()) {
-        tg.showAlert("Order cancelled.");
-        console.log('[FETCH-CHECKOUT] Phone cancelled → abort');
-        return;
-      }
-
-      const phone = phoneRes.input_value.trim();
-
-      if (!/^(09\d{8}|9\d{8}|0\d{9})$/.test(phone)) {
-        tg.showAlert("Invalid phone number (must be 9–10 digits, start with 09 or 9).");
-        console.log('[FETCH-CHECKOUT] Invalid phone → abort');
-        return;
-      }
-
-      // 2. Build summary & total
-      let total = 0;
-      let summaryText = `Phone: ${phone}\nDelivery: Addis Ababa\n\nItems:\n`;
-      cart.forEach(item => {
-        const lineTotal = item.price * item.qty;
-        total += lineTotal;
-        summaryText += `• ${item.brand} ${item.size} × ${item.qty} = ${lineTotal} Birr\n`;
-      });
-      summaryText += `\nTotal: ${total} Birr`;
-
-      // 3. Confirm popup
-      const confirmRes = await tg.showPopup({
-        title: "Confirm Order?",
-        message: summaryText + "\n\nPlace order now?",
-        buttons: [
-          { id: 'yes', type: 'ok', text: 'Yes, Order' },
+          { id: 'confirm', type: 'ok', text: 'Confirm' },
           { type: 'cancel', text: 'Cancel' }
         ]
       });
 
-      console.log('[FETCH-CHECKOUT] Confirm result:', confirmRes);
+      console.log('[CHECKOUT] Phone popup closed. Result:', phonePopup);
 
-      if (confirmRes.button_id !== 'yes') {
+      if (phonePopup.button_id !== 'confirm' || !phonePopup.input_value?.trim()) {
         tg.showAlert("Order cancelled.");
-        console.log('[FETCH-CHECKOUT] Confirmation cancelled → abort');
+        console.log('[CHECKOUT] Phone input cancelled or empty');
+        return;
+      }
+
+      const phone = phonePopup.input_value.trim();
+
+      if (!phone.match(/^(09\d{8}|9\d{8}|0\d{9})$/)) {
+        tg.showAlert("Please enter a valid Ethiopian phone number (9–10 digits, starting with 09 or 9).");
+        console.log('[CHECKOUT] Invalid phone format');
+        return;
+      }
+
+      // 2. Build order summary
+      let total = 0;
+      let itemsText = '';
+      cart.forEach(item => {
+        const line = item.price * item.qty;
+        total += line;
+        itemsText += `• ${item.brand} ${item.size} × ${item.qty} = ${line} Birr\n`;
+      });
+
+      const summaryText = 
+        `Phone: ${phone}\n` +
+        `Delivery: Addis Ababa\n\n` +
+        `Items:\n${itemsText}\n` +
+        `Total: ${total} Birr`;
+
+      // 3. Native confirmation popup
+      console.log('[CHECKOUT] Opening confirmation popup...');
+      const confirmPopup = await tg.showPopup({
+        title: "Confirm Your Order",
+        message: summaryText + "\n\nPlace this order now?",
+        buttons: [
+          { id: 'yes', type: 'ok', text: 'Yes, Place Order' },
+          { type: 'cancel', text: 'Cancel' }
+        ]
+      });
+
+      console.log('[CHECKOUT] Confirmation popup closed. Result:', confirmPopup);
+
+      if (confirmPopup.button_id !== 'yes') {
+        tg.showAlert("Order cancelled.");
+        console.log('[CHECKOUT] User cancelled confirmation');
         return;
       }
 
@@ -715,38 +747,38 @@
           price: item.price
         })),
         timestamp: new Date().toISOString(),
-        init_data: tg.initData  // for backend security validation (optional but good)
+        init_data: tg.initData  // optional – for backend validation
       };
 
-      console.log('[FETCH-CHECKOUT] Payload ready:', JSON.stringify(payload, null, 2));
+      console.log('[CHECKOUT] Payload ready to send:', JSON.stringify(payload, null, 2));
 
-      // 5. Send to YOUR backend (change this URL!)
-      const backendUrl = 'https://danorder-js.vercel.app/';   // ← CHANGE THIS
+      // 5. Send to your backend – CHANGE THIS URL!
+      const backendUrl = 'https://danorder-js.vercel.app/api/order';  // ← REPLACE WITH YOUR REAL VERCEL URL
 
       try {
-        console.log('[FETCH-CHECKOUT] Sending POST request to:', backendUrl);
+        console.log('[CHECKOUT] Sending POST request to:', backendUrl);
         const response = await fetch(backendUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
-        console.log('[FETCH-CHECKOUT] Response status:', response.status);
+        console.log('[CHECKOUT] Backend response status:', response.status);
 
         if (response.ok) {
-          tg.showAlert("✅ Order sent successfully!\nWe'll contact you soon.");
-          console.log('[FETCH-CHECKOUT] Success – closing Mini App');
-          tg.close();  // Close Mini App manually
+          tg.showAlert("✅ Order sent successfully!\nWe will contact you soon on " + phone);
+          console.log('[CHECKOUT] Success – closing Mini App');
+          tg.close(); // Close the Mini App
         } else {
-          tg.showAlert("Error: Server responded with " + response.status);
-          console.log('[FETCH-CHECKOUT] Server error:', await response.text());
+          tg.showAlert("Server error – order not sent (status " + response.status + ")");
+          console.log('[CHECKOUT] Server error response:', await response.text());
         }
       } catch (err) {
-        console.error('[FETCH-CHECKOUT] Network/fetch error:', err);
-        tg.showAlert("Cannot connect to server. Check internet or try later.");
+        console.error('[CHECKOUT] Network or fetch error:', err);
+        tg.showAlert("Cannot connect to server. Please check your internet or try again later.");
       }
 
-      // Reset UI anyway
+      // Reset UI
       cart = [];
       document.getElementById('cart-summary').classList.remove('visible');
       tg.MainButton.hide();
