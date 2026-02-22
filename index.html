@@ -347,7 +347,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Brands data (your full list)
+    // Brands data
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -535,7 +535,7 @@
     }
 
     // Navigation state
-    let previousView = 'main';
+    let previousView = 'main'; // 'main' or 'brand'
     let lastBrandId = null;
 
     function showBrand(id) {
@@ -661,61 +661,51 @@
     renderCart();
 
     // ────────────────────────────────────────────────
-    // Checkout – native Telegram popups + fetch to backend
+    // Checkout – fixed phone + confirmation popups + fetch
     // ────────────────────────────────────────────────
     tg.MainButton.onClick(async () => {
-      console.log('[CHECKOUT] Button clicked – cart length:', cart.length);
+      console.log('[CHECKOUT] Started – cart length:', cart.length);
 
       if (cart.length === 0) {
         tg.showAlert("Your cart is empty. Add items first! 💧");
         return;
       }
 
+      // 1. Phone number popup (only once)
       let phone = '';
+      console.log('[CHECKOUT] Opening phone input popup...');
+      const phoneRes = await tg.showPopup({
+        title: "Delivery Phone Number",
+        message: "Enter your Addis Ababa number\nExample: 0912345678",
+        buttons: [
+          { id: 'confirm', type: 'ok', text: 'Confirm' },
+          { type: 'cancel' }
+        ]
+      });
 
-      // Try native Telegram popup for phone
-      try {
-        console.log('[CHECKOUT] Showing phone input popup...');
-        const phoneRes = await tg.showPopup({
-          title: "Delivery Phone Number",
-          message: "Enter your Addis Ababa number\nExample: 0912345678",
-          buttons: [
-            { id: 'confirm', type: 'ok', text: 'Confirm' },
-            { type: 'cancel' }
-          ]
-        });
+      console.log('[CHECKOUT] Phone popup result:', phoneRes);
 
-        console.log('[CHECKOUT] Phone popup result:', phoneRes);
-
-        if (phoneRes.button_id !== 'confirm' || !phoneRes.input_value?.trim()) {
-          tg.showAlert("Order cancelled.");
-          return;
-        }
-
-        phone = phoneRes.input_value.trim();
-      } catch (err) {
-        console.error('[CHECKOUT] Native popup failed:', err);
-        // Fallback to prompt if native fails (desktop or old client)
-        phone = prompt("Fallback: Enter your phone number (0912345678)", "");
-        if (!phone || !phone.trim()) {
-          tg.showAlert("Order cancelled.");
-          return;
-        }
-      }
-
-      // Validate phone
-      if (!/^(09\d{8}|9\d{8}|0\d{9})$/.test(phone)) {
-        tg.showAlert("Invalid phone number (must be 9–10 digits, start with 09 or 9).");
+      if (phoneRes.button_id !== 'confirm' || !phoneRes.input_value?.trim()) {
+        tg.showAlert("Order cancelled.");
         return;
       }
 
-      // Build order summary
+      phone = phoneRes.input_value.trim();
+
+      if (!/^(09\d{8}|9\d{8}|0\d{9})$/.test(phone)) {
+        tg.showAlert("Invalid phone number (9–10 digits, start with 09 or 9).");
+        return;
+      }
+
+      console.log('[CHECKOUT] Phone accepted:', phone);
+
+      // 2. Build order summary
       let total = 0;
       let itemsList = '';
       cart.forEach(item => {
-        const lineTotal = item.price * item.qty;
-        total += lineTotal;
-        itemsList += `• ${item.brand} ${item.size} × ${item.qty} = ${lineTotal} Birr\n`;
+        const line = item.price * item.qty;
+        total += line;
+        itemsList += `• ${item.brand} ${item.size} × ${item.qty} = ${line} Birr\n`;
       });
 
       const summary = 
@@ -724,22 +714,27 @@
         `Items:\n${itemsList}\n` +
         `Total: ${total} Birr`;
 
-      // Confirmation popup
+      // 3. Confirmation popup
+      console.log('[CHECKOUT] Opening confirmation popup...');
       const confirmRes = await tg.showPopup({
-        title: "Confirm Order",
-        message: summary + "\n\nPlace this order now?",
+        title: "Confirm Your Order",
+        message: summary + "\n\nSend this order?",
         buttons: [
-          { id: 'yes', type: 'ok', text: 'Yes, Send Order' },
+          { id: 'yes', type: 'ok', text: 'Yes, Send' },
           { type: 'cancel', text: 'Cancel' }
         ]
       });
+
+      console.log('[CHECKOUT] Confirmation result:', confirmRes);
 
       if (confirmRes.button_id !== 'yes') {
         tg.showAlert("Order cancelled.");
         return;
       }
 
-      // Prepare data
+      console.log('[CHECKOUT] Order confirmed by user');
+
+      // 4. Prepare payload
       const user = tg.initDataUnsafe.user || { id: 'unknown', first_name: 'Guest', last_name: '' };
       const payload = {
         user_id: user.id.toString(),
@@ -755,12 +750,13 @@
         timestamp: new Date().toISOString()
       };
 
-      console.log('[CHECKOUT] Sending data:', JSON.stringify(payload, null, 2));
+      console.log('[CHECKOUT] Payload ready:', JSON.stringify(payload, null, 2));
 
-      // Send to backend – CHANGE THIS URL TO YOUR REAL ONE!
-      const backendUrl = 'https://danorder-js.vercel.app/'; // ← REPLACE THIS
+      // 5. Send to backend
+      const backendUrl = 'https://danorder-js.vercel.app/'; // ← CHANGE TO YOUR REAL URL
 
       try {
+        console.log('[CHECKOUT] Sending to:', backendUrl);
         const response = await fetch(backendUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -768,14 +764,14 @@
         });
 
         if (response.ok) {
-          tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
-          tg.close(); // Close Mini App
+          tg.showAlert("✅ Order sent successfully!\nWe will contact you soon.");
+          tg.close();
         } else {
-          tg.showAlert("Error sending order. Try again or call us.");
+          tg.showAlert("Error sending order (server responded " + response.status + ")");
         }
       } catch (err) {
         console.error('[CHECKOUT] Fetch error:', err);
-        tg.showAlert("Cannot connect. Check internet and try again.");
+        tg.showAlert("Cannot connect to server. Check internet.");
       }
 
       // Reset UI
