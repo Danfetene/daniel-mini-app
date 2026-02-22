@@ -347,7 +347,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Brands data
+    // Brands data (your full list)
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -535,7 +535,7 @@
     }
 
     // Navigation state
-    let previousView = 'main'; // 'main' or 'brand'
+    let previousView = 'main';
     let lastBrandId = null;
 
     function showBrand(id) {
@@ -661,79 +661,85 @@
     renderCart();
 
     // ────────────────────────────────────────────────
-    // Checkout – using Telegram native popups (showPopup)
+    // Checkout – native Telegram popups + fetch to backend
     // ────────────────────────────────────────────────
     tg.MainButton.onClick(async () => {
-      console.log('[CHECKOUT] Button clicked – cart has', cart.length, 'items');
+      console.log('[CHECKOUT] Button clicked – cart length:', cart.length);
 
       if (cart.length === 0) {
-        tg.showAlert("Your cart is empty. Add some water first! 💧");
-        console.log('[CHECKOUT] Cart is empty → stopped');
+        tg.showAlert("Your cart is empty. Add items first! 💧");
         return;
       }
 
-      // 1. Native Telegram popup for phone number
-      console.log('[CHECKOUT] Opening phone input popup...');
-      const phonePopup = await tg.showPopup({
-        title: "Delivery Phone Number",
-        message: "Please enter your Addis Ababa phone number\nExample: 0912345678",
-        buttons: [
-          { id: 'confirm', type: 'ok', text: 'Confirm' },
-          { type: 'cancel', text: 'Cancel' }
-        ]
-      });
+      let phone = '';
 
-      console.log('[CHECKOUT] Phone popup closed. Result:', phonePopup);
+      // Try native Telegram popup for phone
+      try {
+        console.log('[CHECKOUT] Showing phone input popup...');
+        const phoneRes = await tg.showPopup({
+          title: "Delivery Phone Number",
+          message: "Enter your Addis Ababa number\nExample: 0912345678",
+          buttons: [
+            { id: 'confirm', type: 'ok', text: 'Confirm' },
+            { type: 'cancel' }
+          ]
+        });
 
-      if (phonePopup.button_id !== 'confirm' || !phonePopup.input_value?.trim()) {
-        tg.showAlert("Order cancelled.");
-        console.log('[CHECKOUT] Phone input cancelled or empty');
+        console.log('[CHECKOUT] Phone popup result:', phoneRes);
+
+        if (phoneRes.button_id !== 'confirm' || !phoneRes.input_value?.trim()) {
+          tg.showAlert("Order cancelled.");
+          return;
+        }
+
+        phone = phoneRes.input_value.trim();
+      } catch (err) {
+        console.error('[CHECKOUT] Native popup failed:', err);
+        // Fallback to prompt if native fails (desktop or old client)
+        phone = prompt("Fallback: Enter your phone number (0912345678)", "");
+        if (!phone || !phone.trim()) {
+          tg.showAlert("Order cancelled.");
+          return;
+        }
+      }
+
+      // Validate phone
+      if (!/^(09\d{8}|9\d{8}|0\d{9})$/.test(phone)) {
+        tg.showAlert("Invalid phone number (must be 9–10 digits, start with 09 or 9).");
         return;
       }
 
-      const phone = phonePopup.input_value.trim();
-
-      if (!phone.match(/^(09\d{8}|9\d{8}|0\d{9})$/)) {
-        tg.showAlert("Please enter a valid Ethiopian phone number (9–10 digits, starting with 09 or 9).");
-        console.log('[CHECKOUT] Invalid phone format');
-        return;
-      }
-
-      // 2. Build order summary
+      // Build order summary
       let total = 0;
-      let itemsText = '';
+      let itemsList = '';
       cart.forEach(item => {
-        const line = item.price * item.qty;
-        total += line;
-        itemsText += `• ${item.brand} ${item.size} × ${item.qty} = ${line} Birr\n`;
+        const lineTotal = item.price * item.qty;
+        total += lineTotal;
+        itemsList += `• ${item.brand} ${item.size} × ${item.qty} = ${lineTotal} Birr\n`;
       });
 
-      const summaryText = 
+      const summary = 
         `Phone: ${phone}\n` +
         `Delivery: Addis Ababa\n\n` +
-        `Items:\n${itemsText}\n` +
+        `Items:\n${itemsList}\n` +
         `Total: ${total} Birr`;
 
-      // 3. Native confirmation popup
-      console.log('[CHECKOUT] Opening confirmation popup...');
-      const confirmPopup = await tg.showPopup({
-        title: "Confirm Your Order",
-        message: summaryText + "\n\nPlace this order now?",
+      // Confirmation popup
+      const confirmRes = await tg.showPopup({
+        title: "Confirm Order",
+        message: summary + "\n\nPlace this order now?",
         buttons: [
-          { id: 'yes', type: 'ok', text: 'Yes, Place Order' },
+          { id: 'yes', type: 'ok', text: 'Yes, Send Order' },
           { type: 'cancel', text: 'Cancel' }
         ]
       });
 
-      console.log('[CHECKOUT] Confirmation popup closed. Result:', confirmPopup);
-
-      if (confirmPopup.button_id !== 'yes') {
+      if (confirmRes.button_id !== 'yes') {
         tg.showAlert("Order cancelled.");
-        console.log('[CHECKOUT] User cancelled confirmation');
         return;
       }
 
-      // 4. Prepare payload
+      // Prepare data
       const user = tg.initDataUnsafe.user || { id: 'unknown', first_name: 'Guest', last_name: '' };
       const payload = {
         user_id: user.id.toString(),
@@ -746,36 +752,30 @@
           qty: item.qty,
           price: item.price
         })),
-        timestamp: new Date().toISOString(),
-        init_data: tg.initData  // optional – for backend validation
+        timestamp: new Date().toISOString()
       };
 
-      console.log('[CHECKOUT] Payload ready to send:', JSON.stringify(payload, null, 2));
+      console.log('[CHECKOUT] Sending data:', JSON.stringify(payload, null, 2));
 
-      // 5. Send to your backend – CHANGE THIS URL!
-      const backendUrl = 'https://danorder-js.vercel.app/api/order';  // ← REPLACE WITH YOUR REAL VERCEL URL
+      // Send to backend – CHANGE THIS URL TO YOUR REAL ONE!
+      const backendUrl = 'https://danorder-js.vercel.app/api/order'; // ← REPLACE THIS
 
       try {
-        console.log('[CHECKOUT] Sending POST request to:', backendUrl);
         const response = await fetch(backendUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
-        console.log('[CHECKOUT] Backend response status:', response.status);
-
         if (response.ok) {
-          tg.showAlert("✅ Order sent successfully!\nWe will contact you soon on " + phone);
-          console.log('[CHECKOUT] Success – closing Mini App');
-          tg.close(); // Close the Mini App
+          tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
+          tg.close(); // Close Mini App
         } else {
-          tg.showAlert("Server error – order not sent (status " + response.status + ")");
-          console.log('[CHECKOUT] Server error response:', await response.text());
+          tg.showAlert("Error sending order. Try again or call us.");
         }
       } catch (err) {
-        console.error('[CHECKOUT] Network or fetch error:', err);
-        tg.showAlert("Cannot connect to server. Please check your internet or try again later.");
+        console.error('[CHECKOUT] Fetch error:', err);
+        tg.showAlert("Cannot connect. Check internet and try again.");
       }
 
       // Reset UI
