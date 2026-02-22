@@ -6,6 +6,9 @@
   <title>ET Water Market • Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    /* ────────────────────────────────────────────────
+       Your original styles – unchanged
+    ──────────────────────────────────────────────── */
     :root {
       --tg-bg-color: #f0f0f0;
       --tg-text-color: #000;
@@ -347,7 +350,7 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // Brands data
+    // Brands data (your full list – unchanged)
     const brands = [
       { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp', brandDisplay: 'Aquaddis/ Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -535,7 +538,7 @@
     }
 
     // Navigation state
-    let previousView = 'main'; // 'main' or 'brand'
+    let previousView = 'main';
     let lastBrandId = null;
 
     function showBrand(id) {
@@ -661,34 +664,76 @@
     renderCart();
 
     // ────────────────────────────────────────────────
-    // Checkout: send order to your bot when confirmed
+    // Checkout – improved version with native popups + debug logs
     // ────────────────────────────────────────────────
-    tg.MainButton.onClick(() => {
-      console.log('DEBUG: Checkout button clicked!');
-      if (!cart.length) return;
-
-      const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 0912345678", "");
-      if (!phone || phone.trim().length < 9) {
-        tg.showAlert("Please enter a valid phone number.");
+    tg.MainButton.onClick(async () => {
+      console.log('[MINI-APP] Checkout button clicked – cart length:', cart.length);
+      if (!cart.length) {
+        console.log('[MINI-APP] Cart is empty – aborting');
         return;
       }
 
-      // Build confirmation message for the user
-      let msg = `New Order – ET Water\nPhone: ${phone.trim()}\nDelivery: Addis Ababa\n\nItems:\n`;
-      let sum = 0;
-      cart.forEach(i => {
-        const lt = i.price * i.qty;
-        msg += `• ${i.brand} ${i.size} × ${i.qty} = ${lt} Birr\n`;
-        sum += lt;
+      // 1. Ask phone with Telegram popup
+      const phoneResult = await tg.showPopup({
+        title: "Delivery Phone Number",
+        message: "Enter your Addis Ababa number (e.g. 0912345678)",
+        buttons: [
+          {id: "ok", type: "ok", text: "Confirm"},
+          {type: "cancel"}
+        ]
       });
-      msg += `\nTotal: ${sum} Birr`;
 
-      //if (!confirm(msg + "\n\nConfirm order?")) return;
+      console.log('[MINI-APP] Phone popup result:', phoneResult);
 
-      // Prepare order data
+      if (phoneResult.button_id !== "ok" || !phoneResult.input_value?.trim()) {
+        tg.showAlert("Order cancelled.");
+        console.log('[MINI-APP] Phone cancelled – aborting');
+        return;
+      }
+
+      const phone = phoneResult.input_value.trim();
+
+      if (!/^(09\d{8}|9\d{8}|\d{9,10})$/.test(phone)) {
+        tg.showAlert("Please enter a valid Ethiopian phone (9–10 digits).");
+        console.log('[MINI-APP] Invalid phone format – aborting');
+        return;
+      }
+
+      // 2. Build summary
+      let summaryText = `Order Summary – ET Water\n\nPhone: ${phone}\nDelivery: Addis Ababa\n\nItems:\n`;
+      let total = 0;
+      cart.forEach(item => {
+        const lineTotal = item.price * item.qty;
+        summaryText += `• ${item.brand} ${item.size} × ${item.qty} = ${lineTotal} Birr\n`;
+        total += lineTotal;
+      });
+      summaryText += `\nTotal: ${total} Birr`;
+
+      // 3. Confirm order with popup
+      const confirmResult = await tg.showPopup({
+        title: "Confirm Order",
+        message: summaryText + "\n\nPlace this order now?",
+        buttons: [
+          {id: "yes", type: "ok", text: "Yes, Order"},
+          {type: "cancel", text: "Cancel"}
+        ]
+      });
+
+      console.log('[MINI-APP] Confirm result:', confirmResult);
+
+      if (confirmResult.button_id !== "yes") {
+        tg.showAlert("Order cancelled.");
+        console.log('[MINI-APP] Order confirmation cancelled – aborting');
+        return;
+      }
+
+      // 4. Prepare data + add user info
+      const user = tg.initDataUnsafe.user || { id: "unknown", first_name: "Guest", last_name: "" };
       const orderData = {
-        phone: phone.trim(),
-        total: sum,
+        user_id: user.id.toString(),
+        user_name: `${user.first_name} ${user.last_name}`.trim() || "Guest",
+        phone: phone,
+        total: total,
         items: cart.map(item => ({
           brand: item.brand,
           size: item.size,
@@ -698,24 +743,23 @@
         timestamp: new Date().toISOString()
       };
 
-      // Send to your bot (this closes the Mini App automatically)
+      console.log('[MINI-APP] Order data prepared:', JSON.stringify(orderData, null, 2));
+
+      // 5. Send to bot → Mini App closes automatically
+      console.log('[MINI-APP] Calling tg.sendData() now...');
       tg.sendData(JSON.stringify(orderData));
 
-      // Success message
-      tg.showAlert("✅ Order placed! We will contact you soon.\nThank you! 💧");
+      // 6. Show success before close
+      tg.showAlert("✅ Order sent! We'll contact you soon.\nThank you! 💧");
 
-      // Clear cart & reset UI
+      console.log('[MINI-APP] sendData called – waiting for app to close');
+
+      // Reset UI
       cart = [];
       document.getElementById('cart-summary').classList.remove('visible');
       tg.MainButton.hide();
       tg.BackButton.hide();
-
-      // Return to main brands page
-      document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-      document.querySelector('.top-controls').style.display = 'flex';
-      document.querySelector('.categories').style.display = 'grid';
-      document.getElementById('no-results').style.display = 'none';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      returnToMainView();
     });
 
   </script>
