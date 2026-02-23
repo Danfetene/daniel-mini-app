@@ -1,0 +1,15 @@
+{
+  "name": "telegram-miniapp-inline-vercel",
+  "version": "1.0.0",
+  "description": "Telegram Mini App (inline) + Vercel backend to send messages to personal Telegram",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'No local dev server needed – just open index.html or use Vercel preview'",
+    "start": "echo 'Deploy to Vercel – this is a static + API project'"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
