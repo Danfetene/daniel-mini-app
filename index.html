@@ -1,137 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>1 vs 2</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Simple Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    :root {
-      --bg: #000;
-      --text: #fff;
-      --button: #2481cc;
-      --button-text: #ffffff;
-      --success: #2ecc71;
-    }
-
-    body {
-      margin: 0;
-      height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 60px;
-      touch-action: manipulation;
-      user-select: none;
-    }
-
-    h1 {
-      font-size: 6rem;
-      font-weight: 900;
-      margin: 0;
-      letter-spacing: -6px;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 50px;
-    }
-
-    button {
-      width: 160px;
-      height: 160px;
-      font-size: 6rem;
-      font-weight: bold;
-      background: var(--button);
-      color: var(--button-text);
-      border: none;
-      border-radius: 32px;
-      cursor: pointer;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-      transition: transform 0.12s;
-    }
-
-    button:active {
-      transform: scale(0.92);
-    }
-
-    #status {
-      font-size: 1.3rem;
-      text-align: center;
-      max-width: 80%;
-      min-height: 2.5em;
-    }
-
-    .success { color: var(--success); }
-  </style>
 </head>
 <body>
+  <h1>Hello from Daniel's Mini App! 🚀</h1>
+  <p>This is launched via keyboard button.</p>
 
-  <h1>1 vs 2</h1>
-
-  <div class="buttons">
-    <button onclick="pick(1)">1</button>
-    <button onclick="pick(2)">2</button>
-  </div>
-
-  <div id="status">Tap a number</div>
+  <button onclick="sendHello()">Send Data to Bot & Close</button>
 
   <script>
-    const tg = window.Telegram?.WebApp;
-    const statusEl = document.getElementById('status');
+    Telegram.WebApp.ready();          // Required
+    Telegram.WebApp.expand();         // Optional: full screen
 
-    if (tg) {
-      tg.ready();
-      tg.expand();
-      tg.enableClosingConfirmation();
-
-      // Apply Telegram theme
-      const theme = tg.themeParams || {};
-      document.documentElement.style.setProperty('--bg',          theme.bg_color          || '#000');
-      document.documentElement.style.setProperty('--text',        theme.text_color        || '#fff');
-      document.documentElement.style.setProperty('--button',      theme.button_color      || '#2481cc');
-      document.documentElement.style.setProperty('--button-text', theme.button_text_color || '#fff');
-
-      // Greeting
-      const user = tg.initDataUnsafe?.user || {};
-      if (user.first_name) {
-        statusEl.textContent = `Hey ${user.first_name}, pick one!`;
-      }
-    }
-
-    function pick(number) {
-      if (!tg) {
-        statusEl.textContent = 'Not in Telegram';
-        return;
-      }
-
-      const message = `Daniel picked: **${number}** 🎯`;
-
-      statusEl.textContent = `Sending ${number}...`;
-      statusEl.className = '';
-
-      // This is the key line for Option A
-      tg.sendData(message);
-
-      // Nice feedback before closing
-      tg.HapticFeedback?.impactOccurred('success');
-
-      // Optional: show popup before close (Mini App will close anyway)
-      tg.showPopup({
-        title: 'Sent!',
-        message: `You chose ${number} — bot will reply soon`,
-        buttons: [{type: 'ok'}]
-      });
-
-      // Mini App closes automatically after sendData
+    function sendHello() {
+      Telegram.WebApp.sendData("Hello from index.html! User said hi.");
+      // Telegram.WebApp.close();      // Optional: close immediately
     }
   </script>
-
 </body>
 </html>
