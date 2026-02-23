@@ -1,25 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Simple Mini App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Daniel's Mini App</title>
+
+  <!-- Telegram Web App SDK – always include this first -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #ffffff);
+      --text: var(--tg-theme-text-color, #000000);
+      --button: var(--tg-theme-button-color, #0088cc);
+      --button-text: var(--tg-theme-button-text-color, #ffffff);
+      --hint: var(--tg-theme-hint-color, #999999);
+      
+      /* Safe areas from Telegram (Bot API 8.0+) */
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 
+        calc(var(--safe-top) + 16px) 
+        calc(var(--safe-right) + 16px) 
+        calc(var(--safe-bottom) + 80px)  /* extra for bottom button */
+        calc(var(--safe-left) + 16px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: var(--hint);
+      max-width: 90%;
+    }
+
+    .info {
+      font-size: 0.9rem;
+      margin: 1rem 0;
+      color: var(--hint);
+    }
+
+    button.custom-btn {
+      background: var(--button);
+      color: var(--button-text);
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 1rem;
+      transition: transform 0.1s;
+    }
+
+    button.custom-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Make it look good in both light/dark */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --text: #e0e0e0;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello from Daniel's Mini App! 🚀</h1>
-  <p>This is launched via keyboard button.</p>
+  <h1>Hello, Daniel! 🚀</h1>
+  
+  <p>Welcome to your Mini App.<br>
+     Tap the button below (or use the native bottom button) to send a message to your bot and close me.</p>
 
-  <button onclick="sendHello()">Send Data to Bot & Close</button>
+  <div class="info">
+    Theme: <span id="theme-mode">detecting...</span><br>
+    Platform: <span id="platform">...</span>
+  </div>
+
+  <!-- Custom button as fallback / extra option -->
+  <button class="custom-btn" onclick="sendToBot()">Send Message & Close</button>
 
   <script>
-    Telegram.WebApp.ready();          // Required
-    Telegram.WebApp.expand();         // Optional: full screen
+    const tg = window.Telegram.WebApp;
 
-    function sendHello() {
-      Telegram.WebApp.sendData("Hello from index.html! User said hi.");
-      // Telegram.WebApp.close();      // Optional: close immediately
+    // 1. Tell Telegram we're ready (hides loading screen)
+    tg.ready();
+
+    // 2. Expand to full available height
+    tg.expand();
+
+    // 3. Show native MainButton (bottom button in Telegram style)
+    tg.MainButton.setText("Accept & Send");
+    tg.MainButton.setParams({
+      color: tg.themeParams.button_color || "#0088cc",
+      text_color: tg.themeParams.button_text_color || "#ffffff"
+    });
+    tg.MainButton.show();
+
+    // When user taps the native MainButton
+    tg.MainButton.onClick(() => {
+      sendToBot();
+    });
+
+    // Optional: Show Back button in header (if you want user to be able to go back)
+    tg.BackButton.show();
+    tg.BackButton.onClick(() => {
+      if (confirm("Exit Mini App?")) {
+        tg.close();
+      }
+    });
+
+    // 4. Apply theme colors dynamically + listen for changes
+    function updateTheme() {
+      document.documentElement.style.setProperty('--bg', tg.themeParams.bg_color);
+      document.documentElement.style.setProperty('--text', tg.themeParams.text_color);
+      document.documentElement.style.setProperty('--button', tg.themeParams.button_color);
+      document.documentElement.style.setProperty('--button-text', tg.themeParams.button_text_color);
+      document.documentElement.style.setProperty('--hint', tg.themeParams.hint_color);
+
+      document.getElementById("theme-mode").textContent = tg.colorScheme;
     }
+    updateTheme();
+    tg.onEvent("themeChanged", updateTheme);
+
+    // 5. Show platform info (just for demo)
+    document.getElementById("platform").textContent = tg.platform;
+
+    // 6. Function to send data to bot & close
+    function sendToBot() {
+      const payload = {
+        action: "accept",
+        from: "Daniel",
+        location: "Oromiya, ET",
+        message: "Hi bot! Everything is good here 😊",
+        timestamp: new Date().toISOString()
+      };
+
+      // Send JSON string (max ~4096 bytes)
+      tg.sendData(JSON.stringify(payload));
+
+      // Note: sendData() automatically closes the Mini App
+      // No need for tg.close() after it
+    }
+
+    // Optional: Listen if app becomes active/inactive (new in Bot API 8.0+)
+    tg.onEvent("activated", () => console.log("Mini App activated"));
+    tg.onEvent("deactivated", () => console.log("Mini App deactivated"));
   </script>
 </body>
 </html>
