@@ -59,7 +59,7 @@
     button.number-btn {
       width: 140px;
       height: 140px;
-      font-size: 4.5rem;
+      font-size: 5rem;
       font-weight: bold;
       background: var(--button);
       color: var(--button-text);
@@ -99,7 +99,7 @@
   </div>
 
   <div class="info">
-    Tap 1 or 2 → it will be sent to your bot and the app will close
+    Tap 1 or 2 → it will be sent to your Telegram and the app will close
   </div>
 
   <script>
@@ -108,11 +108,10 @@
     tg.ready();
     tg.expand();
 
-    // Optional: show nice bottom button too (you can hide if you want only big numbers)
-    tg.MainButton.setText("Choose 1 or 2");
-    tg.MainButton.hide();  // hide it — we use big buttons instead
+    // Optional: hide MainButton since we have our own big buttons
+    tg.MainButton.hide();
 
-    // Optional: show back button in header
+    // Show Back button in header
     tg.BackButton.show();
     tg.BackButton.onClick(() => {
       if (confirm("Close without choosing?")) {
@@ -120,7 +119,7 @@
       }
     });
 
-    // Apply Telegram theme colors
+    // Apply Telegram theme
     function updateTheme() {
       document.documentElement.style.setProperty('--bg', tg.themeParams.bg_color || '#ffffff');
       document.documentElement.style.setProperty('--text', tg.themeParams.text_color || '#000000');
@@ -130,14 +129,48 @@
     updateTheme();
     tg.onEvent("themeChanged", updateTheme);
 
-    // When user taps 1 or 2
-    function choose(number) {
-      const dataToSend = number.toString();  // "1" or "2" (simple string)
+    // Send choice to your Vercel backend
+    async function sendToBackend(choice) {
+      const payload = {
+        choice: choice,                          // "1" or "2"
+        timestamp: new Date().toISOString(),
+        user: tg.initDataUnsafe?.user || { id: 'unknown', first_name: 'unknown' },
+        platform: tg.platform || 'unknown'
+      };
 
-      console.log("Sending to bot:", dataToSend); // for debug
+      console.log("Sending payload:", payload);
 
-      tg.sendData(dataToSend);  // sends + closes Mini App automatically
+      try {
+        const response = await fetch(
+          'https://api-send-to-bot-js.vercel.app/',  // ← CHANGE THIS TO YOUR REAL URL
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        const result = await response.json();
+        console.log("Backend response:", result);
+
+        if (result.success) {
+          tg.close();  // close Mini App after successful send
+        } else {
+          alert("Failed to send: " + (result.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Network error – check console (F12)");
+      }
     }
+
+    // Button handlers
+    function choose(number) {
+      sendToBackend(number.toString());
+    }
+
+    // Optional: log when app is ready
+    console.log("Mini App ready – theme:", tg.colorScheme, "platform:", tg.platform);
   </script>
 </body>
 </html>
