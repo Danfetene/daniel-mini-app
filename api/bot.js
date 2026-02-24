@@ -1,63 +1,36 @@
-// api/notify-me.js
+// bot.js
+const { Telegraf } = require('telegraf');
 
-export default async function handler(req, res) {
-  // Handle CORS (important for Telegram WebView)
-  res.setHeader('Access-Control-Allow-Origin', '*');           // or tighten later
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+const token = '8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI';   // same token as in html
+const bot = new Telegraf(token);
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+bot.start((ctx) => {
+  const from = ctx.from;
+  console.log('\n=== New user ===');
+  console.log('id:     ', from.id);
+  console.log('username:', from.username);
+  console.log('name:   ', from.first_name, from.last_name);
+  console.log('===============\n');
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  ctx.replyWithMarkdownV2(
+    'Hi\\! Send me anything and I’ll show you your **chat ID** and basic info\\.\n\n' +
+    'Put this number in the HTML file as `chatId`'
+  );
+});
 
-  const body = req.body || {};
-  const { choice, timestamp, user } = body;
+bot.on('text', (ctx) => {
+  const from = ctx.from;
+  ctx.reply(
+    `Your chat ID is: ${from.id}\n\n` +
+    `username: @${from.username || 'none'}\n` +
+    `name: ${from.first_name} ${from.last_name || ''}`
+  );
+});
 
-  if (!choice) {
-    return res.status(400).json({ error: 'Missing choice' });
-  }
+bot.launch().then(() => {
+  console.log('Bot is running...');
+  console.log('Open Telegram → talk to your bot → get your chat ID');
+});
 
-  const BOT_TOKEN = process.env.BOT_TOKEN;
-  const CHAT_ID = process.env.YOUR_CHAT_ID;
-
-  if (!BOT_TOKEN || !CHAT_ID) {
-    console.error('Missing BOT_TOKEN or YOUR_CHAT_ID');
-    return res.status(500).json({ error: 'Server misconfigured' });
-  }
-
-  const text = 
-`Mini App choice received:
-• Choice: **${choice}**
-• Time: ${timestamp || new Date().toISOString()}
-• User: ${user?.first_name || 'Unknown'} (${user?.id || '?'})`;
-
-  try {
-    const telegramRes = await fetch(
-      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: text,
-          parse_mode: 'Markdown'
-        })
-      }
-    );
-
-    const result = await telegramRes.json();
-
-    if (!result.ok) {
-      throw new Error(result.description || 'Telegram error');
-    }
-
-    return res.status(200).json({ success: true });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Failed to send message' });
-  }
-}
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
