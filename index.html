@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Send 1 or 2</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.4rem;
+      opacity: 0.9;
+    }
+    .btn {
+      width: 220px;
+      height: 110px;
+      font-size: 4.5rem;
+      font-weight: bold;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #btn1 {
+      background: #e91e63;
+    }
+    #btn1:active {
+      background: #c2185b;
+      transform: scale(0.94);
+    }
+    #btn2 {
+      background: #2196f3;
+    }
+    #btn2:active {
+      background: #1976d2;
+      transform: scale(0.94);
+    }
+    #status {
+      font-size: 1.1rem;
+      min-height: 1.4em;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Choose</h1>
+
+  <button id="btn1" class="btn">1</button>
+  <button id="btn2" class="btn">2</button>
+
+  <div id="status"></div>
+
+  <script>
+    const status = document.getElementById('status');
+    const token = "8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI";           // ← change this
+    const chatId = "421868479";                     // ← change this
+
+    async function sendToTelegram(text) {
+      status.textContent = "sending...";
+      
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: text,
+            parse_mode: "HTML"
+          })
+        });
+
+        if (res.ok) {
+          status.textContent = "✓ Sent!";
+          setTimeout(() => status.textContent = "", 1800);
+        } else {
+          status.textContent = "Error 😕";
+        }
+      } catch (err) {
+        status.textContent = "Failed (no internet?)";
+        console.error(err);
+      }
+    }
+
+    document.getElementById("btn1").onclick = () => sendToTelegram("1");
+    document.getElementById("btn2").onclick = () => sendToTelegram("2");
+  </script>
+
+</body>
+</html>
