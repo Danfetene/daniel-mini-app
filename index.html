@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Water Shop – Addis</title>
+  <title>Water Delivery – Addis</title>
   <style>
     body {
       margin: 0;
@@ -14,26 +14,25 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 12px;
+      padding: 20px 16px;
       box-sizing: border-box;
     }
 
     header {
       text-align: center;
-      margin: 20px 0 32px;
+      margin: 16px 0 24px;
     }
 
     h1 {
       margin: 0;
-      font-size: 2.1rem;
+      font-size: 2rem;
       font-weight: 700;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      letter-spacing: 0.8px;
     }
 
     .subtitle {
-      margin-top: 6px;
-      font-size: 1rem;
+      margin-top: 4px;
+      font-size: 0.95rem;
       opacity: 0.8;
     }
 
@@ -48,75 +47,103 @@
     #brands-screen {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 40px;
+      gap: 20px;
+      margin-bottom: 32px;
     }
 
-    .card {
-      background: rgba(255,255,255,0.08);
+    .card, .price-card, .confirm-btn {
+      background: rgba(255,255,255,0.09);
       backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 28px 16px;
+      border-radius: 16px;
+      padding: 24px 16px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.22s ease;
-      border: 1px solid rgba(255,255,255,0.12);
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.14);
       user-select: none;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .card:active {
-      transform: scale(0.94);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    .card:active, .price-card:active, .confirm-btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
 
     .brand-name {
-      font-size: 2.1rem;
+      font-size: 2rem;
       font-weight: 800;
-      margin: 12px 0 8px;
-      letter-spacing: 1.5px;
+      margin: 10px 0 6px;
+      letter-spacing: 1.2px;
     }
 
     .desc {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       opacity: 0.75;
-      line-height: 1.4;
       margin: 0;
     }
 
     .price-card {
-      background: rgba(255,255,255,0.12);
-      border-radius: 16px;
-      padding: 24px 16px;
-      margin: 16px 0;
-      font-size: 2.2rem;
+      margin: 14px 0;
+      font-size: 2.1rem;
       font-weight: bold;
-      width: 80%;
-      max-width: 300px;
+      width: 85%;
+      max-width: 280px;
+    }
+
+    .price-35 { background: #ff6d00cc; }
+    .price-30 { background: #ffa000cc; }
+    .price-25 { background: #43a047cc; }
+
+    input[type="tel"] {
+      width: 85%;
+      max-width: 280px;
+      padding: 14px 16px;
+      font-size: 1.3rem;
+      margin: 20px 0 12px;
+      border: 1px solid #555;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      color: white;
       text-align: center;
+    }
+
+    input[type="tel"]::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+
+    .confirm-btn {
+      margin-top: 16px;
+      padding: 14px 40px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .price-card:active {
-      transform: scale(0.96);
+    .back-btn {
+      margin-top: 24px;
+      padding: 10px 24px;
+      font-size: 1rem;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
     }
-
-    .price-35 { background: #ff6d00; }
-    .price-30 { background: #ffa000; }
-    .price-25 { background: #43a047; }
 
     #status {
-      margin-top: 16px;
+      margin: 20px 0;
       font-size: 1.1rem;
-      min-height: 1.5em;
-      opacity: 0.85;
+      min-height: 1.4em;
       text-align: center;
     }
 
-    .success { color: #76ff03; }
-    .error   { color: #ff5252; }
+    .success { color: #a5d6a7; }
+    .error   { color: #ef5350; }
 
     /* Brand colors */
     .top    { color: #00d4ff; }
@@ -128,87 +155,119 @@
 <body>
 
   <header>
-    <h1>Bottled Water Shop</h1>
-    <div class="subtitle">Choose brand & size • Addis Ababa</div>
+    <h1>Water Delivery</h1>
+    <div class="subtitle">Brand • Size • Phone • Addis Ababa</div>
   </header>
 
-  <!-- ─── BRANDS SCREEN ─────────────────────────────────────── -->
+  <!-- BRANDS -->
   <div id="brands-screen" class="screen">
     <div class="card" data-brand="Top">
       <div class="brand-name top">TOP</div>
-      <p class="desc">Pure & Crisp<br>Most popular</p>
+      <p class="desc">Pure & Crisp</p>
     </div>
-
     <div class="card" data-brand="Gold">
       <div class="brand-name gold">GOLD</div>
-      <p class="desc">Premium quality<br>Golden taste</p>
+      <p class="desc">Premium</p>
     </div>
-
     <div class="card" data-brand="One">
       <div class="brand-name one">ONE</div>
-      <p class="desc">Clean & Simple<br>Everyday choice</p>
+      <p class="desc">Everyday</p>
     </div>
-
     <div class="card" data-brand="Share">
       <div class="brand-name share">SHARE</div>
-      <p class="desc">Share the freshness<br>Friendly & light</p>
+      <p class="desc">Fresh & Light</p>
     </div>
   </div>
 
-  <!-- ─── PRICES SCREEN ─────────────────────────────────────── -->
+  <!-- PRICES -->
   <div id="prices-screen" class="screen">
-    <h2 id="selected-brand" style="margin: 20px 0 8px; font-size: 2rem;"></h2>
+    <h2 id="selected-brand" style="margin: 20px 0 12px; font-size: 1.9rem;"></h2>
     <div class="price-card price-35" data-price="35">35 ETB</div>
     <div class="price-card price-30" data-price="30">30 ETB</div>
     <div class="price-card price-25" data-price="25">25 ETB</div>
+    <button class="back-btn" onclick="showBrands()">← Back</button>
+  </div>
 
-    <button onclick="showBrands()" style="margin-top:32px; padding:12px 28px; font-size:1.1rem; background:#444; color:white; border:none; border-radius:12px; cursor:pointer;">
-      ← Back to brands
-    </button>
+  <!-- PHONE INPUT -->
+  <div id="phone-screen" class="screen">
+    <h2 id="order-summary" style="margin: 20px 0 8px; font-size: 1.4rem; text-align:center;"></h2>
+    <input type="tel" id="phone-input" placeholder="09xxxxxxxx" inputmode="tel" pattern="[0-9]{10}" required>
+    <button class="confirm-btn" onclick="confirmAndSend()">Confirm & Send</button>
+    <button class="back-btn" onclick="showPrices()">← Change size</button>
   </div>
 
   <div id="status"></div>
 
   <script>
-    // ────────────────────────────────────────────────
-    //   CHANGE THESE TWO VALUES
-    // ────────────────────────────────────────────────
-    const BOT_TOKEN = "8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI";   // ← from @BotFather
-    const CHAT_ID   = "421868479";             // ← your Telegram ID
-    // ────────────────────────────────────────────────
+    // CHANGE THESE TWO VALUES
+    const BOT_TOKEN = "8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI";   // from @BotFather
+    const CHAT_ID   = "421868479";             // your Telegram ID
 
     const statusEl       = document.getElementById("status");
     const brandsScreen   = document.getElementById("brands-screen");
     const pricesScreen   = document.getElementById("prices-screen");
+    const phoneScreen    = document.getElementById("phone-screen");
     const selectedBrandEl = document.getElementById("selected-brand");
+    const orderSummaryEl  = document.getElementById("order-summary");
+    const phoneInput     = document.getElementById("phone-input");
 
     let currentBrand = "";
+    let currentPrice = "";
+
+    function hideAll() {
+      brandsScreen.style.display = "none";
+      pricesScreen.style.display = "none";
+      phoneScreen.style.display  = "none";
+      statusEl.textContent = "";
+    }
 
     function showBrands() {
+      hideAll();
       brandsScreen.style.display = "grid";
-      pricesScreen.style.display = "none";
-      statusEl.textContent = "";
     }
 
     function showPrices(brand) {
+      hideAll();
       currentBrand = brand;
       selectedBrandEl.textContent = brand;
-      brandsScreen.style.display = "none";
       pricesScreen.style.display = "flex";
-      statusEl.textContent = "";
     }
 
-    async function sendOrder(brand, price) {
+    function showPhone(price) {
+      hideAll();
+      currentPrice = price;
+      orderSummaryEl.textContent = `${currentBrand} – ${price} ETB`;
+      phoneInput.value = "";
+      phoneScreen.style.display = "flex";
+      phoneInput.focus();
+    }
+
+    async function confirmAndSend() {
+      const phone = phoneInput.value.trim();
+
+      if (!phone || phone.length < 9) {
+        statusEl.textContent = "Please enter a valid phone number";
+        statusEl.className = "error";
+        return;
+      }
+
       statusEl.textContent = "Sending...";
       statusEl.className = "";
 
       try {
+        const message = 
+`🛒 New order:
+Brand: **${currentBrand}**
+Size: ${currentPrice} ETB
+Phone: ${phone}
+Location: Addis Ababa`;
+
         const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: CHAT_ID,
-            text: `🛒 Order: **${brand}**  –  ${price} ETB`,
+            text: message,
             parse_mode: "Markdown"
           })
         });
@@ -216,37 +275,29 @@
         const data = await res.json();
 
         if (res.ok && data.ok) {
-          statusEl.textContent = `✓ ${brand} ${price} ETB sent!`;
+          statusEl.textContent = "Order sent successfully! ✓";
           statusEl.className = "success";
-          setTimeout(showBrands, 2200);   // auto return to brands after success
+          setTimeout(showBrands, 2800);
         } else {
-          statusEl.textContent = "Error sending";
+          statusEl.textContent = "Failed to send order";
           statusEl.className = "error";
         }
-
       } catch (err) {
-        statusEl.textContent = "No internet?";
+        statusEl.textContent = "No internet connection";
         statusEl.className = "error";
       }
     }
 
-    // Brand clicks
+    // Event listeners
     document.querySelectorAll(".card").forEach(card => {
-      card.addEventListener("click", () => {
-        const brand = card.dataset.brand;
-        showPrices(brand);
-      });
+      card.addEventListener("click", () => showPrices(card.dataset.brand));
     });
 
-    // Price clicks
     document.querySelectorAll(".price-card").forEach(card => {
-      card.addEventListener("click", () => {
-        const price = card.dataset.price;
-        sendOrder(currentBrand, price);
-      });
+      card.addEventListener("click", () => showPhone(card.dataset.price));
     });
 
-    // Start with brands screen
+    // Start
     showBrands();
   </script>
 
