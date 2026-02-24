@@ -3,102 +3,186 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Send 1 or 2</title>
+  <title>Water Shop – Addis</title>
   <style>
     body {
       margin: 0;
-      height: 100vh;
-      background: #111;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       color: white;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacOSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      gap: 40px;
+      padding: 20px 12px;
+      box-sizing: border-box;
     }
+
+    header {
+      text-align: center;
+      margin: 20px 0 32px;
+    }
+
     h1 {
       margin: 0;
-      font-size: 2.4rem;
-      opacity: 0.9;
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
-    .btn {
-      width: 220px;
-      height: 110px;
-      font-size: 4.5rem;
-      font-weight: bold;
-      color: white;
-      border: none;
+
+    .subtitle {
+      margin-top: 6px;
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .brands {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
       border-radius: 20px;
+      padding: 28px 16px;
+      text-align: center;
       cursor: pointer;
-      transition: all 0.15s;
-      touch-action: manipulation;
+      transition: all 0.22s ease;
+      border: 1px solid rgba(255,255,255,0.12);
       user-select: none;
+      touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
-    #btn1 {
-      background: #e91e63;
-    }
-    #btn1:active {
-      background: #c2185b;
+
+    .card:active {
       transform: scale(0.94);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
-    #btn2 {
-      background: #2196f3;
+
+    .brand-name {
+      font-size: 2.1rem;
+      font-weight: 800;
+      margin: 12px 0 8px;
+      letter-spacing: 1.5px;
     }
-    #btn2:active {
-      background: #1976d2;
-      transform: scale(0.94);
+
+    .desc {
+      font-size: 0.95rem;
+      opacity: 0.75;
+      line-height: 1.4;
+      margin: 0;
     }
+
+    /* Brand colors */
+    .top    { color: #00d4ff; }
+    .gold   { color: #ffd700; }
+    .one    { color: #4caf50; }
+    .share  { color: #e91e63; }
+
     #status {
+      margin-top: 16px;
       font-size: 1.1rem;
-      min-height: 1.4em;
-      opacity: 0.7;
+      min-height: 1.5em;
+      opacity: 0.85;
+      text-align: center;
     }
+
+    .success { color: #76ff03; }
+    .error   { color: #ff5252; }
   </style>
 </head>
 <body>
 
-  <h1>Choose</h1>
+  <header>
+    <h1>Bottled Water Shop</h1>
+    <div class="subtitle">Choose your favorite brand • Addis Ababa</div>
+  </header>
 
-  <button id="btn1" class="btn">1</button>
-  <button id="btn2" class="btn">2</button>
+  <div class="brands">
+    <div class="card" data-brand="Top">
+      <div class="brand-name top">TOP</div>
+      <p class="desc">Pure & Crisp<br>Most popular in town</p>
+    </div>
+
+    <div class="card" data-brand="Gold">
+      <div class="brand-name gold">GOLD</div>
+      <p class="desc">Premium quality<br>Golden taste</p>
+    </div>
+
+    <div class="card" data-brand="One">
+      <div class="brand-name one">ONE</div>
+      <p class="desc">Clean & Simple<br>Everyday choice</p>
+    </div>
+
+    <div class="card" data-brand="Share">
+      <div class="brand-name share">SHARE</div>
+      <p class="desc">Share the freshness<br>Friendly & light</p>
+    </div>
+  </div>
 
   <div id="status"></div>
 
   <script>
-    const status = document.getElementById('status');
-    const token = "8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI";           // ← change this
-    const chatId = "421868479";                     // ← change this
+    // ────────────────────────────────────────────────
+    //   CHANGE THESE TWO VALUES
+    // ────────────────────────────────────────────────
+    const BOT_TOKEN = "8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI";     // e.g. 7123456789:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    const CHAT_ID   = "421868479";               // your personal chat ID or group/channel @username
+    // ────────────────────────────────────────────────
 
-    async function sendToTelegram(text) {
-      status.textContent = "sending...";
-      
+    const statusEl = document.getElementById("status");
+    const cards    = document.querySelectorAll(".card");
+
+    async function sendToTelegram(brand) {
+      statusEl.textContent = "Sending...";
+      statusEl.className = "";
+
       try {
-        const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            chat_id: chatId,
-            text: text,
-            parse_mode: "HTML"
+            chat_id: CHAT_ID,
+            text: `🛒 Order: **${brand}** water`,
+            parse_mode: "Markdown"
           })
         });
 
-        if (res.ok) {
-          status.textContent = "✓ Sent!";
-          setTimeout(() => status.textContent = "", 1800);
+        const data = await res.json();
+
+        if (res.ok && data.ok) {
+          statusEl.textContent = `✓ ${brand} selected & sent!`;
+          statusEl.className = "success";
         } else {
-          status.textContent = "Error 😕";
+          statusEl.textContent = "Error sending message";
+          statusEl.className = "error";
+          console.log(data);
         }
+
+        setTimeout(() => {
+          statusEl.textContent = "";
+          statusEl.className = "";
+        }, 2600);
+
       } catch (err) {
-        status.textContent = "Failed (no internet?)";
+        statusEl.textContent = "No connection? Try again";
+        statusEl.className = "error";
         console.error(err);
       }
     }
 
-    document.getElementById("btn1").onclick = () => sendToTelegram("1");
-    document.getElementById("btn2").onclick = () => sendToTelegram("2");
+    cards.forEach(card => {
+      card.addEventListener("click", () => {
+        const brand = card.dataset.brand;
+        sendToTelegram(brand);
+      });
+    });
   </script>
 
 </body>
