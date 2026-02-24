@@ -37,12 +37,18 @@
       opacity: 0.8;
     }
 
-    .brands {
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 420px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #brands-screen {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
-      width: 100%;
-      max-width: 420px;
       margin-bottom: 40px;
     }
 
@@ -79,11 +85,27 @@
       margin: 0;
     }
 
-    /* Brand colors */
-    .top    { color: #00d4ff; }
-    .gold   { color: #ffd700; }
-    .one    { color: #4caf50; }
-    .share  { color: #e91e63; }
+    .price-card {
+      background: rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 24px 16px;
+      margin: 16px 0;
+      font-size: 2.2rem;
+      font-weight: bold;
+      width: 80%;
+      max-width: 300px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .price-card:active {
+      transform: scale(0.96);
+    }
+
+    .price-35 { background: #ff6d00; }
+    .price-30 { background: #ffa000; }
+    .price-25 { background: #43a047; }
 
     #status {
       margin-top: 16px;
@@ -95,19 +117,26 @@
 
     .success { color: #76ff03; }
     .error   { color: #ff5252; }
+
+    /* Brand colors */
+    .top    { color: #00d4ff; }
+    .gold   { color: #ffd700; }
+    .one    { color: #4caf50; }
+    .share  { color: #e91e63; }
   </style>
 </head>
 <body>
 
   <header>
     <h1>Bottled Water Shop</h1>
-    <div class="subtitle">Choose your favorite brand • Addis Ababa</div>
+    <div class="subtitle">Choose brand & size • Addis Ababa</div>
   </header>
 
-  <div class="brands">
+  <!-- ─── BRANDS SCREEN ─────────────────────────────────────── -->
+  <div id="brands-screen" class="screen">
     <div class="card" data-brand="Top">
       <div class="brand-name top">TOP</div>
-      <p class="desc">Pure & Crisp<br>Most popular in town</p>
+      <p class="desc">Pure & Crisp<br>Most popular</p>
     </div>
 
     <div class="card" data-brand="Gold">
@@ -126,20 +155,50 @@
     </div>
   </div>
 
+  <!-- ─── PRICES SCREEN ─────────────────────────────────────── -->
+  <div id="prices-screen" class="screen">
+    <h2 id="selected-brand" style="margin: 20px 0 8px; font-size: 2rem;"></h2>
+    <div class="price-card price-35" data-price="35">35 ETB</div>
+    <div class="price-card price-30" data-price="30">30 ETB</div>
+    <div class="price-card price-25" data-price="25">25 ETB</div>
+
+    <button onclick="showBrands()" style="margin-top:32px; padding:12px 28px; font-size:1.1rem; background:#444; color:white; border:none; border-radius:12px; cursor:pointer;">
+      ← Back to brands
+    </button>
+  </div>
+
   <div id="status"></div>
 
   <script>
     // ────────────────────────────────────────────────
     //   CHANGE THESE TWO VALUES
     // ────────────────────────────────────────────────
-    const BOT_TOKEN = "8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI";     // e.g. 7123456789:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    const CHAT_ID   = "421868479";               // your personal chat ID or group/channel @username
+    const BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";   // ← from @BotFather
+    const CHAT_ID   = "123456789";             // ← your Telegram ID
     // ────────────────────────────────────────────────
 
-    const statusEl = document.getElementById("status");
-    const cards    = document.querySelectorAll(".card");
+    const statusEl       = document.getElementById("status");
+    const brandsScreen   = document.getElementById("brands-screen");
+    const pricesScreen   = document.getElementById("prices-screen");
+    const selectedBrandEl = document.getElementById("selected-brand");
 
-    async function sendToTelegram(brand) {
+    let currentBrand = "";
+
+    function showBrands() {
+      brandsScreen.style.display = "grid";
+      pricesScreen.style.display = "none";
+      statusEl.textContent = "";
+    }
+
+    function showPrices(brand) {
+      currentBrand = brand;
+      selectedBrandEl.textContent = brand;
+      brandsScreen.style.display = "none";
+      pricesScreen.style.display = "flex";
+      statusEl.textContent = "";
+    }
+
+    async function sendOrder(brand, price) {
       statusEl.textContent = "Sending...";
       statusEl.className = "";
 
@@ -149,7 +208,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: CHAT_ID,
-            text: `🛒 Order: **${brand}** water`,
+            text: `🛒 Order: **${brand}**  –  ${price} ETB`,
             parse_mode: "Markdown"
           })
         });
@@ -157,32 +216,38 @@
         const data = await res.json();
 
         if (res.ok && data.ok) {
-          statusEl.textContent = `✓ ${brand} selected & sent!`;
+          statusEl.textContent = `✓ ${brand} ${price} ETB sent!`;
           statusEl.className = "success";
+          setTimeout(showBrands, 2200);   // auto return to brands after success
         } else {
-          statusEl.textContent = "Error sending message";
+          statusEl.textContent = "Error sending";
           statusEl.className = "error";
-          console.log(data);
         }
 
-        setTimeout(() => {
-          statusEl.textContent = "";
-          statusEl.className = "";
-        }, 2600);
-
       } catch (err) {
-        statusEl.textContent = "No connection? Try again";
+        statusEl.textContent = "No internet?";
         statusEl.className = "error";
-        console.error(err);
       }
     }
 
-    cards.forEach(card => {
+    // Brand clicks
+    document.querySelectorAll(".card").forEach(card => {
       card.addEventListener("click", () => {
         const brand = card.dataset.brand;
-        sendToTelegram(brand);
+        showPrices(brand);
       });
     });
+
+    // Price clicks
+    document.querySelectorAll(".price-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const price = card.dataset.price;
+        sendOrder(currentBrand, price);
+      });
+    });
+
+    // Start with brands screen
+    showBrands();
   </script>
 
 </body>
