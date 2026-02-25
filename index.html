@@ -443,10 +443,10 @@
       { 
         id: 'forest', name: 'Forest', img: 'https://i.postimg.cc/bYFW3tJV/forest.webp', brandDisplay: 'Forest Water / Agents',
         variants: [
-          {size:'0.3L', price:140},
-          {size:'0.6L', price:150},
-          {size:'1L',   price:155},
-          {size:'2L',   price:160}
+          {size:'0.3L', price:140/pack},
+          {size:'0.6L', price:150/pack},
+          {size:'1L',   price:155/pack},
+          {size:'2L',   price:160/pack}
         ],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
       },
@@ -798,7 +798,7 @@
     tg.MainButton.onClick(async () => {
       if (!cart.length) return;
 
-      const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 0912345678", "");
+      const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 09--------", "");
       if (!phone || phone.trim().length < 9) {
         tg.showAlert("Please enter a valid phone number.");
         return;
