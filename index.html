@@ -143,19 +143,9 @@
       align-items: center;
       gap: 10px;
     }
-
-    .variant-info {
-      flex: 1;
-    }
-    .variant-size {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .variant-price {
-      font-size: 18px;
-      color: var(--accent);
-      font-weight: bold;
-    }
+    .variant-info { flex: 1; }
+    .variant-size { font-size: 15px; font-weight: 600; }
+    .variant-price { font-size: 18px; color: var(--accent); font-weight: bold; }
 
     .order-btn {
       background: var(--tg-button-color);
@@ -246,7 +236,7 @@
     .qty-plus  { background: rgba(46,125,50,0.12); color: var(--accent); }
 
     .qty-input {
-      width: 50px;
+      width: 60px;
       height: 34px;
       text-align: center;
       font-size: 15px;
@@ -369,7 +359,6 @@
     applyTheme();
     tg.onEvent('themeChanged', applyTheme);
 
-    // ALL BRANDS
     const brands = [
       { id: 'top', name: 'Top', img: 'https://i.postimg.cc/4dGs4htb/top.webp', brandDisplay: 'Top Water / Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
@@ -508,8 +497,14 @@
     }
 
     function updateQty(index, newQty) {
-      newQty = Math.max(1, parseInt(newQty) || 1);
-      cart[index].qty = newQty;
+      newQty = Math.max(0, Math.min(1000, parseInt(newQty) || 0));
+
+      if (newQty === 0) {
+        cart.splice(index, 1);
+      } else {
+        cart[index].qty = newQty;
+      }
+
       renderCart();
       tg.HapticFeedback.impactOccurred('light');
     }
@@ -546,7 +541,7 @@
           <div class="cart-item-name">${item.brand} ${item.size}</div>
           <div class="cart-qty-controls">
             <button class="qty-btn qty-minus" data-index="${i}" data-delta="-1">−</button>
-            <input type="number" class="qty-input" data-index="${i}" value="${item.qty}" min="1" step="1">
+            <input type="number" class="qty-input" data-index="${i}" value="${item.qty}" min="0" max="1000" step="1">
             <button class="qty-btn qty-plus" data-index="${i}" data-delta="1">+</button>
           </div>
           <div class="cart-item-total">${line} Birr</div>
@@ -559,20 +554,26 @@
       tg.MainButton.show();
     }
 
+    // Quantity input handling
     document.addEventListener('input', e => {
       if (e.target.classList.contains('qty-input')) {
         const index = Number(e.target.dataset.index);
-        if (!isNaN(index)) updateQty(index, e.target.value);
+        if (!isNaN(index)) {
+          updateQty(index, e.target.value);
+        }
       }
     });
 
     document.addEventListener('change', e => {
       if (e.target.classList.contains('qty-input')) {
         const index = Number(e.target.dataset.index);
-        if (!isNaN(index)) updateQty(index, e.target.value);
+        if (!isNaN(index)) {
+          updateQty(index, e.target.value);
+        }
       }
     });
 
+    // Navigation & Back button logic – CLEAR CART WHEN LEAVING CART VIEW
     let previousView = 'main';
     let lastBrandId = null;
 
@@ -591,6 +592,10 @@
     }
 
     function returnToMainView() {
+      // Clear cart when returning to main view
+      cart = [];
+      renderCart();
+
       previousView = 'main';
       lastBrandId = null;
       document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
@@ -617,13 +622,18 @@
 
     tg.BackButton.onClick(() => {
       const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
+
       if (cartIsVisible) {
+        // When leaving cart view → clear cart
+        cart = [];
+        renderCart();
         document.getElementById('cart-summary').classList.remove('visible');
         tg.MainButton.hide();
         returnToLastBrand();
       } else if (previousView === 'brand') {
         returnToMainView();
       }
+
       tg.HapticFeedback.impactOccurred('light');
     });
 
@@ -637,8 +647,8 @@
         const index = Number(t.dataset.index);
         const delta = Number(t.dataset.delta);
         if (!isNaN(index)) {
-          let newQty = (cart[index]?.qty || 1) + delta;
-          newQty = Math.max(1, newQty);
+          let newQty = (cart[index]?.qty || 0) + delta;
+          newQty = Math.max(0, Math.min(1000, newQty));
           updateQty(index, newQty);
         }
       }
