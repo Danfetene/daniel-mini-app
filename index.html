@@ -222,23 +222,46 @@
       font-size: 15px;
     }
     .cart-item-name { flex: 1; font-weight: 500; }
+
     .cart-qty-controls {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin: 0 16px;
+      gap: 8px;
+      margin: 0 12px;
     }
+
     .qty-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border: none;
       border-radius: 50%;
-      font-size: 22px;
+      font-size: 20px;
       cursor: pointer;
       transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .qty-minus { background: rgba(211,47,47,0.12); color: var(--danger); }
     .qty-plus  { background: rgba(46,125,50,0.12); color: var(--accent); }
+
+    .qty-input {
+      width: 54px;
+      height: 36px;
+      text-align: center;
+      font-size: 16px;
+      border: 1px solid rgba(120,120,120,0.4);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      color: var(--tg-text-color);
+      padding: 0;
+      
+    }
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
 
     #total {
       font-weight: bold;
@@ -327,9 +350,12 @@
     });
     tg.MainButton.hide();
 
-    // CHANGE THESE TWO VALUES
-    const BOT_TOKEN = '8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI';           // ← from @BotFather
-    const TARGET_CHAT_ID = '421868479';        // ← your Telegram ID or group/channel
+    // ────────────────────────────────────────────────
+    //   CHANGE THESE TWO VALUES
+    // ────────────────────────────────────────────────
+    const BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';           // ← from @BotFather
+    const TARGET_CHAT_ID = 'YOUR_CHAT_ID_HERE';        // ← your Telegram ID / group / channel
+    // ────────────────────────────────────────────────
 
     function applyTheme() {
       const isDark = tg.colorScheme === 'dark';
@@ -351,9 +377,17 @@
     tg.onEvent('themeChanged', applyTheme);
 
     // ────────────────────────────────────────────────
-    //   ALL BRANDS (expanded list)
+    //   ALL BRANDS
     // ────────────────────────────────────────────────
     const brands = [
+      {
+        id: 'top',
+        name: 'Top',
+        img: 'https://i.postimg.cc/4dGs4htb/top.webp',
+        brandDisplay: 'Top Water / Agents',
+        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
+        nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
+      },
       {
         id: 'gold',
         name: 'Gold',
@@ -363,19 +397,18 @@
         nutrition: [{label:'TDS', val:'8.5 mg/L'}, {label:'Calcium', val:'1.6 mg/L'}, {label:'Magnesium', val:'0.8 mg/L'}, {label:'Potassium', val:'8.5 mg/L'}, {label:'Sodium', val:'0.9 mg/L'}]
       },
       {
-        id: 'top',
-        name: 'Top',
-        img: 'https://i.postimg.cc/4dGs4htb/top.webp',
-        brandDisplay: 'Top Water / Agents',
+        id: 'one',
+        name: 'One',
+        img: 'https://i.postimg.cc/Vvf49NBk/one-water.jpg',
+        brandDisplay: 'One Water / Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
       },
-      
-       {
-        id: 'africa',
-        name: 'Africa',
-        img: 'https://i.postimg.cc/0NGB7hR3/africa.jpg',
-        brandDisplay: 'Africa Water / Agents',
+      {
+        id: 'share',
+        name: 'Share',
+        img: 'https://via.placeholder.com/64?text=Share', // ← replace with real image if you have one
+        brandDisplay: 'Share Water / Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
       },
@@ -387,16 +420,14 @@
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
       },
-     
       {
-        id: 'one',
-        name: 'One',
-        img: 'https://i.postimg.cc/Vvf49NBk/one-water.jpg',
-        brandDisplay: 'One Water / Agents',
+        id: 'africa',
+        name: 'Africa',
+        img: 'https://i.postimg.cc/0NGB7hR3/africa.jpg',
+        brandDisplay: 'Africa Water / Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
       },
-      
       {
         id: 'yes',
         name: 'Yes',
@@ -484,14 +515,6 @@
         brandDisplay: 'Eden Water / Agents',
         variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
         nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
-      },
-      {
-        id: 'share',
-        name: 'Share',
-        img: 'https://via.placeholder.com/64?text=Share', // ← replace with real image if available
-        brandDisplay: 'Share Water / Agents',
-        variants: [{size:'0.3L', price:140}, {size:'0.6L', price:150}, {size:'2L', price:160}],
-        nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
       }
     ];
 
@@ -547,7 +570,6 @@
       document.body.appendChild(section);
     });
 
-    // Cart logic
     let cart = [];
 
     function addToCart(brand, size, price) {
@@ -562,9 +584,9 @@
       tg.HapticFeedback.impactOccurred('medium');
     }
 
-    function changeQty(index, delta) {
-      cart[index].qty += delta;
-      if (cart[index].qty <= 0) cart.splice(index, 1);
+    function updateQty(index, newQty) {
+      newQty = Math.max(1, parseInt(newQty) || 1);
+      cart[index].qty = newQty;
       renderCart();
       tg.HapticFeedback.impactOccurred('light');
     }
@@ -601,7 +623,7 @@
           <div class="cart-item-name">${item.brand} ${item.size}</div>
           <div class="cart-qty-controls">
             <button class="qty-btn qty-minus" data-index="${i}" data-delta="-1">−</button>
-            <span class="qty-display">${item.qty}</span>
+            <input type="number" class="qty-input" data-index="${i}" value="${item.qty}" min="1" step="1">
             <button class="qty-btn qty-plus" data-index="${i}" data-delta="1">+</button>
           </div>
           <div class="cart-item-total">${line} Birr</div>
@@ -614,7 +636,28 @@
       tg.MainButton.show();
     }
 
-    // Navigation state
+    // Quantity input handling
+    document.addEventListener('input', e => {
+      if (e.target.classList.contains('qty-input')) {
+        const index = Number(e.target.dataset.index);
+        if (!isNaN(index)) {
+          updateQty(index, e.target.value);
+        }
+      }
+    });
+
+    document.addEventListener('change', e => {
+      if (e.target.classList.contains('qty-input')) {
+        const index = Number(e.target.dataset.index);
+        if (!isNaN(index)) {
+          updateQty(index, e.target.value);
+        }
+      }
+    });
+
+    // ────────────────────────────────────────────────
+    //   Navigation & Back button logic
+    // ────────────────────────────────────────────────
     let previousView = 'main';
     let lastBrandId = null;
 
@@ -678,7 +721,9 @@
       tg.HapticFeedback.impactOccurred('light');
     });
 
-    // Event delegation
+    // ────────────────────────────────────────────────
+    //   Event delegation for buttons
+    // ────────────────────────────────────────────────
     document.addEventListener('click', e => {
       const t = e.target;
 
@@ -690,7 +735,11 @@
       if (t.classList.contains('qty-minus') || t.classList.contains('qty-plus')) {
         const index = Number(t.dataset.index);
         const delta = Number(t.dataset.delta);
-        if (!isNaN(index)) changeQty(index, delta);
+        if (!isNaN(index)) {
+          let newQty = (cart[index]?.qty || 1) + delta;
+          newQty = Math.max(1, newQty);
+          updateQty(index, newQty);
+        }
       }
     });
 
@@ -736,7 +785,9 @@
       }, 280);
     });
 
-    // Checkout → send to Telegram
+    // ────────────────────────────────────────────────
+    //   Checkout – send to your Telegram bot
+    // ────────────────────────────────────────────────
     tg.MainButton.onClick(async () => {
       if (!cart.length) return;
 
