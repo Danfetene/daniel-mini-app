@@ -5,281 +5,272 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Grace Products</title>
 
-  <script src="https://telegram.org/js/telegram-web-app.js?60"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
   <style>
     :root {
-      --tg-bg: var(--tg-theme-bg-color, #f8fafc);
-      --tg-text: var(--tg-theme-text-color, #0f172a);
-      --tg-hint: var(--tg-theme-hint-color, #64748b);
-      --accent: #6366f1;
-      --success: #10b981;
-      --card-bg: rgba(255,255,255,0.8);
-      --card-border: rgba(226,232,240,0.9);
-      --shadow: 0 6px 18px rgba(99,102,241,0.12);
-      --radius: 16px;
-      --transition: all 0.24s ease;
+      --bg:        var(--tg-theme-bg-color,        #f9fafb);
+      --text:      var(--tg-theme-text-color,      #111827);
+      --text-sec:  var(--tg-theme-hint-color,      #6b7280);
+      --card:      var(--tg-theme-bg-color,        #ffffff);
+      --border:    rgba(209,213,219,0.6);
+      --accent:    #6366f1;
+      --success:   #10b981;
+      --radius:    16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --tg-bg: #0f172a;
-        --tg-text: #e2e8f0;
-        --tg-hint: #94a3b8;
-        --card-bg: rgba(30,41,59,0.7);
-        --card-border: rgba(59,69,89,0.65);
-        --shadow: 0 8px 20px rgba(0,0,0,0.38);
+        --bg:       #0f172a;
+        --text:     #f1f5f9;
+        --text-sec: #94a3b8;
+        --card:     #1e293b;
+        --border:   rgba(59,69,89,0.5);
+        --shadow-sm: 0 2px 6px rgba(0,0,0,0.35);
+        --shadow-md: 0 6px 16px rgba(0,0,0,0.40);
       }
     }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * {
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
     body {
-      font-family: system-ui, sans-serif;
-      background: var(--tg-bg);
-      color: var(--tg-text);
-      min-height: 100vh;
-      padding-bottom: 120px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      padding-bottom: 96px;
       -webkit-tap-highlight-color: transparent;
+      line-height: 1.4;
     }
 
     header {
-      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      background: linear-gradient(to bottom, #4f46e5, #7c3aed);
       color: white;
       text-align: center;
-      padding: 1.4rem 1rem 1.1rem;
+      padding: 1.2rem 1rem 1rem;
       position: sticky;
       top: 0;
-      z-index: 10;
-      box-shadow: 0 4px 16px rgba(99,102,241,0.28);
+      z-index: 20;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
     }
 
     h1 {
-      font-size: 1.95rem;
+      font-size: 1.9rem;
       font-weight: 800;
       letter-spacing: -0.5px;
     }
 
-    .subtitle {
-      font-size: 1.02rem;
-      opacity: 0.95;
-      margin-top: 0.45rem;
+    .tagline {
+      font-size: 1rem;
+      opacity: 0.94;
+      margin-top: 0.4rem;
+    }
+
+    .made-in {
+      font-size: 0.82rem;
+      opacity: 0.85;
+      margin-top: 0.3rem;
+      font-weight: 500;
     }
 
     .container {
-      padding: 1.2rem 1rem;
-      max-width: 960px;
+      padding: 1rem 1rem 2rem;
+      max-width: 920px;
       margin: 0 auto;
     }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.3rem;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.1rem;
     }
 
     .product-card {
-      background: var(--card-bg);
+      background: var(--card);
       border-radius: var(--radius);
       overflow: hidden;
-      border: 1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      transition: var(--transition);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
     .product-card:active {
-      transform: scale(0.975);
-      box-shadow: 0 10px 24px rgba(99,102,241,0.22);
+      transform: translateY(1px);
+      box-shadow: var(--shadow-md);
     }
 
-    .product-image-wrapper {
-      height: 140px;
-      background: linear-gradient(135deg, #f1f5f9, #e0e7ff);
+    .img-container {
+      height: 132px;
+      background: #f8fafc;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      padding: 10px;
     }
 
-    .product-image {
+    @media (prefers-color-scheme: dark) {
+      .img-container { background: #1e293b; }
+    }
+
+    .product-img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
-      transition: transform 0.38s ease;
     }
 
-    .product-card:active .product-image {
-      transform: scale(1.06);
-    }
-
-    .product-info {
+    .product-body {
       padding: 1rem 1rem 1.2rem;
       text-align: center;
     }
 
-    .product-name {
-      font-size: 1.28rem;
+    .name {
+      font-size: 1.24rem;
       font-weight: 700;
-      margin-bottom: 0.4rem;
-      line-height: 1.28;
+      margin-bottom: 0.36rem;
     }
 
-    .product-size {
-      font-size: 0.94rem;
-      color: var(--tg-hint);
+    .size {
+      font-size: 0.92rem;
+      color: var(--text-sec);
       margin-bottom: 0.7rem;
     }
 
-    .product-price {
-      font-size: 1.6rem;
+    .price {
+      font-size: 1.64rem;
       font-weight: 800;
       color: var(--success);
-      margin: 0.6rem 0 1.1rem;
-      letter-spacing: -0.4px;
+      margin: 0.4rem 0 1rem;
     }
 
     .btn {
-      background: linear-gradient(90deg, #10b981, #059669);
+      background: var(--success);
       color: white;
       border: none;
-      padding: 0.95rem;
+      padding: 0.9rem;
       border-radius: 12px;
-      font-size: 1.05rem;
+      font-size: 1.04rem;
       font-weight: 700;
       width: 100%;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(16,185,129,0.3);
-      transition: all 0.22s;
     }
 
     .btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 8px rgba(16,185,129,0.35);
+      background: #059669;
     }
 
-    /* ──────────────────────────────────────
-       BOLD & COLOURFUL BOTTOM SECTION
-    ────────────────────────────────────── */
-    .fixed-bottom {
+    .fixed-cta {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: linear-gradient(135deg, #059669, #10b981, #34d399);
-      padding: 1.2rem 1rem;
-      box-shadow: 0 -8px 24px rgba(16,185,129,0.4);
-      z-index: 200;
-      text-align: center;
-      animation: pulse-bg 4s infinite ease-in-out;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 1rem;
+      box-shadow: 0 -3px 12px rgba(0,0,0,0.12);
+      z-index: 100;
     }
 
-    @keyframes pulse-bg {
-      0%, 100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
-    }
-
-    .fixed-bottom .btn {
+    .fixed-cta .btn {
       max-width: 420px;
       margin: 0 auto;
-      display: block;
-      padding: 1.25rem 1.5rem;
-      font-size: 1.22rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      background: linear-gradient(90deg, #ffffff, #f0fdfa);
-      color: #064e3b;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      border: 2px solid #ffffff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.15);
-      animation: pulse-btn 2.2s infinite;
+      padding: 1.12rem;
+      font-size: 1.14rem;
+      background: linear-gradient(to right, #10b981, #059669);
+      box-shadow: 0 4px 14px rgba(16,185,129,0.28);
     }
 
-    @keyframes pulse-btn {
-      0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.03); }
+    .fixed-cta .btn:active {
+      background: linear-gradient(to right, #059669, #047857);
     }
 
-    .footer-text {
+    .footer {
       text-align: center;
-      font-size: 0.86rem;
-      color: var(--tg-hint);
-      margin: 2.2rem 1rem 4rem;
+      color: var(--text-sec);
+      font-size: 0.84rem;
+      padding: 1.6rem 1rem 2.4rem;
     }
 
     @media (max-width: 480px) {
-      .product-grid { grid-template-columns: 1fr; gap: 1.1rem; }
-      .product-image-wrapper { height: 130px; }
-      h1 { font-size: 1.8rem; }
-      .fixed-bottom .btn { font-size: 1.15rem; padding: 1.15rem; }
+      .product-grid { grid-template-columns: 1fr; }
+      .img-container { height: 124px; }
+      h1 { font-size: 1.78rem; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Grace Soap & Cosmetics</h1>
-    <div class="subtitle">Quality Cleaning Products • Made in Ethiopia</div>
-  </header>
+<header>
+  <h1>Grace Soap & Cosmetics</h1>
+  <div class="tagline">Quality Cleaning Products • Made in Ethiopia</div>
+  <div class="made-in">🇪🇹 Proudly Ethiopian Made</div>
+</header>
 
-  <div class="container">
-    <div class="product-grid" id="products"></div>
-  </div>
+<div class="container">
+  <div class="product-grid" id="products"></div>
+</div>
 
-  <div class="footer-text">
-    GRACE SOAP AND COSMETICS MANUFACTURING PLC
-  </div>
+<div class="footer">
+  GRACE SOAP AND COSMETICS MANUFACTURING PLC
+</div>
 
-  <!-- Bold & Colourful Bottom Section -->
-  <div class="fixed-bottom">
-    <button class="btn" id="contactBtn">📞 CALL / WHATSAPP NOW: 0912672353</button>
-  </div>
+<div class="fixed-cta">
+  <button class="btn" id="contactBtn">📲 WhatsApp / Call 0912672353 – Order Now</button>
+</div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
 
-    const products = [
-      { name: "Grace Dettol",       size: "5 Liter",   price: "100 Birr",  image: "https://i.postimg.cc/2SQQBYqF/g-dettol.jpg" },
-      { name: "Grace Handwash",     size: "0.5 Liter", price: "100 Birr",  image: "https://i.postimg.cc/htvJKqLz/g-b.jpg" },
-      { name: "Grace Liquid Soap",  size: "5 Liter",   price: "450 Birr",  image: "https://i.postimg.cc/LszmpybL/g-liq.jpg" },
-      { name: "Grace Dish Wash",    size: "0.8 Liter", price: "100 Birr",  image: "https://via.placeholder.com/400x300/FF9800/FFFFFF?text=Grace+Dish+Wash+0.8L" },
-      { name: "Grace Bleaching",    size: "0.8 Liter", price: "80 Birr",   image: "https://i.postimg.cc/wMDXcYfm/g-tile-clea.jpg" },
-      { name: "Grace Bleaching",    size: "0.5 Liter", price: "40 Birr",   image: "https://i.postimg.cc/tRmQLQgb/g-bli.jpg" }
-    ];
+  const products = [
+    { name: "Grace Dettol",       size: "5 Liter",   price: "100 Birr",  image: "https://i.postimg.cc/2SQQBYqF/g-dettol.jpg" },
+    { name: "Grace Handwash",     size: "0.5 Liter", price: "100 Birr",  image: "https://i.postimg.cc/htvJKqLz/g-b.jpg" },
+    { name: "Grace Liquid Soap",  size: "5 Liter",   price: "450 Birr",  image: "https://i.postimg.cc/LszmpybL/g-liq.jpg" },
+    { name: "Grace Dish Wash",    size: "0.8 Liter", price: "100 Birr",  image: "https://i.postimg.cc/8zLL2GNR/g-yello.jpg" },
+    { name: "Grace Bleaching",    size: "0.8 Liter", price: "80 Birr",   image: "https://i.postimg.cc/wMDXcYfm/g-tile-clea.jpg" },
+    { name: "Grace Bleaching",    size: "0.5 Liter", price: "40 Birr",   image: "https://i.postimg.cc/tRmQLQgb/g-bli.jpg" }
+  ];
 
-    const container = document.getElementById("products");
+  const container = document.getElementById("products");
 
-    products.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "product-card";
+  products.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "product-card";
 
-      card.innerHTML = `
-        <div class="product-image-wrapper">
-          <img class="product-image" src="${p.image}" alt="${p.name}" loading="lazy">
-        </div>
-        <div class="product-info">
-          <div class="product-name">${p.name}</div>
-          <div class="product-size">${p.size}</div>
-          <div class="product-price">${p.price}</div>
-          <button class="btn">Order Now</button>
-        </div>
-      `;
+    card.innerHTML = `
+      <div class="img-container">
+        <img class="product-img" src="${item.image}" alt="${item.name}" loading="lazy">
+      </div>
+      <div class="product-body">
+        <div class="name">${item.name}</div>
+        <div class="size">${item.size}</div>
+        <div class="price">${item.price}</div>
+        <button class="btn">Order this product</button>
+      </div>
+    `;
 
-      card.querySelector(".btn").onclick = () => {
-        const msg = `Hello! Interested in ${p.name} ${p.size} – ${p.price}`;
-        window.open(`https://wa.me/0912672353?text=${encodeURIComponent(msg)}`, '_blank');
-        setTimeout(() => window.location.href = 'tel:0912672353', 1400);
-      };
-
-      container.appendChild(card);
-    });
-
-    document.getElementById("contactBtn").onclick = () => {
-      const msg = "Hello Grace team! Interested in your products";
-      window.open(`https://wa.me/0912672353?text=${encodeURIComponent(msg)}`, '_blank');
-      setTimeout(() => window.location.href = 'tel:0912672353', 1400);
+    card.querySelector(".btn").onclick = () => {
+      const text = `Hello! Interested in ${item.name} ${item.size} – ${item.price}`;
+      const wa = `https://wa.me/0912672353?text=${encodeURIComponent(text)}`;
+      window.open(wa, '_blank');
+      setTimeout(() => window.location.href = 'tel:0912672353', 1200);
     };
-  </script>
+
+    container.appendChild(card);
+  });
+
+  document.getElementById("contactBtn").onclick = () => {
+    const text = "Hello Grace team! I'm interested in your cleaning products";
+    const wa = `https://wa.me/0912672353?text=${encodeURIComponent(text)}`;
+    window.open(wa, '_blank');
+    setTimeout(() => window.location.href = 'tel:0912672353', 1200);
+  };
+</script>
 </body>
 </html>
