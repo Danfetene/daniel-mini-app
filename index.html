@@ -2,143 +2,228 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Grace Products - Soap & Cosmetics</title>
-  
-  <!-- Telegram Web App SDK -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Grace Products</title>
+
   <script src="https://telegram.org/js/telegram-web-app.js?60"></script>
-  
+
   <style>
     :root {
-      --tg-theme-bg-color: #ffffff;
-      --tg-theme-text-color: #000000;
-      --tg-theme-hint-color: #707579;
-      --tg-theme-button-color: #0088cc;
-      --tg-theme-button-text-color: #ffffff;
+      --tg-bg: var(--tg-theme-bg-color, #ffffff);
+      --tg-text: var(--tg-theme-text-color, #000000);
+      --tg-hint: var(--tg-theme-hint-color, #8a8a8e);
+      --tg-accent: #0088cc;
+      --tg-accent-dark: #006699;
+      --card-bg: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.12);
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-md: 0 10px 25px rgba(0,0,0,0.14);
+      --radius-lg: 20px;
+      --transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --tg-theme-bg-color: #18222d;
-        --tg-theme-text-color: #f5f5f5;
-        --tg-theme-hint-color: #a1a1a6;
-        --tg-theme-button-color: #0088cc;
-        --tg-theme-button-text-color: #ffffff;
+        --card-bg: rgba(30,40,55,0.5);
+        --card-border: rgba(255,255,255,0.08);
+        --shadow-sm: 0 6px 16px rgba(0,0,0,0.35);
+        --shadow-md: 0 12px 32px rgba(0,0,0,0.45);
       }
     }
 
-    body {
+    * {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: var(--tg-theme-bg-color);
-      color: var(--tg-theme-text-color);
-      transition: background 0.3s, color 0.3s;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--tg-bg);
+      color: var(--tg-text);
+      min-height: 100vh;
+      padding-bottom: 90px; /* space for fixed bar */
+      -webkit-tap-highlight-color: transparent;
     }
 
     header {
-      background: linear-gradient(135deg, #0088cc, #00aaff);
+      background: linear-gradient(135deg, #0090e9, #00a8ff);
       color: white;
       text-align: center;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      padding: 1.4rem 1rem 1.1rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
     }
 
     h1 {
-      margin: 0;
-      font-size: 1.6rem;
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
 
     .subtitle {
-      font-size: 0.95rem;
-      opacity: 0.9;
-      margin-top: 0.3rem;
+      font-size: 0.98rem;
+      opacity: 0.92;
+      margin-top: 0.35rem;
     }
 
     .container {
-      padding: 0 1rem 2rem;
-      max-width: 800px;
+      padding: 1.1rem;
+      max-width: 920px;
       margin: 0 auto;
     }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.2rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.3rem;
     }
 
     .product-card {
-      background: rgba(255,255,255,0.07);
-      border-radius: 16px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+      transform: translateY(0);
     }
 
+    .product-card:active,
     .product-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .product-image-wrapper {
+      position: relative;
+      height: 260px;
+      overflow: hidden;
     }
 
     .product-image {
       width: 100%;
-      height: 240px;
+      height: 100%;
       object-fit: cover;
-      background: #f0f0f0;
+      transition: transform 0.45s ease;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.06);
+    }
+
+    .image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.38), transparent 60%);
+      pointer-events: none;
     }
 
     .product-info {
-      padding: 1.1rem;
+      padding: 1.3rem 1.25rem;
     }
 
     .product-name {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin: 0 0 0.5rem;
+      font-size: 1.28rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
     }
 
     .product-size {
-      font-size: 0.9rem;
-      color: var(--tg-theme-hint-color);
-      margin-bottom: 0.4rem;
+      font-size: 0.94rem;
+      color: var(--tg-hint);
+      margin-bottom: 0.65rem;
     }
 
     .product-price {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #00c853;
-      margin: 0.6rem 0 1rem;
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #00d16c;
+      margin-bottom: 1.1rem;
+      letter-spacing: -0.01em;
     }
 
     .btn {
-      display: inline-block;
-      background: var(--tg-theme-button-color);
-      color: var(--tg-theme-button-text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #4caf50;
+      color: white;
       border: none;
-      padding: 0.8rem 1.4rem;
-      border-radius: 12px;
-      font-weight: 600;
+      padding: 0.95rem;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
       cursor: pointer;
-      text-align: center;
-      transition: background 0.2s;
+      transition: all 0.22s ease;
+      position: relative;
+      overflow: hidden;
       width: 100%;
     }
 
-    .btn.call-btn {
-      background: #4caf50;  /* green for call action */
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.18);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
     }
 
-    .btn.call-btn:hover {
-      background: #388e3c;
+    .btn:active::before {
+      transform: translateX(100%);
+      transition: transform 0s;
     }
 
-    .footer {
+    .btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .fixed-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--card-border);
+      padding: 1rem;
+      box-shadow: 0 -4px 14px rgba(0,0,0,0.12);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .fixed-bottom .btn {
+      flex: 1;
+      max-width: 320px;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .footer-text {
       text-align: center;
-      margin-top: 2.5rem;
-      font-size: 0.85rem;
-      color: var(--tg-theme-hint-color);
+      font-size: 0.82rem;
+      color: var(--tg-hint);
+      margin-top: 1.8rem;
+      padding: 0 1rem;
+    }
+
+    @media (max-width: 500px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+      header {
+        padding: 1.2rem 0.9rem;
+      }
     }
   </style>
 </head>
@@ -146,71 +231,40 @@
 
   <header>
     <h1>Grace Soap & Cosmetics</h1>
-    <div class="subtitle">Quality Cleaning Products • Made in Ethiopia</div>
+    <div class="subtitle">Premium Cleaning Solutions • Proudly Ethiopian</div>
   </header>
 
   <div class="container">
-    <div class="product-grid" id="products">
-      <!-- Products will be inserted here by JS -->
-    </div>
+    <div class="product-grid" id="products"></div>
   </div>
 
-  <div class="footer">
+  <div class="footer-text">
     GRACE SOAP AND COSMETICS MANUFACTURING PLC<br>
-    Call/WhatsApp: 0912672353
+    Quality You Can Trust
+  </div>
+
+  <!-- Fixed bottom contact bar -->
+  <div class="fixed-bottom">
+    <button class="btn" id="contactAll">
+      📞 Call/WhatsApp to Order: 0912672353
+    </button>
   </div>
 
   <script>
-    // Telegram WebApp initialization
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    if (tg.colorScheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    }
-
-    // Product data
+    // Product data (updated your real images)
     const products = [
-      {
-        name: "Grace Dettol",
-        size: " 5 Liter",
-        price: "100 Birr",
-        image: "https://i.postimg.cc/2SQQBYqF/g-dettol.jpg"
-      },
-      {
-        name: "Grace Handwash",
-        size: "0.5 Liter",
-        price: "100 Birr",
-        image: "https://i.postimg.cc/htvJKqLz/g-b.jpg"
-      },
-      {
-        name: "Grace Liquid Soap",
-        size: "5 Liter",
-        price: "450 Birr",
-        image: "https://i.postimg.cc/LszmpybL/g-liq.jpg"
-      },
-      {
-        name: "Grace Dish Wash",
-        size: "0.8 Liter",
-        price: "100 Birr",
-        image: "https://via.placeholder.com/400x300/FF9800/FFFFFF?text=Grace+Dish+Wash+0.8L"
-      },
-      {
-        name: "Grace Bleaching",
-        size: "0.8 Liter",
-        price: "80 Birr",
-        image: "https://i.postimg.cc/wMDXcYfm/g-tile-clea.jpg"
-      },
-      {
-        name: "Grace Bleaching",
-        size: "0.5 Liter",
-        price: "40 Birr",
-        image: "https://i.postimg.cc/tRmQLQgb/g-bli.jpg"
-      }
+      { name: "Grace Dettol",          size: "5 Liter",   price: "100 Birr",  image: "https://i.postimg.cc/2SQQBYqF/g-dettol.jpg" },
+      { name: "Grace Handwash",        size: "0.5 Liter", price: "100 Birr",  image: "https://i.postimg.cc/htvJKqLz/g-b.jpg" },
+      { name: "Grace Liquid Soap",     size: "5 Liter",   price: "450 Birr",  image: "https://i.postimg.cc/LszmpybL/g-liq.jpg" },
+      { name: "Grace Dish Wash",       size: "0.8 Liter", price: "100 Birr",  image: "https://via.placeholder.com/400x300/FF9800/FFFFFF?text=Grace+Dish+Wash+0.8L" },
+      { name: "Grace Bleaching",       size: "0.8 Liter", price: "80 Birr",   image: "https://i.postimg.cc/wMDXcYfm/g-tile-clea.jpg" },
+      { name: "Grace Bleaching",       size: "0.5 Liter", price: "40 Birr",   image: "https://i.postimg.cc/tRmQLQgb/g-bli.jpg" }
     ];
 
-    // Render products
     const container = document.getElementById("products");
 
     products.forEach(product => {
@@ -218,36 +272,35 @@
       card.className = "product-card";
 
       card.innerHTML = `
-        <img class="product-image" src="${product.image}" alt="${product.name}" loading="lazy">
+        <div class="product-image-wrapper">
+          <img class="product-image" src="${product.image}" alt="${product.name}" loading="lazy">
+          <div class="image-overlay"></div>
+        </div>
         <div class="product-info">
-          <h3 class="product-name">${product.name}</h3>
+          <div class="product-name">${product.name}</div>
           <div class="product-size">${product.size}</div>
           <div class="product-price">${product.price}</div>
-          <button class="btn call-btn">Call to Order: 0912672353</button>
+          <button class="btn">Order Now – 0912672353</button>
         </div>
       `;
 
-      // Open phone dialer when button is clicked
       card.querySelector(".btn").addEventListener("click", () => {
-        const phoneNumber = "0912672353";
-        const message = `Hello! Interested in ${product.name} ${product.size} (${product.price})`;
-        
-        // Try to open WhatsApp first (most popular in Ethiopia)
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-        
-        // Fallback to regular phone call if WhatsApp link fails or not supported
-        const telUrl = `tel:${phoneNumber}`;
-
-        // Open WhatsApp (preferred)
-        window.open(whatsappUrl, '_blank');
-
-        // Optional: fallback to tel: after 2 seconds if WhatsApp didn't open
-        setTimeout(() => {
-          window.location.href = telUrl;
-        }, 2000);
+        const phone = "0912672353";
+        const msg = `Hello Grace! Interested in ${product.name} ${product.size} – ${product.price}`;
+        const wa = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+        window.open(wa, '_blank');
+        setTimeout(() => { window.location.href = `tel:${phone}`; }, 1800);
       });
 
       container.appendChild(card);
+    });
+
+    // Global contact button
+    document.getElementById("contactAll").addEventListener("click", () => {
+      const msg = "Hello Grace! I'm interested in your products.";
+      const wa = `https://wa.me/0912672353?text=${encodeURIComponent(msg)}`;
+      window.open(wa, '_blank');
+      setTimeout(() => { window.location.href = "tel:0912672353"; }, 1800);
     });
   </script>
 </body>
