@@ -38,7 +38,7 @@
       background: var(--tg-bg);
       color: var(--tg-text);
       min-height: 100vh;
-      padding-bottom: 110px;
+      padding-bottom: 120px;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -93,7 +93,7 @@
     }
 
     .product-image-wrapper {
-      height: 140px;               /* ← significantly smaller & balanced */
+      height: 140px;
       background: linear-gradient(135deg, #f1f5f9, #e0e7ff);
       display: flex;
       align-items: center;
@@ -157,37 +157,60 @@
       box-shadow: 0 2px 8px rgba(16,185,129,0.35);
     }
 
+    /* ──────────────────────────────────────
+       BOLD & COLOURFUL BOTTOM SECTION
+    ────────────────────────────────────── */
     .fixed-bottom {
       position: fixed;
       bottom: 0;
-      left: 0; right: 0;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--card-border);
-      padding: 1.1rem 1rem;
-      box-shadow: 0 -5px 16px rgba(0,0,0,0.14);
-      z-index: 100;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #059669, #10b981, #34d399);
+      padding: 1.2rem 1rem;
+      box-shadow: 0 -8px 24px rgba(16,185,129,0.4);
+      z-index: 200;
+      text-align: center;
+      animation: pulse-bg 4s infinite ease-in-out;
+    }
+
+    @keyframes pulse-bg {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
     }
 
     .fixed-bottom .btn {
-      max-width: 380px;
+      max-width: 420px;
       margin: 0 auto;
       display: block;
-      padding: 1.1rem;
-      font-size: 1.12rem;
+      padding: 1.25rem 1.5rem;
+      font-size: 1.22rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #ffffff, #f0fdfa);
+      color: #064e3b;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      border: 2px solid #ffffff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      animation: pulse-btn 2.2s infinite;
+    }
+
+    @keyframes pulse-btn {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.03); }
     }
 
     .footer-text {
       text-align: center;
       font-size: 0.86rem;
       color: var(--tg-hint);
-      margin: 2.2rem 1rem 1.4rem;
+      margin: 2.2rem 1rem 4rem;
     }
 
     @media (max-width: 480px) {
       .product-grid { grid-template-columns: 1fr; gap: 1.1rem; }
       .product-image-wrapper { height: 130px; }
       h1 { font-size: 1.8rem; }
+      .fixed-bottom .btn { font-size: 1.15rem; padding: 1.15rem; }
     }
   </style>
 </head>
@@ -206,8 +229,9 @@
     GRACE SOAP AND COSMETICS MANUFACTURING PLC
   </div>
 
+  <!-- Bold & Colourful Bottom Section -->
   <div class="fixed-bottom">
-    <button class="btn" id="contactBtn">📞 Call / WhatsApp: 0912672353</button>
+    <button class="btn" id="contactBtn">📞 CALL / WHATSAPP NOW: 0912672353</button>
   </div>
 
   <script>
