@@ -3,787 +3,238 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ET Water Market • Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Grace Products - Soap & Cosmetics</title>
+  
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js?60"></script>
+  
   <style>
     :root {
-      --tg-bg-color: #f0f0f0;
-      --tg-text-color: #000;
-      --tg-hint-color: #999;
-      --tg-button-color: #5288c1;
-      --tg-button-text-color: #fff;
-      --accent: #2e7d32;
-      --danger: #d32f2f;
+      --tg-theme-bg-color: #ffffff;
+      --tg-theme-text-color: #000000;
+      --tg-theme-hint-color: #707579;
+      --tg-theme-button-color: #0088cc;
+      --tg-theme-button-text-color: #ffffff;
     }
 
-    body.dark {
-      --tg-bg-color: #17212b;
-      --tg-text-color: #f0f0f0;
-      --tg-hint-color: #aaa;
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --tg-theme-bg-color: #18222d;
+        --tg-theme-text-color: #f5f5f5;
+        --tg-theme-hint-color: #a1a1a6;
+        --tg-theme-button-color: #0088cc;
+        --tg-theme-button-text-color: #ffffff;
+      }
     }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--tg-bg-color);
-      color: var(--tg-text-color);
-      min-height: 100vh;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--tg-theme-bg-color);
+      color: var(--tg-theme-text-color);
       transition: background 0.3s, color 0.3s;
     }
 
     header {
-      background: var(--tg-button-color);
-      color: var(--tg-button-text-color);
-      padding: 12px 16px;
+      background: linear-gradient(135deg, #0088cc, #00aaff);
+      color: white;
       text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    header h1 { font-size: 20px; margin: 0; }
-    .moto { font-size: 13px; opacity: 0.9; }
-
-    .top-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px 6px;
-      background: var(--tg-bg-color);
-      position: sticky;
-      top: 48px;
-      z-index: 9;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
 
-    .search-bar {
-      flex: 1;
-      background: var(--tg-bg-color);
-      border: 1px solid var(--tg-hint-color);
-      border-radius: 10px;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-    .search-bar input {
-      background: transparent;
-      border: none;
-      flex: 1;
-      font-size: 15px;
-      color: var(--tg-text-color);
-      outline: none;
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
     }
 
-    .filter-wrapper select {
-      background: var(--tg-bg-color);
-      color: var(--tg-text-color);
-      border: 1px solid var(--tg-hint-color);
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 13px;
-      max-width: 140px;
+    .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-top: 0.3rem;
     }
 
-    .categories {
+    .container {
+      padding: 0 1rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      gap: 10px;
-      padding: 14px;
-      background: var(--tg-bg-color);
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
     }
 
-    .category-tile {
-      background: var(--tg-bg-color);
-      border-radius: 14px;
-      padding: 10px 6px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.16s;
+    .product-card {
+      background: rgba(255,255,255,0.07);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.08);
     }
-    .category-tile:active { transform: scale(0.95); }
-    .category-tile img {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 240px;
       object-fit: cover;
-      margin-bottom: 6px;
-    }
-    .category-tile span {
-      font-size: 12px;
-      display: block;
+      background: #f0f0f0;
     }
 
-    .brand-section {
-      display: none;
-      padding: 12px 14px 100px;
-      background: var(--tg-bg-color);
-    }
-    .brand-section.active { display: block; }
-
-    .brand-header {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 8px 0 16px;
-      color: var(--tg-button-color);
-      text-align: center;
+    .product-info {
+      padding: 1.1rem;
     }
 
-    .variant {
-      background: rgba(82,136,193,0.06);
-      border: 1px solid rgba(82,136,193,0.18);
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
+    .product-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem;
     }
-    .variant-info { flex: 1; }
-    .variant-size { font-size: 15px; font-weight: 600; }
-    .variant-price { font-size: 18px; color: var(--accent); font-weight: bold; }
 
-    .order-btn {
-      background: var(--tg-button-color);
-      color: var(--tg-button-text-color);
+    .product-size {
+      font-size: 0.9rem;
+      color: var(--tg-theme-hint-color);
+      margin-bottom: 0.4rem;
+    }
+
+    .product-price {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #00c853;
+      margin: 0.6rem 0 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--tg-theme-button-color);
+      color: var(--tg-theme-button-text-color);
       border: none;
-      border-radius: 10px;
-      padding: 8px 18px;
-      font-size: 14px;
+      padding: 0.8rem 1.4rem;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
-      min-width: 90px;
-      white-space: nowrap;
-    }
-    .order-btn:active {
-      opacity: 0.88;
-      transform: scale(0.97);
-    }
-
-    .nutrition {
-      margin-top: 24px;
-      padding: 14px;
-      background: rgba(46,125,50,0.06);
-      border-radius: 12px;
-      border: 1px solid rgba(46,125,50,0.18);
-    }
-    .nutrition h3 {
-      margin: 0 0 10px;
-      color: var(--accent);
-      font-size: 16px;
       text-align: center;
-    }
-    .nutrition-table {
+      transition: background 0.2s;
       width: 100%;
-      font-size: 13px;
-      border-collapse: collapse;
-    }
-    .nutrition-table td {
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-    }
-    .nutrition-table td:first-child { font-weight: 500; }
-    .nutrition-table td:last-child {
-      text-align: right;
-      color: var(--tg-button-color);
     }
 
-    #cart-summary {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: var(--tg-bg-color);
-      border-top: 1px solid rgba(0,0,0,0.1);
-      padding: 14px;
-      box-shadow: 0 -6px 14px rgba(0,0,0,0.15);
-      transform: translateY(100%);
-      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-      z-index: 100;
-    }
-    #cart-summary.visible { transform: translateY(0); }
-
-    #cart-items { list-style: none; margin: 10px 0 16px; max-height: 240px; overflow-y: auto; }
-    .cart-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      font-size: 14px;
-    }
-    .cart-item-name { flex: 1; font-weight: 500; }
-
-    .cart-qty-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 10px;
-    }
-
-    .qty-btn {
-      width: 34px;
-      height: 34px;
-      border: none;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .qty-minus { background: rgba(211,47,47,0.12); color: var(--danger); }
-    .qty-plus  { background: rgba(46,125,50,0.12); color: var(--accent); }
-
-    .qty-input {
-      width: 60px;
-      height: 34px;
-      text-align: center;
-      font-size: 15px;
-      border: 1px solid rgba(120,120,120,0.4);
-      border-radius: 6px;
-      background: rgba(255,255,255,0.06);
-      color: var(--tg-text-color);
-    }
-    .qty-input::-webkit-outer-spin-button,
-    .qty-input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    #total {
-      font-weight: bold;
-      text-align: right;
-      font-size: 18px;
-      margin: 10px 0 14px;
-      padding-top: 10px;
-      border-top: 2px solid rgba(0,0,0,0.08);
-    }
-
-    #empty { text-align: center; color: var(--tg-hint-color); padding: 40px 0; font-size: 15px; }
-
-    #no-results {
-      display: none;
-      text-align: center;
-      padding: 36px 16px;
-      color: var(--tg-hint-color);
-      font-size: 15px;
+    .btn:hover {
+      background: #006699;
     }
 
     .footer {
       text-align: center;
-      padding: 20px 16px;
-      color: var(--tg-hint-color);
-      font-size: 13px;
-      background: rgba(0,0,0,0.03);
-      border-top: 1px solid rgba(0,0,0,0.08);
-    }
-
-    @media (min-width: 500px) {
-      body { max-width: 480px; margin: 0 auto; }
+      margin-top: 2.5rem;
+      font-size: 0.85rem;
+      color: var(--tg-theme-hint-color);
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1 id="header-title">ET Water Market (+350 Agents)</h1>
-  <div class="moto">To your need • Addis Ababa delivery</div>
-</header>
+  <header>
+    <h1>Grace Soap & Cosmetics</h1>
+    <div class="subtitle">Quality Cleaning Products • Made in Ethiopia</div>
+  </header>
 
-<div class="top-controls">
-  <div class="search-bar">
-    <input id="searchInput" type="text" placeholder="Search brands" />
-  </div>
-  <div class="filter-wrapper">
-    <select id="sortFilter">
-      <option value="default">Filter by</option>
-      <option value="price-low-high">Price:Low</option>
-    </select>
-  </div>
-</div>
-
-<div class="categories" id="categories"></div>
-
-<div id="no-results">No brands found</div>
-
-<!-- Cart -->
-<div id="cart-summary">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-    <h2 style="margin:0; font-size:18px;">Your Cart</h2>
-  </div>
-  <ul id="cart-items"></ul>
-  <div id="total">Total: 0 Birr</div>
-  <div id="empty">Cart is empty – pick your water! 💧</div>
-</div>
-
-<div class="footer">
-  Contact for requests / delivery in Addis Ababa<br>
-  <strong style="color:var(--tg-button-color); font-size:15px;">0984748168</strong>
-</div>
-
-<script>
-// ────────────────────────────────────────────────
-//  CONFIG
-// ────────────────────────────────────────────────
-const BOT_TOKEN = '8557040338:AAGT7VyhxhfbMi6ETnJdPsNzefGwr_LFKJI';
-const TARGET_CHAT_ID = '421868479';
-
-// ────────────────────────────────────────────────
-//  TELEGRAM & THEME
-// ────────────────────────────────────────────────
-const tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand();
-tg.enableClosingConfirmation();
-
-tg.MainButton.setParams({
-  text: 'Checkout',
-  color: tg.themeParams.button_color || '#00b140',
-  text_color: tg.themeParams.button_text_color || '#ffffff'
-});
-tg.MainButton.hide();
-
-function applyTheme() {
-  const isDark = tg.colorScheme === 'dark';
-  document.body.classList.toggle('dark', isDark);
-
-  const p = tg.themeParams;
-  document.documentElement.style.setProperty('--tg-bg-color', p.bg_color || (isDark ? '#17212b' : '#f0f0f0'));
-  document.documentElement.style.setProperty('--tg-text-color', p.text_color || (isDark ? '#f0f0f0' : '#000'));
-  document.documentElement.style.setProperty('--tg-hint-color', p.hint_color || (isDark ? '#aaa' : '#999'));
-  document.documentElement.style.setProperty('--tg-button-color', p.button_color || '#5288c1');
-  document.documentElement.style.setProperty('--tg-button-text-color', p.button_text_color || '#fff');
-
-  tg.MainButton.setParams({ color: p.button_color, text_color: p.button_text_color });
-}
-applyTheme();
-tg.onEvent('themeChanged', applyTheme);
-
-// ────────────────────────────────────────────────
-//  BRANDS DATA (with 1L @ 155 Birr)
-// ────────────────────────────────────────────────
-const brands = [
-  { id: 'gold',     name: 'Gold',     img: 'https://i.postimg.cc/nr7cPzVK/gold-w.webp',     brandDisplay: 'Gold Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'TDS',val:'8.5 mg/L'},{label:'Calcium',val:'1.6 mg/L'},{label:'Magnesium',val:'0.8 mg/L'},{label:'Potassium',val:'8.5 mg/L'},{label:'Sodium',val:'0.9 mg/L'}]
-  },
-  { id: 'top',      name: 'Top',      img: 'https://i.postimg.cc/4dGs4htb/top.webp',        brandDisplay: 'Top Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'yes',      name: 'Yes',      img: 'https://i.postimg.cc/rw1JHWnJ/yes.webp',        brandDisplay: 'Yes Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'TDS',val:'10 mg/L'},{label:'Calcium',val:'1.2 mg/L'},{label:'Magnesium',val:'0.8 mg/L'},{label:'Sodium',val:'1.2 mg/L'}]
-  },
-  { id: 'aquaddis', name: 'Aquaddis', img: 'https://i.postimg.cc/dVD0gdmt/aquaddis.webp',   brandDisplay: 'Aquaddis / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'africa',   name: 'Africa',   img: 'https://i.postimg.cc/0NGB7hR3/africa.jpg',      brandDisplay: 'Africa Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'one',      name: 'One',      img: 'https://i.postimg.cc/Vvf49NBk/one-water.jpg',   brandDisplay: 'One Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'dega',     name: 'Dega',     img: 'https://i.postimg.cc/9FG86vz9/dega.webp',       brandDisplay: 'Dega Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'arki',     name: 'Arki',     img: 'https://i.postimg.cc/TwDqrDDf/arki.webp',       brandDisplay: 'Arki Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'forest',   name: 'Forest',   img: 'https://i.postimg.cc/bYFW3tJV/forest.webp',     brandDisplay: 'Forest Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'kiya',     name: 'Kiya',     img: 'https://i.postimg.cc/TYMSzXV0/kiya.webp',       brandDisplay: 'Kiya Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'sport',    name: 'Sport',    img: 'https://i.postimg.cc/9McHHHH5/sport.webp',      brandDisplay: 'Sport Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'fham',     name: 'Fham',     img: 'https://i.postimg.cc/wjqVSMCp/fham.jpg',        brandDisplay: 'Fham Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'care',     name: 'Care',     img: 'https://i.postimg.cc/15NtYv7K/care.webp',       brandDisplay: 'Care Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'wow',      name: 'Wow',      img: 'https://i.postimg.cc/Gh1fD2DQ/wow.webp',        brandDisplay: 'Wow Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'konjo',    name: 'Konjo',    img: 'https://i.postimg.cc/gkYDd68Y/konjo.jpg',       brandDisplay: 'Konjo Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { id: 'eden',     name: 'Eden',     img: 'https://i.postimg.cc/xCnkHL01/eden.webp',       brandDisplay: 'Eden Water / Agents',
-    variants: [{size:'0.3L',price:140},{size:'0.6L',price:150},{size:'1L',price:155},{size:'2L',price:160}],
-    nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
-  },
-  { 
-    id: 'miawa', name: 'Miawa', img: 'https://via.placeholder.com/64?text=Miawa', brandDisplay: 'Miawa Water / Agents',
-    variants: [
-      {size:'0.3L', price:140},
-      {size:'0.6L', price:150},
-      {size:'1L',   price:155},
-      {size:'2L',   price:160}
-    ],
-    nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
-  }
-];
-
-const categoriesEl = document.getElementById('categories');
-
-// ────────────────────────────────────────────────
-//  RENDER BRANDS & SECTIONS
-// ────────────────────────────────────────────────
-brands.forEach(brand => {
-  const minPrice = Math.min(...brand.variants.map(v => v.price));
-
-  // Category tile
-  const tile = document.createElement('div');
-  tile.className = 'category-tile';
-  tile.dataset.brandId = brand.id;
-  tile.dataset.minPrice = minPrice;
-  tile.innerHTML = `
-    <img src="${brand.img}" alt="${brand.name}" loading="lazy">
-    <span>${brand.name}</span>
-  `;
-  tile.addEventListener('click', () => showBrand(brand.id));
-  categoriesEl.appendChild(tile);
-
-  // Brand detail section
-  const section = document.createElement('div');
-  section.id = `${brand.id}-section`;
-  section.className = 'brand-section';
-
-  let variantsHTML = brand.variants.map(v => `
-    <div class="variant">
-      <div class="variant-info">
-        <div class="variant-size">${v.size}</div>
-        <div class="variant-price">${v.price} Birr</div>
-      </div>
-      <button class="order-btn" 
-              data-brand="${brand.brandDisplay}" 
-              data-size="${v.size}" 
-              data-price="${v.price}">Order</button>
+  <div class="container">
+    <div class="product-grid" id="products">
+      <!-- Products will be inserted here by JS -->
     </div>
-  `).join('');
+  </div>
 
-  let nutritionHTML = '';
-  if (brand.nutrition?.length) {
-    nutritionHTML = `
-      <div class="nutrition">
-        <h3>Nutrition Facts (per liter)</h3>
-        <table class="nutrition-table">
-          ${brand.nutrition.map(n => `<tr><td>${n.label}</td><td>${n.val}</td></tr>`).join('')}
-        </table>
-      </div>`;
-  }
+  <div class="footer">
+    GRACE SOAP AND COSMETICS MANUFACTURING PLC © 2026
+  </div>
 
-  section.innerHTML = `
-    <div class="brand-header">${brand.brandDisplay}</div>
-    ${variantsHTML}
-    ${nutritionHTML}
-  `;
+  <script>
+    // Telegram WebApp initialization
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand(); // make it full-screen
 
-  document.body.appendChild(section);
-});
-
-// ────────────────────────────────────────────────
-//  CART STATE & FUNCTIONS
-// ────────────────────────────────────────────────
-let cart = [];
-
-function addToCart(brand, size, price) {
-  const key = `${brand}|${size}`;
-  const existing = cart.find(i => `${i.brand}|${i.size}` === key);
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.push({ brand, size, price, qty: 1 });
-  }
-  renderCart();
-  tg.HapticFeedback.impactOccurred('medium');
-}
-
-function updateQty(index, newQty) {
-  newQty = Math.max(0, Math.min(1000, parseInt(newQty) || 0));
-
-  if (newQty === 0) {
-    cart.splice(index, 1);
-  } else {
-    cart[index].qty = newQty;
-  }
-
-  renderCart();
-  tg.HapticFeedback.impactOccurred('light');
-}
-
-function renderCart() {
-  const list       = document.getElementById('cart-items');
-  const totalEl    = document.getElementById('total');
-  const emptyEl    = document.getElementById('empty');
-  const summary    = document.getElementById('cart-summary');
-
-  list.innerHTML = '';
-  let total = 0;
-
-  if (cart.length === 0) {
-    emptyEl.style.display = 'block';
-    totalEl.textContent = 'Total: 0 Birr';
-    summary.classList.remove('visible');
-    tg.MainButton.hide();
-    tg.BackButton.hide();
-    return;
-  }
-
-  emptyEl.style.display = 'none';
-  summary.classList.add('visible');
-  tg.BackButton.show();
-
-  cart.forEach((item, i) => {
-    const line = item.price * item.qty;
-    total += line;
-
-    const li = document.createElement('li');
-    li.className = 'cart-item';
-    li.innerHTML = `
-      <div class="cart-item-name">${item.brand} ${item.size}</div>
-      <div class="cart-qty-controls">
-        <button class="qty-btn qty-minus" data-index="${i}" data-delta="-1">−</button>
-        <input type="number" class="qty-input" data-index="${i}" value="${item.qty}" min="0" max="1000" step="1">
-        <button class="qty-btn qty-plus" data-index="${i}" data-delta="1">+</button>
-      </div>
-      <div class="cart-item-total">${line} Birr</div>
-    `;
-    list.appendChild(li);
-  });
-
-  totalEl.textContent = `Total: ${total} Birr`;
-  tg.MainButton.setText(`Checkout • ${total} Birr`);
-  tg.MainButton.show();
-}
-
-// ────────────────────────────────────────────────
-//  NAVIGATION & VIEW MANAGEMENT
-// ────────────────────────────────────────────────
-let previousView = 'main';
-let lastBrandId = null;
-
-function showBrand(id) {
-  previousView = 'brand';
-  lastBrandId = id;
-
-  document.querySelector('.top-controls').style.display = 'none';
-  document.querySelector('.categories').style.display = 'none';
-  document.getElementById('no-results').style.display = 'none';
-
-  document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-  document.getElementById(`${id}-section`)?.classList.add('active');
-
-  tg.BackButton.show();
-  tg.HapticFeedback.impactOccurred('light');
-  window.scrollTo({ top: 0, behavior: 'instant' });
-}
-
-function returnToMainView() {
-  cart = []; // clear cart when going back to main
-  renderCart();
-
-  previousView = 'main';
-  lastBrandId = null;
-
-  document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-
-  document.querySelector('.top-controls').style.display = 'flex';
-  document.querySelector('.categories').style.display = 'grid';
-  document.getElementById('no-results').style.display = 'none';
-
-  tg.BackButton.hide();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  tg.HapticFeedback.impactOccurred('light');
-}
-
-function returnToLastBrand() {
-  if (lastBrandId) {
-    document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-    document.getElementById(`${lastBrandId}-section`)?.classList.add('active');
-
-    document.querySelector('.top-controls').style.display = 'none';
-    document.querySelector('.categories').style.display = 'none';
-    tg.BackButton.show();
-  } else {
-    returnToMainView();
-  }
-}
-
-tg.BackButton.onClick(() => {
-  const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
-
-  if (cartIsVisible) {
-    cart = [];
-    renderCart();
-    document.getElementById('cart-summary').classList.remove('visible');
-    tg.MainButton.hide();
-    returnToLastBrand();
-  } else if (previousView === 'brand') {
-    returnToMainView();
-  }
-
-  tg.HapticFeedback.impactOccurred('light');
-});
-
-// ────────────────────────────────────────────────
-//  EVENT LISTENERS
-// ────────────────────────────────────────────────
-document.addEventListener('click', e => {
-  const t = e.target;
-
-  // Order button
-  if (t.classList.contains('order-btn')) {
-    const { brand, size, price } = t.dataset;
-    addToCart(brand, size, Number(price));
-  }
-
-  // Quantity +/- buttons
-  if (t.classList.contains('qty-minus') || t.classList.contains('qty-plus')) {
-    const index = Number(t.dataset.index);
-    const delta = Number(t.dataset.delta);
-    if (!isNaN(index)) {
-      let newQty = (cart[index]?.qty || 0) + delta;
-      newQty = Math.max(0, Math.min(1000, newQty));
-      updateQty(index, newQty);
+    // Optional: match Telegram theme
+    if (tg.colorScheme === 'dark') {
+      document.documentElement.classList.add('dark');
     }
-  }
-});
 
-// Quantity input changes
-document.addEventListener('input', e => {
-  if (e.target.classList.contains('qty-input')) {
-    const index = Number(e.target.dataset.index);
-    if (!isNaN(index)) updateQty(index, e.target.value);
-  }
-});
+    // Product data
+    const products = [
+      {
+        name: "Grace Dettol",
+        size: "0.5 Liter",
+        price: "100 Birr",
+        image: "https://via.placeholder.com/400x300/4CAF50/FFFFFF?text=Grace+Dettol+0.5L" // ← replace with real image URL
+      },
+      {
+        name: "Grace Handwash",
+        size: "0.5 Liter",
+        price: "100 Birr",
+        image: "https://via.placeholder.com/400x300/2196F3/FFFFFF?text=Grace+Handwash+0.5L"
+      },
+      {
+        name: "Grace Liquid Soap",
+        size: "0.5 Liter",
+        price: "450 Birr",
+        image: "https://via.placeholder.com/400x300/9C27B0/FFFFFF?text=Grace+Liquid+Soap+0.5L"
+      },
+      {
+        name: "Grace Dish Wash",
+        size: "0.8 Liter",
+        price: "100 Birr",
+        image: "https://via.placeholder.com/400x300/FF9800/FFFFFF?text=Grace+Dish+Wash+0.8L"
+      },
+      {
+        name: "Grace Bleaching",
+        size: "0.8 Liter",
+        price: "80 Birr",
+        image: "https://via.placeholder.com/400x300/F44336/FFFFFF?text=Grace+Bleaching+0.8L"
+      },
+      {
+        name: "Grace Bleaching",
+        size: "0.5 Liter",
+        price: "40 Birr",
+        image: "https://via.placeholder.com/400x300/F44336/FFFFFF?text=Grace+Bleaching+0.5L"
+      }
+    ];
 
-document.addEventListener('change', e => {
-  if (e.target.classList.contains('qty-input')) {
-    const index = Number(e.target.dataset.index);
-    if (!isNaN(index)) updateQty(index, e.target.value);
-  }
-});
+    // Render products
+    const container = document.getElementById("products");
 
-// Sort filter
-document.getElementById('sortFilter').addEventListener('change', e => {
-  const value = e.target.value;
-  const tiles = Array.from(document.querySelectorAll('.category-tile'));
-  const container = document.getElementById('categories');
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "product-card";
 
-  if (value === 'price-low-high') {
-    tiles.sort((a, b) => parseInt(a.dataset.minPrice || 9999) - parseInt(b.dataset.minPrice || 9999));
-    tiles.forEach(tile => container.appendChild(tile));
-  } else {
-    brands.forEach(brand => {
-      const tile = document.querySelector(`[data-brand-id="${brand.id}"]`);
-      if (tile) container.appendChild(tile);
-    });
-  }
-});
+      card.innerHTML = `
+        <img class="product-image" src="${product.image}" alt="${product.name}" loading="lazy">
+        <div class="product-info">
+          <h3 class="product-name">${product.name}</h3>
+          <div class="product-size">${product.size}</div>
+          <div class="product-price">${product.price}</div>
+          <button class="btn">Contact to Order</button>
+        </div>
+      `;
 
-// Search (debounced)
-let searchTimeout;
-document.getElementById('searchInput').addEventListener('input', e => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    const q = e.target.value.toLowerCase().trim();
-    const tiles = document.querySelectorAll('.category-tile');
-    let visible = 0;
+      // Make button interactive (example: open chat with predefined message)
+      card.querySelector(".btn").addEventListener("click", () => {
+        const text = `Hello! I'm interested in ${product.name} ${product.size} - ${product.price}`;
+        tg.openTelegramLink(`https://t.me/your_channel_or_support?text=${encodeURIComponent(text)}`);
+        // Alternative: tg.sendData(JSON.stringify({action:"order", product: product.name}));
+      });
 
-    tiles.forEach(tile => {
-      const name = tile.querySelector('span').textContent.toLowerCase();
-      const show = name.includes(q) || ['140','150','155','160'].some(p => q.includes(p));
-      tile.style.display = show ? '' : 'none';
-      if (show) visible++;
-    });
-
-    document.getElementById('no-results').style.display = (q && visible === 0) ? 'block' : 'none';
-  }, 280);
-});
-
-// ────────────────────────────────────────────────
-//  CHECKOUT → SEND TO TELEGRAM
-// ────────────────────────────────────────────────
-tg.MainButton.onClick(async () => {
-  if (!cart.length) return;
-
-  const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 09", "");
-  if (!phone || phone.trim().length < 9) {
-    tg.showAlert("Please enter a valid phone number.");
-    return;
-  }
-
-  const cleanPhone = phone.trim();
-  let itemsText = "";
-  let total = 0;
-
-  cart.forEach(i => {
-    const line = i.price * i.qty;
-    total += line;
-    itemsText += `• ${i.brand} ${i.size} × ${i.qty} = ${line} Birr\n`;
-  });
-
-  const message = 
-`🛒 New Water Order – ET Water Market
-📞 Phone: ${cleanPhone}
-📍 Delivery: Addis Ababa
-
-Items:
-${itemsText}
-────────────────────
-💰 Total: ${total} Birr
-
-Ordered from Telegram Mini App`;
-
-  tg.showAlert("Thanks! Your order is Confirmed");
-
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: TARGET_CHAT_ID,
-        text: message,
-        parse_mode: 'Markdown'
-      })
+      container.appendChild(card);
     });
 
-    const data = await res.json();
-
-    if (data.ok) {
-      tg.showAlert("Thanks! Your order is confirmed\nWe will contact you soon.");
-      cart = [];
-      document.getElementById('cart-summary').classList.remove('visible');
-      tg.MainButton.hide();
-      tg.BackButton.hide();
-      returnToMainView();
-    } else {
-      tg.showAlert("Failed to send order.\nError: " + (data.description || "Unknown"));
-    }
-  } catch (err) {
-    tg.showAlert("No internet connection or error sending order.");
-  }
-});
-
-// ────────────────────────────────────────────────
-//  INIT
-// ────────────────────────────────────────────────
-renderCart();
+    // Optional: show main button (if you want to add cart / checkout later)
+    // tg.MainButton.setText("View All Products").show();
   </script>
 </body>
 </html>
