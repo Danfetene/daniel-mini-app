@@ -10,17 +10,15 @@
   <style>
     :root {
       --tg-bg: var(--tg-theme-bg-color, #f8fafc);
-      --tg-text: var(--tg-theme-text-color, #1e293b);
+      --tg-text: var(--tg-theme-text-color, #0f172a);
       --tg-hint: var(--tg-theme-hint-color, #64748b);
-      --accent: #6366f1;           /* indigo – modern & trustworthy */
-      --accent-dark: #4f46e5;
-      --success: #10b981;          /* emerald – for price & action */
-      --card-bg: rgba(255,255,255,0.75);
-      --card-border: rgba(226,232,240,0.8);
-      --shadow-sm: 0 6px 16px rgba(0,0,0,0.08);
-      --shadow-md: 0 12px 28px rgba(99,102,241,0.18);
+      --accent: #6366f1;
+      --success: #10b981;
+      --card-bg: rgba(255,255,255,0.8);
+      --card-border: rgba(226,232,240,0.9);
+      --shadow: 0 6px 18px rgba(99,102,241,0.12);
       --radius: 16px;
-      --transition: all 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition: all 0.24s ease;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -28,56 +26,55 @@
         --tg-bg: #0f172a;
         --tg-text: #e2e8f0;
         --tg-hint: #94a3b8;
-        --card-bg: rgba(30,41,59,0.65);
-        --card-border: rgba(59,69,89,0.6);
-        --shadow-sm: 0 8px 20px rgba(0,0,0,0.4);
-        --shadow-md: 0 14px 32px rgba(99,102,241,0.25);
+        --card-bg: rgba(30,41,59,0.7);
+        --card-border: rgba(59,69,89,0.65);
+        --shadow: 0 8px 20px rgba(0,0,0,0.38);
       }
     }
 
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: system-ui, sans-serif;
       background: var(--tg-bg);
       color: var(--tg-text);
       min-height: 100vh;
-      padding-bottom: 100px;
+      padding-bottom: 110px;
       -webkit-tap-highlight-color: transparent;
     }
 
     header {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
       color: white;
       text-align: center;
-      padding: 1.3rem 1rem;
+      padding: 1.4rem 1rem 1.1rem;
       position: sticky;
       top: 0;
       z-index: 10;
-      box-shadow: 0 4px 14px rgba(99,102,241,0.25);
+      box-shadow: 0 4px 16px rgba(99,102,241,0.28);
     }
 
     h1 {
-      font-size: 1.9rem;
+      font-size: 1.95rem;
       font-weight: 800;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
-      font-size: 1rem;
-      opacity: 0.94;
-      margin-top: 0.4rem;
+      font-size: 1.02rem;
+      opacity: 0.95;
+      margin-top: 0.45rem;
     }
 
     .container {
-      padding: 1rem;
+      padding: 1.2rem 1rem;
       max-width: 960px;
       margin: 0 auto;
     }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.1rem;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.3rem;
     }
 
     .product-card {
@@ -85,100 +82,79 @@
       border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--card-border);
-      box-shadow: var(--shadow-sm);
-      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
       transition: var(--transition);
     }
 
     .product-card:active {
-      transform: scale(0.97);
-      box-shadow: var(--shadow-md);
+      transform: scale(0.975);
+      box-shadow: 0 10px 24px rgba(99,102,241,0.22);
     }
 
     .product-image-wrapper {
-      position: relative;
-      height: 180px;           /* ← smaller image size */
-      overflow: hidden;
-      background: linear-gradient(145deg, #e0e7ff, #f3e8ff);
-    }
-
-    .product-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;     /* better for product bottles */
-      object-position: center;
-      transition: transform 0.4s ease;
-    }
-
-    .product-card:active .product-image,
-    .product-card:hover .product-image {
-      transform: scale(1.08);
-    }
-
-    .product-info {
-      padding: 1.1rem 1rem;
-    }
-
-    .product-name {
-      font-size: 1.22rem;
-      font-weight: 700;
-      margin-bottom: 0.35rem;
-      line-height: 1.3;
-    }
-
-    .product-size {
-      font-size: 0.92rem;
-      color: var(--tg-hint);
-      margin-bottom: 0.6rem;
-    }
-
-    .product-price {
-      font-size: 1.48rem;
-      font-weight: 800;
-      color: var(--success);
-      margin-bottom: 1rem;
-    }
-
-    .btn {
+      height: 140px;               /* ← significantly smaller & balanced */
+      background: linear-gradient(135deg, #f1f5f9, #e0e7ff);
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 12px;
+    }
+
+    .product-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.38s ease;
+    }
+
+    .product-card:active .product-image {
+      transform: scale(1.06);
+    }
+
+    .product-info {
+      padding: 1rem 1rem 1.2rem;
+      text-align: center;
+    }
+
+    .product-name {
+      font-size: 1.28rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      line-height: 1.28;
+    }
+
+    .product-size {
+      font-size: 0.94rem;
+      color: var(--tg-hint);
+      margin-bottom: 0.7rem;
+    }
+
+    .product-price {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--success);
+      margin: 0.6rem 0 1.1rem;
+      letter-spacing: -0.4px;
+    }
+
+    .btn {
       background: linear-gradient(90deg, #10b981, #059669);
       color: white;
       border: none;
-      padding: 0.9rem;
+      padding: 0.95rem;
       border-radius: 12px;
-      font-size: 1.03rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
       width: 100%;
-    }
-
-    .btn::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 0; height: 0;
-      background: rgba(255,255,255,0.25);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-      pointer-events: none;
-    }
-
-    .btn:active::after {
-      width: 300px;
-      height: 300px;
-      transition: width 0s, height 0s;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.3);
+      transition: all 0.22s;
     }
 
     .btn:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+      transform: translateY(2px);
+      box-shadow: 0 2px 8px rgba(16,185,129,0.35);
     }
 
     .fixed-bottom {
@@ -188,30 +164,30 @@
       background: var(--card-bg);
       backdrop-filter: blur(16px);
       border-top: 1px solid var(--card-border);
-      padding: 1rem;
-      box-shadow: 0 -6px 16px rgba(0,0,0,0.12);
+      padding: 1.1rem 1rem;
+      box-shadow: 0 -5px 16px rgba(0,0,0,0.14);
       z-index: 100;
-      display: flex;
-      justify-content: center;
     }
 
     .fixed-bottom .btn {
-      max-width: 360px;
-      padding: 1.05rem;
-      font-size: 1.08rem;
+      max-width: 380px;
+      margin: 0 auto;
+      display: block;
+      padding: 1.1rem;
+      font-size: 1.12rem;
     }
 
     .footer-text {
       text-align: center;
-      font-size: 0.84rem;
+      font-size: 0.86rem;
       color: var(--tg-hint);
-      margin: 2rem 1rem 1rem;
+      margin: 2.2rem 1rem 1.4rem;
     }
 
     @media (max-width: 480px) {
-      .product-grid { grid-template-columns: 1fr; }
-      header { padding: 1.1rem 0.9rem; }
-      h1 { font-size: 1.75rem; }
+      .product-grid { grid-template-columns: 1fr; gap: 1.1rem; }
+      .product-image-wrapper { height: 130px; }
+      h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
@@ -219,7 +195,7 @@
 
   <header>
     <h1>Grace Soap & Cosmetics</h1>
-    <div class="subtitle">Premium • Ethiopian Made • Trusted Quality</div>
+    <div class="subtitle">Quality Cleaning Products • Made in Ethiopia</div>
   </header>
 
   <div class="container">
@@ -231,9 +207,7 @@
   </div>
 
   <div class="fixed-bottom">
-    <button class="btn" id="contactBtn">
-      📲 WhatsApp / Call: 0912672353
-    </button>
+    <button class="btn" id="contactBtn">📞 Call / WhatsApp: 0912672353</button>
   </div>
 
   <script>
@@ -255,6 +229,7 @@
     products.forEach(p => {
       const card = document.createElement("div");
       card.className = "product-card";
+
       card.innerHTML = `
         <div class="product-image-wrapper">
           <img class="product-image" src="${p.image}" alt="${p.name}" loading="lazy">
@@ -268,19 +243,18 @@
       `;
 
       card.querySelector(".btn").onclick = () => {
-        const msg = `Hi Grace! Interested in ${p.name} ${p.size} – ${p.price}`;
-        const wa = `https://wa.me/0912672353?text=${encodeURIComponent(msg)}`;
-        window.open(wa, '_blank');
-        setTimeout(() => window.location.href = 'tel:0912672353', 1500);
+        const msg = `Hello! Interested in ${p.name} ${p.size} – ${p.price}`;
+        window.open(`https://wa.me/0912672353?text=${encodeURIComponent(msg)}`, '_blank');
+        setTimeout(() => window.location.href = 'tel:0912672353', 1400);
       };
 
       container.appendChild(card);
     });
 
     document.getElementById("contactBtn").onclick = () => {
-      const msg = "Hello! Interested in Grace products";
+      const msg = "Hello Grace team! Interested in your products";
       window.open(`https://wa.me/0912672353?text=${encodeURIComponent(msg)}`, '_blank');
-      setTimeout(() => window.location.href = 'tel:0912672353', 1500);
+      setTimeout(() => window.location.href = 'tel:0912672353', 1400);
     };
   </script>
 </body>
