@@ -126,8 +126,12 @@
       width: 100%;
     }
 
-    .btn:hover {
-      background: #006699;
+    .btn.call-btn {
+      background: #4caf50;  /* green for call action */
+    }
+
+    .btn.call-btn:hover {
+      background: #388e3c;
     }
 
     .footer {
@@ -152,16 +156,16 @@
   </div>
 
   <div class="footer">
-    GRACE SOAP AND COSMETICS MANUFACTURING PLC © 2026
+    GRACE SOAP AND COSMETICS MANUFACTURING PLC<br>
+    Call/WhatsApp: 0912672353
   </div>
 
   <script>
     // Telegram WebApp initialization
     const tg = window.Telegram.WebApp;
     tg.ready();
-    tg.expand(); // make it full-screen
+    tg.expand();
 
-    // Optional: match Telegram theme
     if (tg.colorScheme === 'dark') {
       document.documentElement.classList.add('dark');
     }
@@ -172,7 +176,7 @@
         name: "Grace Dettol",
         size: "0.5 Liter",
         price: "100 Birr",
-        image: "https://via.placeholder.com/400x300/4CAF50/FFFFFF?text=Grace+Dettol+0.5L" // ← replace with real image URL
+        image: "https://via.placeholder.com/400x300/4CAF50/FFFFFF?text=Grace+Dettol+0.5L"
       },
       {
         name: "Grace Handwash",
@@ -219,22 +223,32 @@
           <h3 class="product-name">${product.name}</h3>
           <div class="product-size">${product.size}</div>
           <div class="product-price">${product.price}</div>
-          <button class="btn">Contact to Order</button>
+          <button class="btn call-btn">Call to Order: 0912672353</button>
         </div>
       `;
 
-      // Make button interactive (example: open chat with predefined message)
+      // Open phone dialer when button is clicked
       card.querySelector(".btn").addEventListener("click", () => {
-        const text = `Hello! I'm interested in ${product.name} ${product.size} - ${product.price}`;
-        tg.openTelegramLink(`https://t.me/your_channel_or_support?text=${encodeURIComponent(text)}`);
-        // Alternative: tg.sendData(JSON.stringify({action:"order", product: product.name}));
+        const phoneNumber = "0912672353";
+        const message = `Hello! Interested in ${product.name} ${product.size} (${product.price})`;
+        
+        // Try to open WhatsApp first (most popular in Ethiopia)
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        
+        // Fallback to regular phone call if WhatsApp link fails or not supported
+        const telUrl = `tel:${phoneNumber}`;
+
+        // Open WhatsApp (preferred)
+        window.open(whatsappUrl, '_blank');
+
+        // Optional: fallback to tel: after 2 seconds if WhatsApp didn't open
+        setTimeout(() => {
+          window.location.href = telUrl;
+        }, 2000);
       });
 
       container.appendChild(card);
     });
-
-    // Optional: show main button (if you want to add cart / checkout later)
-    // tg.MainButton.setText("View All Products").show();
   </script>
 </body>
 </html>
