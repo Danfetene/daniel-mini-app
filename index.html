@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ET Water Agent • Mini App</title>
-
-    <meta name="description" content="The ultimate tool for ET Water management.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ET Water Agent • Mini App</title>
+  <meta name="description" content="The ultimate tool for ET Water management.">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -361,7 +360,7 @@ applyTheme();
 tg.onEvent('themeChanged', applyTheme);
 
 // ────────────────────────────────────────────────
-//  BRANDS DATA (with 1L @ 155 Birr)
+//  BRANDS DATA
 // ────────────────────────────────────────────────
 const brands = [
   { id: 'gold',     name: 'Gold',     img: 'https://i.postimg.cc/nr7cPzVK/gold-w.webp',     brandDisplay: 'Gold Water / Agents',
@@ -432,58 +431,47 @@ const brands = [
     variants: [{size:'0.3L',price:200},{size:'0.6L',price:250},{size:'1L',price:195},{size:'2L',price:250}],
     nutrition: [{label:'Calcium',val:'0.4 mg/L'},{label:'Magnesium',val:'1.3 mg/L'},{label:'Sodium',val:'2.3 mg/L'},{label:'TDS',val:'20 mg/L'}]
   },
-  { 
-    id: 'miawa', name: 'Miawa', img: 'https://i.postimg.cc/Zqxyrg3s/miawa.jpg', brandDisplay: 'Miawa Water / Agents',
+  { id: 'miawa',    name: 'Miawa',    img: 'https://i.postimg.cc/Zqxyrg3s/miawa.jpg',       brandDisplay: 'Miawa Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'like', name: 'Like', img: 'https://i.postimg.cc/QC9Gr2q3/like.jpg', brandDisplay: 'Like Water / Agents',
+  { id: 'like',     name: 'Like',     img: 'https://i.postimg.cc/QC9Gr2q3/like.jpg',        brandDisplay: 'Like Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'highland', name: 'Highland', img: 'https://i.postimg.cc/Mp05X9PS/highland.jpg', brandDisplay: 'Highland Water / Agents',
+  { id: 'highland', name: 'Highland', img: 'https://i.postimg.cc/Mp05X9PS/highland.jpg',    brandDisplay: 'Highland Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'unique', name: 'Unique', img: 'https://i.postimg.cc/8Ch2pdWz/unique.jpg', brandDisplay: 'Unique Water / Agents',
+  { id: 'unique',   name: 'Unique',   img: 'https://i.postimg.cc/8Ch2pdWz/unique.jpg',      brandDisplay: 'Unique Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'boss', name: 'Boss', img: 'https://i.postimg.cc/59FRbSV9/boss.jpg', brandDisplay: 'Boss Water / Agents',
+  { id: 'boss',     name: 'Boss',     img: 'https://i.postimg.cc/59FRbSV9/boss.jpg',        brandDisplay: 'Boss Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'in', name: 'In', img: 'https://i.postimg.cc/hPN4hrJL/in.jpg', brandDisplay: 'In Water / Agents',
+  { id: 'in',       name: 'In',       img: 'https://i.postimg.cc/hPN4hrJL/in.jpg',          brandDisplay: 'In Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'best', name: 'Best', img: 'https://i.postimg.cc/pTgxyVTq/best.jpg', brandDisplay: 'Best Water / Agents',
+  { id: 'best',     name: 'Best',     img: 'https://i.postimg.cc/pTgxyVTq/best.jpg',        brandDisplay: 'Best Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'victory', name: 'Victory', img: 'https://i.postimg.cc/YCSVKK2F/victory.jpg', brandDisplay: 'Victory Water / Agents',
+  { id: 'victory',  name: 'Victory',  img: 'https://i.postimg.cc/YCSVKK2F/victory.jpg',     brandDisplay: 'Victory Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'sol', name: 'Sol', img: 'https://i.postimg.cc/Wb1StmRv/sol.jpg', brandDisplay: 'Sol Water / Agents',
+  { id: 'sol',      name: 'Sol',      img: 'https://i.postimg.cc/Wb1StmRv/sol.jpg',         brandDisplay: 'Sol Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'share', name: 'Share', img: 'https://i.postimg.cc/3wZFWxZv/share-water.jpg', brandDisplay: 'Share Water / Agents',
+  { id: 'share',    name: 'Share',    img: 'https://i.postimg.cc/3wZFWxZv/share-water.jpg', brandDisplay: 'Share Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   },
-  { 
-    id: 'today', name: 'Today', img: 'https://i.postimg.cc/L8YWqLq3/today.jpg', brandDisplay: 'Today Water / Agents',
+  { id: 'today',    name: 'Today',    img: 'https://i.postimg.cc/L8YWqLq3/today.jpg',       brandDisplay: 'Today Water / Agents',
     variants: [{size:'0.3L', price:200},{size:'0.6L', price:250},{size:'1L',   price:195},{size:'2L',   price:250}],
     nutrition: [{label:'Calcium', val:'0.4 mg/L'}, {label:'Magnesium', val:'1.3 mg/L'}, {label:'Sodium', val:'2.3 mg/L'}, {label:'TDS', val:'20 mg/L'}]
   }
@@ -497,7 +485,6 @@ const categoriesEl = document.getElementById('categories');
 brands.forEach(brand => {
   const minPrice = Math.min(...brand.variants.map(v => v.price));
 
-  // Category tile
   const tile = document.createElement('div');
   tile.className = 'category-tile';
   tile.dataset.brandId = brand.id;
@@ -509,7 +496,6 @@ brands.forEach(brand => {
   tile.addEventListener('click', () => showBrand(brand.id));
   categoriesEl.appendChild(tile);
 
-  // Brand detail section
   const section = document.createElement('div');
   section.id = `${brand.id}-section`;
   section.className = 'brand-section';
@@ -566,22 +552,20 @@ function addToCart(brand, size, price) {
 
 function updateQty(index, newQty) {
   newQty = Math.max(0, Math.min(1000, parseInt(newQty) || 0));
-
   if (newQty === 0) {
     cart.splice(index, 1);
   } else {
     cart[index].qty = newQty;
   }
-
   renderCart();
   tg.HapticFeedback.impactOccurred('light');
 }
 
 function renderCart() {
-  const list       = document.getElementById('cart-items');
-  const totalEl    = document.getElementById('total');
-  const emptyEl    = document.getElementById('empty');
-  const summary    = document.getElementById('cart-summary');
+  const list = document.getElementById('cart-items');
+  const totalEl = document.getElementById('total');
+  const emptyEl = document.getElementById('empty');
+  const summary = document.getElementById('cart-summary');
 
   list.innerHTML = '';
   let total = 0;
@@ -623,7 +607,7 @@ function renderCart() {
 }
 
 // ────────────────────────────────────────────────
-//  NAVIGATION & VIEW MANAGEMENT
+//  NAVIGATION
 // ────────────────────────────────────────────────
 let previousView = 'main';
 let lastBrandId = null;
@@ -631,42 +615,33 @@ let lastBrandId = null;
 function showBrand(id) {
   previousView = 'brand';
   lastBrandId = id;
-
   document.querySelector('.top-controls').style.display = 'none';
   document.querySelector('.categories').style.display = 'none';
   document.getElementById('no-results').style.display = 'none';
-
   document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
   document.getElementById(`${id}-section`)?.classList.add('active');
-
   tg.BackButton.show();
   tg.HapticFeedback.impactOccurred('light');
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function returnToMainView() {
-  cart = []; // clear cart when going back to main
+  cart = []; 
   renderCart();
-
   previousView = 'main';
   lastBrandId = null;
-
   document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
-
   document.querySelector('.top-controls').style.display = 'flex';
   document.querySelector('.categories').style.display = 'grid';
   document.getElementById('no-results').style.display = 'none';
-
   tg.BackButton.hide();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  tg.HapticFeedback.impactOccurred('light');
 }
 
 function returnToLastBrand() {
   if (lastBrandId) {
     document.querySelectorAll('.brand-section').forEach(el => el.classList.remove('active'));
     document.getElementById(`${lastBrandId}-section`)?.classList.add('active');
-
     document.querySelector('.top-controls').style.display = 'none';
     document.querySelector('.categories').style.display = 'none';
     tg.BackButton.show();
@@ -677,7 +652,6 @@ function returnToLastBrand() {
 
 tg.BackButton.onClick(() => {
   const cartIsVisible = document.getElementById('cart-summary').classList.contains('visible');
-
   if (cartIsVisible) {
     cart = [];
     renderCart();
@@ -687,7 +661,6 @@ tg.BackButton.onClick(() => {
   } else if (previousView === 'brand') {
     returnToMainView();
   }
-
   tg.HapticFeedback.impactOccurred('light');
 });
 
@@ -696,26 +669,20 @@ tg.BackButton.onClick(() => {
 // ────────────────────────────────────────────────
 document.addEventListener('click', e => {
   const t = e.target;
-
-  // Order button
   if (t.classList.contains('order-btn')) {
     const { brand, size, price } = t.dataset;
     addToCart(brand, size, Number(price));
   }
-
-  // Quantity +/- buttons
   if (t.classList.contains('qty-minus') || t.classList.contains('qty-plus')) {
     const index = Number(t.dataset.index);
     const delta = Number(t.dataset.delta);
     if (!isNaN(index)) {
       let newQty = (cart[index]?.qty || 0) + delta;
-      newQty = Math.max(0, Math.min(1000, newQty));
       updateQty(index, newQty);
     }
   }
 });
 
-// Quantity input changes
 document.addEventListener('input', e => {
   if (e.target.classList.contains('qty-input')) {
     const index = Number(e.target.dataset.index);
@@ -723,19 +690,10 @@ document.addEventListener('input', e => {
   }
 });
 
-document.addEventListener('change', e => {
-  if (e.target.classList.contains('qty-input')) {
-    const index = Number(e.target.dataset.index);
-    if (!isNaN(index)) updateQty(index, e.target.value);
-  }
-});
-
-// Sort filter
 document.getElementById('sortFilter').addEventListener('change', e => {
   const value = e.target.value;
   const tiles = Array.from(document.querySelectorAll('.category-tile'));
   const container = document.getElementById('categories');
-
   if (value === 'price-low-high') {
     tiles.sort((a, b) => parseInt(a.dataset.minPrice || 9999) - parseInt(b.dataset.minPrice || 9999));
     tiles.forEach(tile => container.appendChild(tile));
@@ -747,7 +705,6 @@ document.getElementById('sortFilter').addEventListener('change', e => {
   }
 });
 
-// Search (debounced)
 let searchTimeout;
 document.getElementById('searchInput').addEventListener('input', e => {
   clearTimeout(searchTimeout);
@@ -755,31 +712,38 @@ document.getElementById('searchInput').addEventListener('input', e => {
     const q = e.target.value.toLowerCase().trim();
     const tiles = document.querySelectorAll('.category-tile');
     let visible = 0;
-
     tiles.forEach(tile => {
       const name = tile.querySelector('span').textContent.toLowerCase();
-      const show = name.includes(q) || ['140','150','155','160'].some(p => q.includes(p));
+      const show = name.includes(q);
       tile.style.display = show ? '' : 'none';
       if (show) visible++;
     });
-
     document.getElementById('no-results').style.display = (q && visible === 0) ? 'block' : 'none';
   }, 280);
 });
 
 // ────────────────────────────────────────────────
-//  CHECKOUT → SEND TO TELEGRAM
+//  CHECKOUT → SEND TO TELEGRAM (UPDATED)
 // ────────────────────────────────────────────────
 tg.MainButton.onClick(async () => {
   if (!cart.length) return;
 
-  const phone = prompt("📞 Phone number for delivery (Addis Ababa)\nExample: 09", "");
+  // Prompt for Phone
+  const phone = prompt("📞 Phone number for delivery\nExample: 09", "");
   if (!phone || phone.trim().length < 9) {
     tg.showAlert("Please enter a valid phone number.");
     return;
   }
 
+  // Prompt for Location (NEW)
+  const location = prompt("📍 Delivery Address / Location\n(e.g., Bole, Haya Hulet, or specific building)", "");
+  if (!location || location.trim().length < 3) {
+    tg.showAlert("Please enter a delivery location.");
+    return;
+  }
+
   const cleanPhone = phone.trim();
+  const cleanLoc = location.trim();
   let itemsText = "";
   let total = 0;
 
@@ -790,18 +754,17 @@ tg.MainButton.onClick(async () => {
   });
 
   const message = 
-`🛒 New Water Order – ET Water Market
-📞 Phone: ${cleanPhone}
-📍 Delivery: Addis Ababa
+`🛒 *New Water Order – ET Water Market*
+────────────────────
+📞 *Phone:* ${cleanPhone}
+📍 *Location:* ${cleanLoc}
 
-Items:
+*Items:*
 ${itemsText}
 ────────────────────
-💰 Total: ${total} Birr
+💰 *Total: ${total} Birr*
 
-Ordered from Telegram Mini App`;
-
-  tg.showAlert("Thanks! Your order is Confirmed");
+_Ordered via Telegram Mini App_`;
 
   try {
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -817,24 +780,21 @@ Ordered from Telegram Mini App`;
     const data = await res.json();
 
     if (data.ok) {
-      tg.showAlert("Thanks! Your order is confirmed\nWe will contact you soon.");
+      tg.showAlert("✅ Order Confirmed!\nWe will contact you shortly.");
       cart = [];
       document.getElementById('cart-summary').classList.remove('visible');
       tg.MainButton.hide();
       tg.BackButton.hide();
       returnToMainView();
     } else {
-      tg.showAlert("Failed to send order.\nError: " + (data.description || "Unknown"));
+      tg.showAlert("Failed to send: " + (data.description || "Unknown error"));
     }
   } catch (err) {
-    tg.showAlert("No internet connection or error sending order.");
+    tg.showAlert("Connection error. Check your internet.");
   }
 });
 
-// ────────────────────────────────────────────────
-//  INIT
-// ────────────────────────────────────────────────
 renderCart();
-  </script>
+</script>
 </body>
 </html>
