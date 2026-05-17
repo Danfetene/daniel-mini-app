@@ -803,6 +803,38 @@
         </div>
         <span class="who-score score-bad">Poor</span>
       </div>
+
+      <div class="who-row">
+        <div class="who-name">Jana</div>
+        <div class="who-bars">
+          <div class="who-bar-row">
+            <span class="who-bar-label">Ca 20</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:26%;background:var(--warning)"></div></div>
+          </div>
+          <div class="who-bar-row">
+            <span class="who-bar-label">Mg 6</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:30%;background:var(--warning)"></div></div>
+          </div>
+        </div>
+        <span class="who-score score-ok">Low</span>
+      </div>
+
+      <div class="who-row">
+        <div class="who-name">Smartwater</div>
+        <div class="who-bars">
+          <div class="who-bar-row">
+            <span class="who-bar-label">Ca &lt;1</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:2%;background:var(--danger)"></div></div>
+          </div>
+          <div class="who-bar-row">
+            <span class="who-bar-label">Mg 20</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:50%;background:var(--warning)"></div></div>
+          </div>
+        </div>
+        <span class="who-score score-bad">Stripped</span>
+      </div>
+    </div>
+
     <div class="insight">
       <span class="insight-icon">🇪🇹</span>
       <p><strong>The opportunity:</strong> Only Ambo mineral water comes close to WHO mineral standards. The rest of the Ethiopian market is significantly below what your body needs — especially for athletes, people who fast, and those in hot climates. This is a massive untapped business opportunity.</p>
@@ -911,7 +943,7 @@
 
     <div class="share-card">
       <div style="font-size:32px;margin-bottom:8px">🇪🇹</div>
-      <div class="share-title">የተሻለ ውሃ ይገባዎታል!</div>
+      <div class="share-title">ኢትዮጵያ የተሻለ ውሃ ትገባታለች</div>
       <div class="share-sub">Ethiopia deserves better water. The functional water market is worth $70B globally — and nobody in Ethiopia is doing it yet.</div>
 
       <div class="share-stats">
@@ -1070,7 +1102,7 @@ function ask(q) {
 }
 
 function share() {
-  var text = '💧 ኢትዮጵያ የተሻለ ውሃ ይገባታል!\n\nThe functional water market is worth $70B globally — and nobody in Ethiopia is doing it yet.\n\nCheck your personal hydration needs: @HydroEthioBot\n\n#EthiopiaWater #FunctionalWater #ውሃ #ጤና';
+  var text = '💧 ኢትዮጵያ የተሻለ ውሃ ትገባታለች!\n\nThe functional water market is worth $70B globally — and nobody in Ethiopia is doing it yet.\n\nCheck your personal hydration needs: @HydroEthioBot\n\n#EthiopiaWater #FunctionalWater #ውሃ #ጤና';
   if (tg && tg.switchInlineQuery) {
     tg.switchInlineQuery(text);
   } else if (navigator.share) {
