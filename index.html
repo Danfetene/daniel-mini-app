@@ -500,7 +500,7 @@
             <span class="profile-chip" id="chip-weight">70 kg</span>
             <span class="profile-chip" id="chip-activity">Light</span>
             <span class="profile-chip" id="chip-climate">Warm</span>
-            <span class="profile-chip" id="chip-fasting">Orthodox</span>
+            <span class="profile-chip" id="chip-fasting">No fasting</span>
             <span class="profile-chip" id="chip-goal">General</span>
           </div>
         </div>
@@ -535,9 +535,9 @@
             <div class="sel-compact">
               <label>Fasting</label>
               <select id="sel-fasting" onchange="calculate()">
-                <option value="1.0">No fasting</option>
+                <option value="1.0" selected>No fasting</option>
                 <option value="1.15">Occasional</option>
-                <option value="1.25" selected>Orthodox Tsom</option>
+                <option value="1.25">Orthodox Tsom</option>
                 <option value="1.35">Ramadan</option>
               </select>
             </div>
@@ -1033,7 +1033,7 @@ function updateChips() {
 
   var actMap = {'1.0':'Sedentary','1.3':'Light','1.6':'Active','2.0':'Very active'};
   var cliMap = {'1.0':'Highlands','1.2':'Warm','1.4':'Hot','1.6':'Very hot'};
-  var fasMap = {'1.0':'No fasting','1.15':'Occasional','1.25':'Orthodox','1.35':'Ramadan'};
+  var fasMap = {'1.0':'No fast','1.15':'Occasional','1.25':'Orthodox','1.35':'Ramadan'};
   var golMap = {'general':'General','athlete':'Athlete','weight':'Weight','heart':'Heart','bones':'Bones'};
 
   document.getElementById('chip-activity').textContent = actMap[document.getElementById('sel-activity').value] || '';
