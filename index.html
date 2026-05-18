@@ -2,1139 +2,644 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HydroEt — Water Advisor</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HydroEthio — Know Your Water 💧</title>
+
+<!-- ═══════════════════════════════════════════
+     OG / TELEGRAM LINK PREVIEW META TAGS
+     These are what Telegram reads when shared
+════════════════════════════════════════════ -->
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://YOUR-HOSTED-URL.com">
+<meta property="og:title"       content="💧 HydroEthio — Do You Know What's in Your Water?">
+<meta property="og:description" content="Most Ethiopian water brands fail WHO mineral standards. Find out how much water YOU need daily & which brand is actually good for you. Free tool — open in Telegram.">
+<meta property="og:image"       content="https://YOUR-HOSTED-URL.com/og-preview.png">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale"      content="en_ET">
+<meta property="og:site_name"   content="HydroEthio">
+
+<!-- Twitter Card (Telegram also reads these as fallback) -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="💧 HydroEthio — Do You Know What's in Your Water?">
+<meta name="twitter:description" content="Most Ethiopian water brands fail WHO mineral standards. Find out how much water YOU need daily. Free Telegram mini app.">
+<meta name="twitter:image"       content="https://YOUR-HOSTED-URL.com/og-preview.png">
+
+<!-- Standard meta -->
+<meta name="description" content="Most Ethiopian water brands fail WHO mineral standards. Find out how much water YOU need daily & which brand is actually good for you. Free Telegram mini app.">
+<meta name="theme-color" content="#0a0f1a">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
   :root {
-    --bg: #0a0f1a;
-    --surface: #111827;
-    --surface2: #1a2332;
-    --border: rgba(255,255,255,0.08);
-    --accent: #00d4aa;
-    --accent2: #0099ff;
-    --accent3: #7c3aed;
-    --text: #f0f4ff;
-    --text2: #8b9ab5;
-    --text3: #4a5568;
+    --bg: #060b14;
+    --surface: #0d1625;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00e5b8;
+    --accent2: #0af;
+    --gold: #f5c842;
+    --text: #eef2ff;
+    --text2: #7a8fad;
+    --text3: #3a4a5e;
     --danger: #ff4d6d;
-    --warning: #ffa500;
-    --radius: 16px;
-    --radius-sm: 10px;
+    --warning: #ffa040;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
+  html { scroll-behavior: smooth; }
+
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Outfit', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  body::before {
-    content: '';
+  /* ── Animated background ── */
+  .bg-orbs {
     position: fixed;
     inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(0,212,170,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 10% 80%, rgba(0,153,255,0.06) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    animation: drift 12s ease-in-out infinite;
+  }
+
+  .orb-1 { width: 500px; height: 500px; background: var(--accent); top: -150px; right: -100px; animation-delay: 0s; }
+  .orb-2 { width: 400px; height: 400px; background: var(--accent2); bottom: 10%; left: -100px; animation-delay: -4s; }
+  .orb-3 { width: 300px; height: 300px; background: var(--gold); top: 40%; left: 50%; animation-delay: -8s; opacity: 0.08; }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(30px, -40px) scale(1.05); }
+    66%       { transform: translate(-20px, 20px) scale(0.95); }
+  }
+
+  /* ── Grid noise overlay ── */
+  .noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px;
   }
 
   .container {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     max-width: 480px;
     margin: 0 auto;
-    padding: 0 0 80px;
+    padding: 0 20px 60px;
   }
 
-  .header {
-    padding: 20px 20px 0;
-    margin-bottom: 24px;
+  /* ── HERO ── */
+  .hero {
+    padding-top: 52px;
+    padding-bottom: 8px;
+    text-align: center;
   }
 
-  .logo {
-    display: flex;
+  .hero-badge {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
+    gap: 6px;
+    background: rgba(0,229,184,0.1);
+    border: 1px solid rgba(0,229,184,0.22);
+    border-radius: 30px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: fadeDown 0.6s ease both;
   }
 
-  .logo-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
+  .hero-drop {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 16px;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  .drop-icon {
+    font-size: 72px;
+    line-height: 1;
+    filter: drop-shadow(0 0 30px rgba(0,229,184,0.5));
+    animation: pulse-drop 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-drop {
+    0%, 100% { filter: drop-shadow(0 0 30px rgba(0,229,184,0.4)); transform: translateY(0); }
+    50%       { filter: drop-shadow(0 0 50px rgba(0,229,184,0.7)); transform: translateY(-6px); }
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(46px, 14vw, 72px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 6px;
+    animation: fadeDown 0.6s 0.15s ease both;
+  }
+
+  .hero-title .hl {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.65;
+    max-width: 340px;
+    margin: 0 auto 32px;
+    animation: fadeDown 0.6s 0.2s ease both;
+  }
+
+  .hero-sub strong { color: var(--text); font-weight: 600; }
+
+  /* ── CTA button ── */
+  .cta-wrap {
+    animation: fadeDown 0.6s 0.3s ease both;
+    margin-bottom: 14px;
+  }
+
+  .cta-main {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    gap: 10px;
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 18px;
+    padding: 17px 24px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #060b14;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+    box-shadow: 0 8px 32px rgba(0,229,184,0.25);
   }
 
-  .logo-text {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--text);
-    letter-spacing: -0.5px;
+  .cta-main:hover  { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,229,184,0.35); }
+  .cta-main:active { transform: scale(0.97); }
+
+  .tg-icon { font-size: 22px; }
+
+  .cta-note {
+    font-size: 12px;
+    color: var(--text3);
+    text-align: center;
+    animation: fadeDown 0.6s 0.35s ease both;
   }
 
-  .logo-text span { color: var(--accent); }
-
-  .header-sub {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.5;
+  /* ── Divider ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 36px 0 24px;
   }
 
-  .screen { display: none; padding: 0 16px; }
-  .screen.active { display: block; }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 12px;
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
   }
 
-  .card-title {
+  .divider-text {
     font-size: 11px;
     font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── Stat pills ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+
+  .stat-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 8px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text3);
+    line-height: 1.3;
+    font-weight: 500;
+  }
+
+  /* ── Feature cards ── */
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .feat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .feat:nth-child(1) { animation-delay: 0.45s; }
+  .feat:nth-child(2) { animation-delay: 0.5s; }
+  .feat:nth-child(3) { animation-delay: 0.55s; }
+  .feat:nth-child(4) { animation-delay: 0.6s; }
+
+  .feat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .feat-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .feat-desc  { font-size: 12px; color: var(--text2); line-height: 1.55; }
+
+  /* ── Brand comparison strip ── */
+  .brand-strip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s 0.65s ease both;
+  }
+
+  .strip-title {
+    font-size: 11px;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text3);
     margin-bottom: 14px;
   }
 
-  .slider-row { margin-bottom: 18px; }
-
-  .slider-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .slider-label span:first-child { font-size: 14px; color: var(--text2); }
-  .slider-label span:last-child { font-size: 14px; font-weight: 600; color: var(--accent); }
-
-  input[type=range] {
-    width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--surface2);
-    outline: none;
-  }
-
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    cursor: pointer;
-    box-shadow: 0 0 0 4px rgba(0,212,170,0.15);
-  }
-
-  .select-row { margin-bottom: 14px; }
-
-  .select-row label {
-    font-size: 13px;
-    color: var(--text2);
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    padding: 10px 12px;
-    outline: none;
-    -webkit-appearance: none;
-    appearance: none;
-    cursor: pointer;
-  }
-
-  .metric-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .metric-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px;
-    text-align: center;
-  }
-
-  .metric-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-weight: 500; }
-  .metric-value { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent); line-height: 1; }
-  .metric-unit { font-size: 12px; color: var(--text2); margin-top: 3px; }
-
-  .mineral-row { margin-bottom: 12px; }
-
-  .mineral-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-
-  .mineral-name { font-size: 13px; color: var(--text2); }
-  .mineral-val { font-size: 13px; font-weight: 600; color: var(--text); }
-
-  .mineral-track {
-    height: 6px;
-    background: var(--surface2);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .mineral-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.5s cubic-bezier(.4,0,.2,1);
-  }
-
-  .insight {
-    background: rgba(0,212,170,0.07);
-    border: 1px solid rgba(0,212,170,0.2);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 12px;
-  }
-
-  .insight-icon { font-size: 18px; margin-bottom: 6px; display: block; }
-
-  .insight p {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.65;
-  }
-
-  .insight p strong { color: var(--accent); font-weight: 600; }
-
-  /* WHO comparison */
-  .who-row {
+  .brand-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
   }
 
-  .who-row:last-child { border-bottom: none; }
+  .brand-row:last-child { margin-bottom: 0; }
 
-  .who-name {
-    font-size: 13px;
+  .brand-name-s {
+    font-size: 12px;
     color: var(--text2);
-    width: 110px;
+    width: 84px;
     flex-shrink: 0;
   }
 
-  .who-bars {
+  .bar-track {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .who-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .who-bar-label { font-size: 10px; color: var(--text3); width: 36px; flex-shrink: 0; }
-
-  .who-bar-track {
-    flex: 1;
-    height: 5px;
-    background: var(--surface2);
+    height: 6px;
+    background: rgba(255,255,255,0.05);
     border-radius: 3px;
     overflow: hidden;
   }
 
-  .who-bar-fill { height: 100%; border-radius: 3px; }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    animation: growBar 1s 0.8s ease both;
+    transform-origin: left;
+  }
 
-  .who-score {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
+  @keyframes growBar {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .bar-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
     border-radius: 6px;
     flex-shrink: 0;
   }
 
-  .score-good { background: rgba(0,212,170,0.15); color: var(--accent); }
-  .score-ok { background: rgba(255,165,0,0.15); color: var(--warning); }
-  .score-bad { background: rgba(255,77,109,0.15); color: var(--danger); }
+  .good { background: rgba(0,229,184,0.12); color: var(--accent); }
+  .ok   { background: rgba(255,160,64,0.12); color: var(--warning); }
+  .bad  { background: rgba(255,77,109,0.12); color: var(--danger); }
 
-  /* Brand cards */
-  .brand-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+  /* ── Quote block ── */
+  .quote-block {
+    border-left: 3px solid var(--accent);
     padding: 14px 16px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    background: rgba(0,229,184,0.05);
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s 0.7s ease both;
   }
 
-  .brand-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .brand-info { flex: 1; }
-  .brand-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-  .brand-sub { font-size: 12px; color: var(--text2); }
-  .brand-score { text-align: right; }
-  .brand-tds { font-size: 13px; font-weight: 600; color: var(--text); }
-  .brand-tds-label { font-size: 10px; color: var(--text3); }
-
-  /* Quick ask */
-  .qa-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 8px 14px;
-    font-size: 12px;
-    color: var(--text2);
-    cursor: pointer;
-    white-space: nowrap;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.2s;
-    display: inline-block;
-    margin: 4px;
-  }
-
-  .qa-btn:active {
-    background: rgba(0,212,170,0.1);
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: scale(0.96);
-  }
-
-  .qa-wrap { display: flex; flex-wrap: wrap; margin: -4px; }
-
-  /* Bottom nav */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(10,15,26,0.95);
-    border-top: 1px solid var(--border);
-    display: flex;
-    backdrop-filter: blur(20px);
-    z-index: 100;
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  .nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    gap: 4px;
-  }
-
-  .nav-icon { font-size: 20px; transition: all 0.2s; }
-  .nav-label { font-size: 10px; font-weight: 500; color: var(--text3); transition: all 0.2s; }
-
-  .nav-item.active .nav-icon,
-  .nav-item.active .nav-label { color: var(--accent); }
-  .nav-item:active { transform: scale(0.92); }
-
-  .cta-btn {
-    width: 100%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: var(--radius);
-    padding: 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: #0a0f1a;
-    cursor: pointer;
-    margin-top: 4px;
-    transition: all 0.2s;
-    letter-spacing: 0.01em;
-  }
-
-  .cta-btn:active { transform: scale(0.97); opacity: 0.9; }
-
-  .share-card {
-    background: linear-gradient(135deg, #0a1628, #0d2137);
-    border: 1px solid rgba(0,212,170,0.3);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 12px;
-    text-align: center;
-  }
-
-  .share-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 6px; }
-
-  .share-sub {
+  .quote-text {
     font-size: 13px;
     color: var(--text2);
-    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+
+  .quote-text strong { color: var(--accent); }
+
+  /* ── Bottom CTA ── */
+  .bottom-cta {
+    text-align: center;
+    animation: fadeUp 0.5s 0.75s ease both;
+  }
+
+  .bottom-cta-label {
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 14px;
     line-height: 1.5;
   }
 
-  .share-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .bottom-cta-label strong { color: var(--text); }
 
-  .share-stat { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 10px 6px; }
-  .share-stat-val { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--accent); }
-  .share-stat-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text3);
+    animation: fadeUp 0.5s 0.8s ease both;
+  }
+
+  .footer span { color: var(--accent); }
+
+  /* ── Animations ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  .screen.active .card,
-  .screen.active .metric-grid,
-  .screen.active .insight,
-  .screen.active .brand-card {
-    animation: fadeUp 0.3s ease forwards;
-  }
-
-  .screen.active .card:nth-child(2) { animation-delay: 0.05s; }
-  .screen.active .card:nth-child(3) { animation-delay: 0.1s; }
-
-  .tiktok-badge {
+  /* ── WHO badge ── */
+  .who-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(0,212,170,0.1);
-    border: 1px solid rgba(0,212,170,0.25);
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: var(--accent);
-    font-weight: 500;
-    margin-bottom: 8px;
+    gap: 5px;
+    background: rgba(245,200,66,0.08);
+    border: 1px solid rgba(245,200,66,0.2);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 20px;
   }
 
-  /* Compact collapsible profile */
-  .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
-  .profile-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; cursor: pointer; user-select: none; -webkit-user-select: none; gap: 8px; }
-  .profile-header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; flex-wrap: wrap; }
-  .profile-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); flex-shrink: 0; }
-  .profile-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-  .profile-chip { font-size: 10px; color: var(--accent); background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.18); border-radius: 20px; padding: 2px 7px; white-space: nowrap; }
-  .profile-toggle { font-size: 12px; color: var(--text3); transition: transform 0.25s ease; flex-shrink: 0; }
-  .profile-toggle.open { transform: rotate(180deg); }
-  .profile-body { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(.4,0,.2,1); }
-  .profile-body.open { max-height: 700px; }
-  .profile-inner { padding: 12px 14px 14px; border-top: 1px solid var(--border); }
-  .weight-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .weight-row label { font-size: 12px; color: var(--text2); flex-shrink: 0; }
-  .weight-row input[type=range] { flex: 1; }
-  .weight-row .wval { font-size: 13px; font-weight: 600; color: var(--accent); width: 42px; text-align: right; flex-shrink: 0; }
-  .selects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .sel-compact label { font-size: 10px; color: var(--text3); display: block; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-  .sel-compact select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 7px 9px; outline: none; -webkit-appearance: none; appearance: none; cursor: pointer; }
+  /* ── Scrolling water drops ── */
+  .drops-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text3);
-    padding: 0 4px;
-    margin: 16px 0 8px;
+  .drop-particle {
+    position: absolute;
+    font-size: 14px;
+    opacity: 0.04;
+    animation: fall linear infinite;
+  }
+
+  @keyframes fall {
+    from { transform: translateY(-20px); opacity: 0.04; }
+    to   { transform: translateY(110vh); opacity: 0; }
   }
 </style>
 </head>
 <body>
 
+<!-- Background effects -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<div class="noise"></div>
+
+<!-- Falling drops -->
+<div class="drops-bg" id="drops-bg"></div>
+
 <div class="container">
 
-  <div class="header">
-    <div class="logo">
-      <div class="logo-icon">💧</div>
-      <div class="logo-text">Hydro<span>Ethio</span></div>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">🇪🇹 Free Telegram Mini App</div>
+
+    <div class="hero-drop">
+      <div class="drop-icon">💧</div>
     </div>
-    <div class="header-sub">Your personal water & mineral advisor — powered by WHO science</div>
+
+    <h1 class="hero-title">
+      Hydro<span class="hl">Ethio</span>
+    </h1>
+
+    <p class="hero-sub">
+      Do you know <strong>what's really in your water?</strong><br>
+      Most Ethiopian brands fail WHO standards — find out how much you need & what to drink.
+    </p>
+
+    <div class="cta-wrap">
+      <a class="cta-main" href="https://t.me/daniel_website_bot" target="_blank">
+        <span class="tg-icon">✈️</span>
+        Open in Telegram — It's Free
+      </a>
+    </div>
+    <p class="cta-note">No sign-up · Opens instantly in Telegram</p>
   </div>
 
-  <!-- SCREEN 1: CALCULATOR -->
-  <div class="screen active" id="screen-calc">
-
-    <!-- Compact collapsible profile card -->
-    <div class="profile-card">
-      <div class="profile-header" onclick="toggleProfile()">
-        <div class="profile-header-left">
-          <span class="profile-title">Your profile</span>
-          <div class="profile-chips" id="profile-chips">
-            <span class="profile-chip" id="chip-weight">70 kg</span>
-            <span class="profile-chip" id="chip-activity">Light</span>
-            <span class="profile-chip" id="chip-climate">Warm</span>
-            <span class="profile-chip" id="chip-fasting">No fasting</span>
-            <span class="profile-chip" id="chip-goal">General</span>
-          </div>
-        </div>
-        <span class="profile-toggle" id="profile-toggle">▼</span>
-      </div>
-      <div class="profile-body" id="profile-body">
-        <div class="profile-inner">
-          <div class="weight-row">
-            <label>Weight</label>
-            <input type="range" id="sl-weight" min="40" max="130" value="70" step="1" oninput="onSlide()">
-            <span class="wval" id="w-out">70 kg</span>
-          </div>
-          <div class="selects-grid">
-            <div class="sel-compact">
-              <label>Activity</label>
-              <select id="sel-activity" onchange="calculate()">
-                <option value="1.0">Sedentary</option>
-                <option value="1.3" selected>Light</option>
-                <option value="1.6">Active</option>
-                <option value="2.0">Very active</option>
-              </select>
-            </div>
-            <div class="sel-compact">
-              <label>Climate</label>
-              <select id="sel-climate" onchange="calculate()">
-                <option value="1.0">Cool highlands</option>
-                <option value="1.2" selected>Warm</option>
-                <option value="1.4">Hot</option>
-                <option value="1.6">Very hot</option>
-              </select>
-            </div>
-            <div class="sel-compact">
-              <label>Fasting</label>
-              <select id="sel-fasting" onchange="calculate()">
-                <option value="1.0" selected>No fasting</option>
-                <option value="1.15">Occasional</option>
-                <option value="1.25">Orthodox Tsom</option>
-                <option value="1.35">Ramadan</option>
-              </select>
-            </div>
-            <div class="sel-compact">
-              <label>Health goal</label>
-              <select id="sel-goal" onchange="calculate()">
-                <option value="general">General</option>
-                <option value="athlete">Athlete</option>
-                <option value="weight">Weight</option>
-                <option value="heart">Heart</option>
-                <option value="bones">Bones</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="metric-grid">
-      <div class="metric-card">
-        <div class="metric-label">Daily water needed</div>
-        <div class="metric-value" id="m-water">2.8</div>
-        <div class="metric-unit">litres / day</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Glasses (250 ml)</div>
-        <div class="metric-value" id="m-glasses">11</div>
-        <div class="metric-unit">glasses / day</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Minerals your water should contain (per litre)</div>
-
-      <div class="mineral-row">
-        <div class="mineral-header">
-          <span class="mineral-name">Calcium (Ca)</span>
-          <span class="mineral-val" id="v-ca">80 mg/L</span>
-        </div>
-        <div class="mineral-track">
-          <div class="mineral-fill" id="b-ca" style="width:53%;background:linear-gradient(90deg,#00d4aa,#0099ff)"></div>
-        </div>
-      </div>
-
-      <div class="mineral-row">
-        <div class="mineral-header">
-          <span class="mineral-name">Magnesium (Mg)</span>
-          <span class="mineral-val" id="v-mg">30 mg/L</span>
-        </div>
-        <div class="mineral-track">
-          <div class="mineral-fill" id="b-mg" style="width:60%;background:linear-gradient(90deg,#0099ff,#7c3aed)"></div>
-        </div>
-      </div>
-
-      <div class="mineral-row">
-        <div class="mineral-header">
-          <span class="mineral-name">Potassium (K)</span>
-          <span class="mineral-val" id="v-k">10 mg/L</span>
-        </div>
-        <div class="mineral-track">
-          <div class="mineral-fill" id="b-k" style="width:40%;background:linear-gradient(90deg,#7c3aed,#d946ef)"></div>
-        </div>
-      </div>
-
-      <div class="mineral-row">
-        <div class="mineral-header">
-          <span class="mineral-name">Sodium (Na)</span>
-          <span class="mineral-val" id="v-na">15 mg/L</span>
-        </div>
-        <div class="mineral-track">
-          <div class="mineral-fill" id="b-na" style="width:30%;background:linear-gradient(90deg,#f59e0b,#ef4444)"></div>
-        </div>
-      </div>
-
-      <div class="mineral-row" style="margin-bottom:0">
-        <div class="mineral-header">
-          <span class="mineral-name">Bicarbonate</span>
-          <span class="mineral-val" id="v-bi">100 mg/L</span>
-        </div>
-        <div class="mineral-track">
-          <div class="mineral-fill" id="b-bi" style="width:50%;background:linear-gradient(90deg,#10b981,#00d4aa)"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="insight">
-      <span class="insight-icon">💡</span>
-      <p id="insight-text">For your profile, balanced mineral water with TDS 100–300 mg/L is ideal. Ambo mineral water is currently the closest Ethiopian brand to WHO standards.</p>
-    </div>
-
-    <div class="section-label">Ask your water advisor</div>
-    <div class="card" style="padding:12px">
-      <div class="qa-wrap">
-        <div class="qa-btn" onclick="ask('What are the best water brands in Ethiopia for my profile and health goal?')">Best Ethiopian water for me 💬</div>
-        <div class="qa-btn" onclick="ask('What symptoms show I am mineral deficient from drinking poor quality water?')">Signs of deficiency 💬</div>
-        <div class="qa-btn" onclick="ask('How does Orthodox Tsom fasting affect my hydration and mineral needs?')">Fasting & hydration 💬</div>
-        <div class="qa-btn" onclick="ask('What is functional water and why does Ethiopia need it?')">Functional water 💬</div>
-      </div>
-    </div>
-
+  <!-- STATS -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text">By the numbers</span>
+    <div class="divider-line"></div>
   </div>
 
-  <!-- SCREEN 2: BRANDS -->
-  <div class="screen" id="screen-brands">
-
-    <div class="tiktok-badge">📊 Ethiopian Water Brands vs WHO Standard</div>
-
-    <div class="card">
-      <div class="card-title">Ethiopian brands vs WHO standard</div>
-
-      <!-- WHO Target -->
-      <div class="who-row">
-        <div class="who-name" style="font-weight:600;color:var(--text);font-size:12px">WHO minimum</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 50+</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:100%;background:var(--accent)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 10+</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:100%;background:var(--accent2)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-good">Target</span>
-      </div>
-
-      <!-- Ambo -->
-      <div class="who-row">
-        <div class="who-name">Ambo Mineral</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 75</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:75%;background:var(--accent)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 35</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:88%;background:var(--accent2)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-good">Good</span>
-      </div>
-
-      <!-- Highland -->
-      <div class="who-row">
-        <div class="who-name">Highland</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 55</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:55%;background:var(--accent)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 18</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:45%;background:var(--accent2)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-good">Good</span>
-      </div>
-
-      <!-- Aqua Addis -->
-      <div class="who-row">
-        <div class="who-name">Aqua Addis</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 22</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:29%;background:var(--warning)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 8</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:40%;background:var(--warning)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-ok">Low</span>
-      </div>
-
-      <!-- Abyssinia -->
-      <div class="who-row">
-        <div class="who-name">Abyssinia</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 30</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:38%;background:var(--warning)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 10</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:25%;background:var(--warning)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-ok">Low</span>
-      </div>
-
-      <!-- Top Water -->
-      <div class="who-row">
-        <div class="who-name">Top Water</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 12</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:15%;background:var(--danger)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg &lt;5</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:12%;background:var(--danger)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-bad">Poor</span>
-      </div>
-
-      <!-- Kool -->
-      <div class="who-row">
-        <div class="who-name">Kool</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 20</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:26%;background:var(--warning)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 6</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:30%;background:var(--danger)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-ok">Low</span>
-      </div>
-
-      <!-- One -->
-      <div class="who-row">
-        <div class="who-name">One</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 20</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:26%;background:var(--warning)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 6</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:30%;background:var(--warning)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-ok">Low</span>
-      </div>
-
-      <!-- Arki -->
-      <div class="who-row">
-        <div class="who-name">Arki</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 18</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:23%;background:var(--danger)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 5</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:25%;background:var(--danger)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-bad">Poor</span>
-      </div>
-
-      <!-- Babile -->
-      <div class="who-row">
-        <div class="who-name">Babile</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 15</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:19%;background:var(--danger)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg 4</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:20%;background:var(--danger)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-bad">Poor</span>
-      </div>
-
-      <!-- South Spring -->
-      <div class="who-row">
-        <div class="who-name">South Spring</div>
-        <div class="who-bars">
-          <div class="who-bar-row">
-            <span class="who-bar-label">Ca 1.5</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:2%;background:var(--danger)"></div></div>
-          </div>
-          <div class="who-bar-row">
-            <span class="who-bar-label">Mg &lt;1</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:1%;background:var(--danger)"></div></div>
-          </div>
-        </div>
-        <span class="who-score score-bad">Stripped</span>
-      </div>
-
+  <div class="stats-row">
+    <div class="stat-pill">
+      <div class="stat-val">10+</div>
+      <div class="stat-label">Ethiopian brands rated</div>
     </div>
-
-    <div class="insight">
-      <span class="insight-icon">🇪🇹</span>
-      <p>Only <strong>Ambo</strong> and <strong>Highland</strong> come close to WHO mineral standards. The majority of Ethiopian bottled water brands fall significantly below recommended calcium and magnesium levels — especially important for athletes, people who fast, and those living in hot climates.</p>
+    <div class="stat-pill">
+      <div class="stat-val">WHO</div>
+      <div class="stat-label">Science-backed standards</div>
     </div>
-
-    <div class="card" style="padding:12px">
-      <div class="qa-wrap">
-        <div class="qa-btn" onclick="ask('Why is Ambo mineral water better than other Ethiopian water brands scientifically?')">Why is Ambo better? 💬</div>
-        <div class="qa-btn" onclick="ask('What makes Highland water a good choice for Ethiopian consumers?')">About Highland 💬</div>
-        <div class="qa-btn" onclick="ask('How can I improve the mineral content of low-quality bottled water at home?')">Boost low-mineral water 💬</div>
-        <div class="qa-btn" onclick="ask('What is functional water and why does Ethiopia need it?')">Functional water 💬</div>
-      </div>
+    <div class="stat-pill">
+      <div class="stat-val">Free</div>
+      <div class="stat-label">Always free to use</div>
     </div>
-
   </div>
 
-  <!-- SCREEN 3: WATER SCIENCE -->
-  <div class="screen" id="screen-science">
-
-    <div class="tiktok-badge">🔬 Water Science — Know the Truth</div>
-
-    <div class="card">
-      <div class="card-title">What RO filters really do</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.7">
-        <p style="margin-bottom:10px">Reverse osmosis removes <strong style="color:var(--text)">92–99%</strong> of calcium and magnesium. The membrane works by <strong style="color:var(--text)">diffusion through polymer</strong> — only uncharged molecules like H₂O with no hydration shell can pass through.</p>
-        <p style="margin-bottom:10px">Minerals like Ca²⁺ and Mg²⁺ carry an electric charge. That charge attracts surrounding water molecules forming a <strong style="color:var(--accent)">hydration shell</strong> — making the ion 3–6× larger than it looks. Too large to pass through the membrane.</p>
-        <p>Result: pure H₂O comes out the other side — <strong style="color:var(--danger)">nutritionally empty</strong>. Brands then add back tiny amounts of cheap mineral salts just enough to print numbers on the label.</p>
+  <!-- FEATURES -->
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon" style="background:rgba(0,229,184,0.1);">💧</div>
+      <div class="feat-body">
+        <div class="feat-title">Personal Water Calculator</div>
+        <div class="feat-desc">Enter your weight, activity, climate & fasting habits — get your exact daily water target in litres & glasses.</div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="card-title">WHO drinking water standards</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Ideal pH</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent)">6.5–8.5</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Ideal TDS</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent)">50–300</div>
-          <div style="font-size:10px;color:var(--text3)">mg/L</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Min Calcium</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent2)">50 mg/L</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Min Magnesium</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent2)">10 mg/L</div>
-        </div>
+    <div class="feat">
+      <div class="feat-icon" style="background:rgba(0,170,255,0.1);">📊</div>
+      <div class="feat-body">
+        <div class="feat-title">Ethiopian Brand Ratings</div>
+        <div class="feat-desc">See how Ambo, Highland, Aqua Addis, Top Water & more compare against WHO calcium & magnesium standards.</div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="card-title">Functional water types</div>
-      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">⚡</span>
-          <div><span style="color:var(--text);font-weight:500">Electrolyte water</span><br><span style="color:var(--text2)">Balanced Ca, Mg, K, Na — ideal for athletes and fasting</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">🫧</span>
-          <div><span style="color:var(--text);font-weight:500">Hydrogen water</span><br><span style="color:var(--text2)">Infused with H₂ — antioxidant effects, growing globally</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">🌿</span>
-          <div><span style="color:var(--text);font-weight:500">Adaptogen water</span><br><span style="color:var(--text2)">Ashwagandha, reishi — stress relief, focus</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">✨</span>
-          <div><span style="color:var(--text);font-weight:500">Collagen water</span><br><span style="color:var(--text2)">Skin, joints, hair — huge beauty market</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">🦠</span>
-          <div><span style="color:var(--text);font-weight:500">Probiotic water</span><br><span style="color:var(--text2)">Live cultures — gut health and immunity</span></div>
-        </div>
+    <div class="feat">
+      <div class="feat-icon" style="background:rgba(124,58,237,0.1);">🔬</div>
+      <div class="feat-body">
+        <div class="feat-title">Water Science Explained</div>
+        <div class="feat-desc">Learn what RO filters really do to minerals, what functional water is, and why it matters for your health.</div>
       </div>
     </div>
-
-    <div class="card" style="padding:12px">
-      <div class="qa-wrap">
-        <div class="qa-btn" onclick="ask('Explain how reverse osmosis membrane works at the molecular level')">How does RO work? 💬</div>
-        <div class="qa-btn" onclick="ask('What is the hydration shell and why does it block minerals in RO?')">Hydration shell science 💬</div>
-        <div class="qa-btn" onclick="ask('What are the health risks of drinking RO water long term?')">RO health risks 💬</div>
+    <div class="feat">
+      <div class="feat-icon" style="background:rgba(245,200,66,0.1);">🤝</div>
+      <div class="feat-body">
+        <div class="feat-title">Orthodox Tsom & Ramadan Mode</div>
+        <div class="feat-desc">Fasting-aware calculator that adjusts your hydration needs for Orthodox fasting and Ramadan schedules.</div>
       </div>
     </div>
-
   </div>
 
-  <!-- SCREEN 4: SHARE / COLLABORATE -->
-  <div class="screen" id="screen-share">
+  <!-- BRAND PREVIEW -->
+  <div class="brand-strip">
+    <div class="strip-title">Ethiopian brands vs WHO standard (Calcium)</div>
 
-    <!-- Collapsible ET banner -->
-    <div style="background:linear-gradient(135deg,#0a1628,#0d2137);border:1px solid rgba(0,212,170,0.3);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;">
-      <div onclick="toggleET()" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;user-select:none;-webkit-user-select:none;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:18px">🇪🇹</span>
-          <span style="font-size:13px;font-weight:600;color:var(--text)">ኢትዮጵያ የተሻለ ውሃ ይገባታል</span>
-        </div>
-        <span id="et-toggle" style="font-size:12px;color:var(--text3);transition:transform 0.25s ease;">▼</span>
-      </div>
-      <div id="et-body" style="max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.4,0,.2,1);">
-        <div style="padding:0 16px 16px;border-top:1px solid rgba(255,255,255,0.06);">
-          <p style="font-size:13px;color:var(--text2);margin:12px 0 14px;line-height:1.5;">Ethiopia deserves better water. The functional water market is worth $70B globally — and nobody in Ethiopia is doing it yet.</p>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
-            <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 6px;text-align:center;">
-              <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);">$70B</div>
-              <div style="font-size:10px;color:var(--text3);margin-top:2px;">Global market</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 6px;text-align:center;">
-              <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);">0</div>
-              <div style="font-size:10px;color:var(--text3);margin-top:2px;">Ethiopian brands</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 6px;text-align:center;">
-              <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);">120M</div>
-              <div style="font-size:10px;color:var(--text3);margin-top:2px;">Population</div>
-            </div>
-          </div>
-          <button class="cta-btn" onclick="share()">Share this opportunity 🚀</button>
-        </div>
-      </div>
+    <div class="brand-row">
+      <span class="brand-name-s">Ambo Mineral</span>
+      <div class="bar-track"><div class="bar-fill" style="width:75%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+      <span class="bar-badge good">Good ✓</span>
     </div>
-
-    <div class="card">
-      <div class="card-title">Who should collaborate</div>
-      <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:20px">💰</span>
-          <div><span style="color:var(--text);font-weight:500">Investors</span><br><span style="color:var(--text2)">First-mover advantage in a $0 market with 120M people</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:20px">🏭</span>
-          <div><span style="color:var(--text);font-weight:500">Manufacturers</span><br><span style="color:var(--text2)">Water bottling plants ready to produce functional water</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:20px">🏋️</span>
-          <div><span style="color:var(--text);font-weight:500">Gyms & sport clubs</span><br><span style="color:var(--text2)">Your athletes need electrolyte water. Let's build it together.</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:20px">🏥</span>
-          <div><span style="color:var(--text);font-weight:500">Health clinics</span><br><span style="color:var(--text2)">Mineral-rich water for patients and recovery</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:20px">📱</span>
-          <div><span style="color:var(--text);font-weight:500">Influencers & creators</span><br><span style="color:var(--text2)">Help educate Ethiopia about water science</span></div>
-        </div>
-      </div>
+    <div class="brand-row">
+      <span class="brand-name-s">Highland</span>
+      <div class="bar-track"><div class="bar-fill" style="width:55%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+      <span class="bar-badge good">Good ✓</span>
     </div>
-
-    <div class="insight">
-      <span class="insight-icon">🤝</span>
-      <p><strong>ጊዜው አሁን ነው።</strong> The need is real. The market is open. The science is on our side. If you are ready to collaborate and bring functional water to Ethiopia — let's connect.</p>
+    <div class="brand-row">
+      <span class="brand-name-s">Aqua Addis</span>
+      <div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--warning)"></div></div>
+      <span class="bar-badge ok">Low</span>
     </div>
-
-    <button class="cta-btn" onclick="ask('I want to collaborate on bringing functional water to Ethiopia. What are the first steps?')">Let's collaborate ↗ 💬</button>
-
+    <div class="brand-row">
+      <span class="brand-name-s">Top Water</span>
+      <div class="bar-track"><div class="bar-fill" style="width:8%;background:var(--danger)"></div></div>
+      <span class="bar-badge bad">Poor</span>
+    </div>
+    <div class="brand-row">
+      <span class="brand-name-s">South Spring</span>
+      <div class="bar-track"><div class="bar-fill" style="width:2%;background:var(--danger)"></div></div>
+      <span class="bar-badge bad">Stripped</span>
+    </div>
   </div>
 
-</div>
+  <!-- QUOTE -->
+  <div class="quote-block">
+    <p class="quote-text">
+      <strong>South Spring Water</strong> contains only <strong>1.51 mg/L calcium</strong> — yet claims to meet WHO standards on their website. WHO recommends a minimum of <strong>50 mg/L</strong>. That's 97% below the standard.
+    </p>
+  </div>
 
-<!-- Bottom nav -->
-<div class="bottom-nav">
-  <div class="nav-item active" id="nav-calc" onclick="showScreen('calc')">
-    <span class="nav-icon">💧</span>
-    <span class="nav-label">Calculator</span>
+  <!-- WHO BADGE -->
+  <div style="text-align:center;margin-bottom:28px;">
+    <div class="who-badge">🏥 Based on WHO Drinking Water Quality Guidelines</div>
   </div>
-  <div class="nav-item" id="nav-brands" onclick="showScreen('brands')">
-    <span class="nav-icon">📊</span>
-    <span class="nav-label">Brands</span>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <p class="bottom-cta-label">
+      <strong>120 million Ethiopians</strong> deserve to know what they're drinking.<br>
+      Check your water. Share with your family.
+    </p>
+    <a class="cta-main" href="https://t.me/daniel_website_bot" target="_blank">
+      <span class="tg-icon">✈️</span>
+      Check My Water Now — Free
+    </a>
   </div>
-  <div class="nav-item" id="nav-science" onclick="showScreen('science')">
-    <span class="nav-icon">🔬</span>
-    <span class="nav-label">Science</span>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Built with 💧 for Ethiopia &nbsp;·&nbsp; <span>HydroEthio</span> &nbsp;·&nbsp; WHO-backed science
   </div>
-  <div class="nav-item" id="nav-share" onclick="showScreen('share')">
-    <span class="nav-icon">🤝</span>
-    <span class="nav-label">Collaborate</span>
-  </div>
+
 </div>
 
 <script>
-/* ET banner toggle */
-var etOpen = false;
-function toggleET() {
-  etOpen = !etOpen;
-  var body = document.getElementById('et-body');
-  var icon = document.getElementById('et-toggle');
-  body.style.maxHeight = etOpen ? body.scrollHeight + 'px' : '0';
-  icon.style.transform = etOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-}
-
-/* Profile toggle */
-var profileOpen = false;
-function toggleProfile() {
-  profileOpen = !profileOpen;
-  var body = document.getElementById('profile-body');
-  var icon = document.getElementById('profile-toggle');
-  body.classList.toggle('open', profileOpen);
-  icon.classList.toggle('open', profileOpen);
-}
-
-function updateChips() {
-  var w = document.getElementById('sl-weight').value;
-  document.getElementById('chip-weight').textContent = w + ' kg';
-
-  var actMap = {'1.0':'Sedentary','1.3':'Light','1.6':'Active','2.0':'Very active'};
-  var cliMap = {'1.0':'Highlands','1.2':'Warm','1.4':'Hot','1.6':'Very hot'};
-  var fasMap = {'1.0':'No fast','1.15':'Occasional','1.25':'Orthodox','1.35':'Ramadan'};
-  var golMap = {'general':'General','athlete':'Athlete','weight':'Weight','heart':'Heart','bones':'Bones'};
-
-  document.getElementById('chip-activity').textContent = actMap[document.getElementById('sel-activity').value] || '';
-  document.getElementById('chip-climate').textContent  = cliMap[document.getElementById('sel-climate').value]  || '';
-  document.getElementById('chip-fasting').textContent  = fasMap[document.getElementById('sel-fasting').value]  || '';
-  document.getElementById('chip-goal').textContent     = golMap[document.getElementById('sel-goal').value]     || '';
-}
-
-var tg = window.Telegram && window.Telegram.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  tg.setHeaderColor('#0a0f1a');
-  tg.setBackgroundColor('#0a0f1a');
-}
-
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
-  document.getElementById('screen-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  window.scrollTo(0,0);
-}
-
-function onSlide() {
-  var w = document.getElementById('sl-weight').value;
-  document.getElementById('w-out').textContent = w + ' kg';
-  calculate();
-  updateChips();
-}
-
-function calculate() {
-  var w    = parseInt(document.getElementById('sl-weight').value);
-  var act  = parseFloat(document.getElementById('sel-activity').value);
-  var cli  = parseFloat(document.getElementById('sel-climate').value);
-  var fas  = parseFloat(document.getElementById('sel-fasting').value);
-  var goal = document.getElementById('sel-goal').value;
-
-  var total   = Math.round(w * 0.033 * act * cli * fas * 10) / 10;
-  var glasses = Math.round(total / 0.25);
-
-  document.getElementById('m-water').textContent   = total.toFixed(1);
-  document.getElementById('m-glasses').textContent = glasses;
-
-  var sw = act * cli * fas;
-  var ca = Math.min(Math.round(60 + (sw-1)*40), 200);
-  var mg = Math.min(Math.round(20 + (sw-1)*20), 80);
-  var k  = Math.min(Math.round(8  + (sw-1)*12), 30);
-  var na = Math.min(Math.round(10 + (sw-1)*15), 40);
-  var bi = Math.min(Math.round(80 + (sw-1)*60), 300);
-
-  if (goal==='athlete'){ ca+=20; mg+=10; k+=5; na+=10; }
-  if (goal==='heart')  { mg+=15; k+=8;  na=Math.max(5,na-5); }
-  if (goal==='bones')  { ca+=30; mg+=10; bi+=20; }
-  if (goal==='weight') { bi+=10; }
-
-  ca=Math.min(ca,200); mg=Math.min(mg,80); k=Math.min(k,30); na=Math.min(na,40); bi=Math.min(bi,300);
-
-  document.getElementById('v-ca').textContent = ca + ' mg/L';
-  document.getElementById('v-mg').textContent = mg + ' mg/L';
-  document.getElementById('v-k').textContent  = k  + ' mg/L';
-  document.getElementById('v-na').textContent = na + ' mg/L';
-  document.getElementById('v-bi').textContent = bi + ' mg/L';
-
-  document.getElementById('b-ca').style.width = Math.round((ca/200)*100) + '%';
-  document.getElementById('b-mg').style.width = Math.round((mg/80)*100)  + '%';
-  document.getElementById('b-k').style.width  = Math.round((k/30)*100)   + '%';
-  document.getElementById('b-na').style.width = Math.round((na/40)*100)  + '%';
-  document.getElementById('b-bi').style.width = Math.round((bi/300)*100) + '%';
-
-  var insights = {
-    general:  'For your profile, balanced mineral water with TDS 100–300 mg/L is ideal. Ambo mineral water is currently the closest Ethiopian brand to WHO standards.',
-    athlete:  'Athletes lose significant calcium, magnesium and potassium through sweat. Plain water is not enough. You need electrolyte water or mineral sachets for proper recovery.',
-    weight:   'Good hydration boosts metabolism and reduces appetite. Bicarbonate-rich water supports digestion. Avoid sugary drinks — stick to natural mineral water.',
-    heart:    'Magnesium and potassium are critical for heart health. Look for water high in these minerals and low in sodium. WHO recommends under 20 mg/L sodium in drinking water.',
-    bones:    'Calcium and magnesium from water are highly bioavailable for bone health. You need 80–150 mg/L calcium. This matters most for children, women, and older adults.'
-  };
-  document.getElementById('insight-text').textContent = insights[goal];
-  updateChips();
-}
-
-function ask(q) {
-  if (tg && tg.sendData) {
-    tg.sendData(JSON.stringify({ type: 'question', text: q }));
-  } else {
-    alert('Question: ' + q + '\n\n(In Telegram this sends to your bot for AI response)');
+  // Generate subtle falling drops in background
+  var bg = document.getElementById('drops-bg');
+  var drops = ['💧','🫧','💦'];
+  for (var i = 0; i < 18; i++) {
+    var el = document.createElement('div');
+    el.className = 'drop-particle';
+    el.textContent = drops[i % drops.length];
+    el.style.left = (Math.random() * 100) + '%';
+    el.style.animationDuration = (8 + Math.random() * 14) + 's';
+    el.style.animationDelay = (-Math.random() * 20) + 's';
+    el.style.fontSize = (10 + Math.random() * 12) + 'px';
+    bg.appendChild(el);
   }
-}
-
-function share() {
-  var text = '💧 ኢትዮጵያ የተሻለ ውሃ ትገባታለች!\n\nThe functional water market is worth $70B globally — and nobody in Ethiopia is doing it yet.\n\nCheck your personal hydration needs: @HydroEthioBot\n\n#EthiopiaWater #FunctionalWater #ውሃ #ጤና';
-  if (tg && tg.switchInlineQuery) {
-    tg.switchInlineQuery(text);
-  } else if (navigator.share) {
-    navigator.share({ title: 'HydroEthio', text: text });
-  } else {
-    alert('Share text copied! Post this on TikTok and Telegram:\n\n' + text);
-  }
-}
-
-calculate();
 </script>
 </body>
 </html>
