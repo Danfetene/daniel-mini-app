@@ -445,6 +445,26 @@
     margin-bottom: 8px;
   }
 
+  /* Compact collapsible profile */
+  .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+  .profile-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; cursor: pointer; user-select: none; -webkit-user-select: none; gap: 8px; }
+  .profile-header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; flex-wrap: wrap; }
+  .profile-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); flex-shrink: 0; }
+  .profile-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .profile-chip { font-size: 10px; color: var(--accent); background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.18); border-radius: 20px; padding: 2px 7px; white-space: nowrap; }
+  .profile-toggle { font-size: 12px; color: var(--text3); transition: transform 0.25s ease; flex-shrink: 0; }
+  .profile-toggle.open { transform: rotate(180deg); }
+  .profile-body { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(.4,0,.2,1); }
+  .profile-body.open { max-height: 700px; }
+  .profile-inner { padding: 12px 14px 14px; border-top: 1px solid var(--border); }
+  .weight-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .weight-row label { font-size: 12px; color: var(--text2); flex-shrink: 0; }
+  .weight-row input[type=range] { flex: 1; }
+  .weight-row .wval { font-size: 13px; font-weight: 600; color: var(--accent); width: 42px; text-align: right; flex-shrink: 0; }
+  .selects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sel-compact label { font-size: 10px; color: var(--text3); display: block; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .sel-compact select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 7px 9px; outline: none; -webkit-appearance: none; appearance: none; cursor: pointer; }
+
   .section-label {
     font-size: 11px;
     font-weight: 600;
@@ -471,56 +491,68 @@
   <!-- SCREEN 1: CALCULATOR -->
   <div class="screen active" id="screen-calc">
 
-    <div class="card">
-      <div class="card-title">Your profile</div>
-
-      <div class="slider-row">
-        <div class="slider-label">
-          <span>Weight</span>
-          <span id="w-out">70 kg</span>
+    <!-- Compact collapsible profile card -->
+    <div class="profile-card">
+      <div class="profile-header" onclick="toggleProfile()">
+        <div class="profile-header-left">
+          <span class="profile-title">Your profile</span>
+          <div class="profile-chips" id="profile-chips">
+            <span class="profile-chip" id="chip-weight">70 kg</span>
+            <span class="profile-chip" id="chip-activity">Light</span>
+            <span class="profile-chip" id="chip-climate">Warm</span>
+            <span class="profile-chip" id="chip-fasting">Orthodox</span>
+            <span class="profile-chip" id="chip-goal">General</span>
+          </div>
         </div>
-        <input type="range" id="sl-weight" min="40" max="130" value="70" step="1" oninput="onSlide()">
+        <span class="profile-toggle" id="profile-toggle">▼</span>
       </div>
-
-      <div class="select-row">
-        <label>Activity level</label>
-        <select id="sel-activity" onchange="calculate()">
-          <option value="1.0">Sedentary — office, little movement</option>
-          <option value="1.3" selected>Light — walking, light exercise</option>
-          <option value="1.6">Active — gym, running, sport</option>
-          <option value="2.0">Very active — athlete, heavy labour</option>
-        </select>
-      </div>
-
-      <div class="select-row">
-        <label>Climate / location</label>
-        <select id="sel-climate" onchange="calculate()">
-          <option value="1.0">Cool highlands — Addis Ababa</option>
-          <option value="1.2" selected>Warm — most of Ethiopia</option>
-          <option value="1.4">Hot — Dire Dawa, Harari, lowlands</option>
-          <option value="1.6">Very hot — Afar, outdoor work</option>
-        </select>
-      </div>
-
-      <div class="select-row">
-        <label>Fasting habits</label>
-        <select id="sel-fasting" onchange="calculate()">
-          <option value="1.0">No fasting</option>
-          <option value="1.15">Occasional fasting</option>
-          <option value="1.25" selected>Regular — Orthodox Tsom</option>
-          <option value="1.35">Daily fasting / Ramadan</option>
-        </select>
-      </div>
-
-      <div class="select-row" style="margin-bottom:0">
-        <label>Health goal</label>
-        <select id="sel-goal" onchange="calculate()">
-          <option value="general">General health</option>
-          <option value="athlete">Athletic performance</option>
-          <option value="weight">Weight management</option>
-          <option value="heart">Heart & blood pressure</option>
-          <option value="bones">Bone & joint health</option>
-        </select>
+      <div class="profile-body" id="profile-body">
+        <div class="profile-inner">
+          <div class="weight-row">
+            <label>Weight</label>
+            <input type="range" id="sl-weight" min="40" max="130" value="70" step="1" oninput="onSlide()">
+            <span class="wval" id="w-out">70 kg</span>
+          </div>
+          <div class="selects-grid">
+            <div class="sel-compact">
+              <label>Activity</label>
+              <select id="sel-activity" onchange="calculate()">
+                <option value="1.0">Sedentary</option>
+                <option value="1.3" selected>Light</option>
+                <option value="1.6">Active</option>
+                <option value="2.0">Very active</option>
+              </select>
+            </div>
+            <div class="sel-compact">
+              <label>Climate</label>
+              <select id="sel-climate" onchange="calculate()">
+                <option value="1.0">Cool highlands</option>
+                <option value="1.2" selected>Warm</option>
+                <option value="1.4">Hot</option>
+                <option value="1.6">Very hot</option>
+              </select>
+            </div>
+            <div class="sel-compact">
+              <label>Fasting</label>
+              <select id="sel-fasting" onchange="calculate()">
+                <option value="1.0">No fasting</option>
+                <option value="1.15">Occasional</option>
+                <option value="1.25" selected>Orthodox Tsom</option>
+                <option value="1.35">Ramadan</option>
+              </select>
+            </div>
+            <div class="sel-compact">
+              <label>Health goal</label>
+              <select id="sel-goal" onchange="calculate()">
+                <option value="general">General</option>
+                <option value="athlete">Athlete</option>
+                <option value="weight">Weight</option>
+                <option value="heart">Heart</option>
+                <option value="bones">Bones</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -886,27 +918,35 @@
   <!-- SCREEN 4: SHARE / COLLABORATE -->
   <div class="screen" id="screen-share">
 
-    <div class="share-card">
-      <div style="font-size:32px;margin-bottom:8px">🇪🇹</div>
-      <div class="share-title">ኢትዮጵያ የተሻለ ውሃ ይገባታል</div>
-      <div class="share-sub">Ethiopia deserves better water. The functional water market is worth $70B globally — and nobody in Ethiopia is doing it yet.</div>
-
-      <div class="share-stats">
-        <div class="share-stat">
-          <div class="share-stat-val">$70B</div>
-          <div class="share-stat-label">Global market</div>
+    <!-- Collapsible ET banner -->
+    <div style="background:linear-gradient(135deg,#0a1628,#0d2137);border:1px solid rgba(0,212,170,0.3);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;">
+      <div onclick="toggleET()" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;user-select:none;-webkit-user-select:none;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px">🇪🇹</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text)">ኢትዮጵያ የተሻለ ውሃ ይገባታል</span>
         </div>
-        <div class="share-stat">
-          <div class="share-stat-val">0</div>
-          <div class="share-stat-label">Ethiopian brands</div>
-        </div>
-        <div class="share-stat">
-          <div class="share-stat-val">120M</div>
-          <div class="share-stat-label">Population</div>
+        <span id="et-toggle" style="font-size:12px;color:var(--text3);transition:transform 0.25s ease;">▼</span>
+      </div>
+      <div id="et-body" style="max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.4,0,.2,1);">
+        <div style="padding:0 16px 16px;border-top:1px solid rgba(255,255,255,0.06);">
+          <p style="font-size:13px;color:var(--text2);margin:12px 0 14px;line-height:1.5;">Ethiopia deserves better water. The functional water market is worth $70B globally — and nobody in Ethiopia is doing it yet.</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+            <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 6px;text-align:center;">
+              <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);">$70B</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px;">Global market</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 6px;text-align:center;">
+              <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);">0</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px;">Ethiopian brands</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 6px;text-align:center;">
+              <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);">120M</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px;">Population</div>
+            </div>
+          </div>
+          <button class="cta-btn" onclick="share()">Share this opportunity 🚀</button>
         </div>
       </div>
-
-      <button class="cta-btn" onclick="share()">Share this opportunity 🚀</button>
     </div>
 
     <div class="card">
@@ -967,6 +1007,41 @@
 </div>
 
 <script>
+/* ET banner toggle */
+var etOpen = false;
+function toggleET() {
+  etOpen = !etOpen;
+  var body = document.getElementById('et-body');
+  var icon = document.getElementById('et-toggle');
+  body.style.maxHeight = etOpen ? body.scrollHeight + 'px' : '0';
+  icon.style.transform = etOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+
+/* Profile toggle */
+var profileOpen = false;
+function toggleProfile() {
+  profileOpen = !profileOpen;
+  var body = document.getElementById('profile-body');
+  var icon = document.getElementById('profile-toggle');
+  body.classList.toggle('open', profileOpen);
+  icon.classList.toggle('open', profileOpen);
+}
+
+function updateChips() {
+  var w = document.getElementById('sl-weight').value;
+  document.getElementById('chip-weight').textContent = w + ' kg';
+
+  var actMap = {'1.0':'Sedentary','1.3':'Light','1.6':'Active','2.0':'Very active'};
+  var cliMap = {'1.0':'Highlands','1.2':'Warm','1.4':'Hot','1.6':'Very hot'};
+  var fasMap = {'1.0':'No fasting','1.15':'Occasional','1.25':'Orthodox','1.35':'Ramadan'};
+  var golMap = {'general':'General','athlete':'Athlete','weight':'Weight','heart':'Heart','bones':'Bones'};
+
+  document.getElementById('chip-activity').textContent = actMap[document.getElementById('sel-activity').value] || '';
+  document.getElementById('chip-climate').textContent  = cliMap[document.getElementById('sel-climate').value]  || '';
+  document.getElementById('chip-fasting').textContent  = fasMap[document.getElementById('sel-fasting').value]  || '';
+  document.getElementById('chip-goal').textContent     = golMap[document.getElementById('sel-goal').value]     || '';
+}
+
 var tg = window.Telegram && window.Telegram.WebApp;
 if (tg) {
   tg.ready();
@@ -987,6 +1062,7 @@ function onSlide() {
   var w = document.getElementById('sl-weight').value;
   document.getElementById('w-out').textContent = w + ' kg';
   calculate();
+  updateChips();
 }
 
 function calculate() {
@@ -1036,6 +1112,7 @@ function calculate() {
     bones:    'Calcium and magnesium from water are highly bioavailable for bone health. You need 80–150 mg/L calcium. This matters most for children, women, and older adults.'
   };
   document.getElementById('insight-text').textContent = insights[goal];
+  updateChips();
 }
 
 function ask(q) {
