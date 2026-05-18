@@ -34,7 +34,6 @@
     overflow-x: hidden;
   }
 
-  /* Background pattern */
   body::before {
     content: '';
     position: fixed;
@@ -54,7 +53,6 @@
     padding: 0 0 80px;
   }
 
-  /* Header */
   .header {
     padding: 20px 20px 0;
     margin-bottom: 24px;
@@ -93,11 +91,9 @@
     line-height: 1.5;
   }
 
-  /* Screens */
   .screen { display: none; padding: 0 16px; }
   .screen.active { display: block; }
 
-  /* Cards */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -115,10 +111,7 @@
     margin-bottom: 14px;
   }
 
-  /* Sliders */
-  .slider-row {
-    margin-bottom: 18px;
-  }
+  .slider-row { margin-bottom: 18px; }
 
   .slider-label {
     display: flex;
@@ -127,16 +120,8 @@
     margin-bottom: 8px;
   }
 
-  .slider-label span:first-child {
-    font-size: 14px;
-    color: var(--text2);
-  }
-
-  .slider-label span:last-child {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--accent);
-  }
+  .slider-label span:first-child { font-size: 14px; color: var(--text2); }
+  .slider-label span:last-child { font-size: 14px; font-weight: 600; color: var(--accent); }
 
   input[type=range] {
     width: 100%;
@@ -159,10 +144,7 @@
     box-shadow: 0 0 0 4px rgba(0,212,170,0.15);
   }
 
-  /* Selects */
-  .select-row {
-    margin-bottom: 14px;
-  }
+  .select-row { margin-bottom: 14px; }
 
   .select-row label {
     font-size: 13px;
@@ -186,7 +168,6 @@
     cursor: pointer;
   }
 
-  /* Metric cards */
   .metric-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -202,30 +183,11 @@
     text-align: center;
   }
 
-  .metric-label {
-    font-size: 11px;
-    color: var(--text3);
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
+  .metric-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-weight: 500; }
+  .metric-value { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--accent); line-height: 1; }
+  .metric-unit { font-size: 12px; color: var(--text2); margin-top: 3px; }
 
-  .metric-value {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--accent);
-    line-height: 1;
-  }
-
-  .metric-unit {
-    font-size: 12px;
-    color: var(--text2);
-    margin-top: 3px;
-  }
-
-  /* Mineral bars */
-  .mineral-row {
-    margin-bottom: 12px;
-  }
+  .mineral-row { margin-bottom: 12px; }
 
   .mineral-header {
     display: flex;
@@ -234,16 +196,8 @@
     margin-bottom: 5px;
   }
 
-  .mineral-name {
-    font-size: 13px;
-    color: var(--text2);
-  }
-
-  .mineral-val {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-  }
+  .mineral-name { font-size: 13px; color: var(--text2); }
+  .mineral-val { font-size: 13px; font-weight: 600; color: var(--text); }
 
   .mineral-track {
     height: 6px;
@@ -258,7 +212,6 @@
     transition: width 0.5s cubic-bezier(.4,0,.2,1);
   }
 
-  /* Insight */
   .insight {
     background: rgba(0,212,170,0.07);
     border: 1px solid rgba(0,212,170,0.2);
@@ -267,11 +220,7 @@
     margin-bottom: 12px;
   }
 
-  .insight-icon {
-    font-size: 18px;
-    margin-bottom: 6px;
-    display: block;
-  }
+  .insight-icon { font-size: 18px; margin-bottom: 6px; display: block; }
 
   .insight p {
     font-size: 13px;
@@ -279,10 +228,7 @@
     line-height: 1.65;
   }
 
-  .insight p strong {
-    color: var(--accent);
-    font-weight: 600;
-  }
+  .insight p strong { color: var(--accent); font-weight: 600; }
 
   /* WHO comparison */
   .who-row {
@@ -315,12 +261,7 @@
     gap: 6px;
   }
 
-  .who-bar-label {
-    font-size: 10px;
-    color: var(--text3);
-    width: 36px;
-    flex-shrink: 0;
-  }
+  .who-bar-label { font-size: 10px; color: var(--text3); width: 36px; flex-shrink: 0; }
 
   .who-bar-track {
     flex: 1;
@@ -330,10 +271,7 @@
     overflow: hidden;
   }
 
-  .who-bar-fill {
-    height: 100%;
-    border-radius: 3px;
-  }
+  .who-bar-fill { height: 100%; border-radius: 3px; }
 
   .who-score {
     font-size: 11px;
@@ -347,7 +285,7 @@
   .score-ok { background: rgba(255,165,0,0.15); color: var(--warning); }
   .score-bad { background: rgba(255,77,109,0.15); color: var(--danger); }
 
-  /* Ethiopian brands */
+  /* Brand cards */
   .brand-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -371,33 +309,11 @@
   }
 
   .brand-info { flex: 1; }
-
-  .brand-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 3px;
-  }
-
-  .brand-sub {
-    font-size: 12px;
-    color: var(--text2);
-  }
-
-  .brand-score {
-    text-align: right;
-  }
-
-  .brand-tds {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .brand-tds-label {
-    font-size: 10px;
-    color: var(--text3);
-  }
+  .brand-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .brand-sub { font-size: 12px; color: var(--text2); }
+  .brand-score { text-align: right; }
+  .brand-tds { font-size: 13px; font-weight: 600; color: var(--text); }
+  .brand-tds-label { font-size: 10px; color: var(--text3); }
 
   /* Quick ask */
   .qa-btn {
@@ -422,11 +338,7 @@
     transform: scale(0.96);
   }
 
-  .qa-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    margin: -4px;
-  }
+  .qa-wrap { display: flex; flex-wrap: wrap; margin: -4px; }
 
   /* Bottom nav */
   .bottom-nav {
@@ -455,26 +367,13 @@
     gap: 4px;
   }
 
-  .nav-icon {
-    font-size: 20px;
-    transition: all 0.2s;
-  }
-
-  .nav-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--text3);
-    transition: all 0.2s;
-  }
+  .nav-icon { font-size: 20px; transition: all 0.2s; }
+  .nav-label { font-size: 10px; font-weight: 500; color: var(--text3); transition: all 0.2s; }
 
   .nav-item.active .nav-icon,
-  .nav-item.active .nav-label {
-    color: var(--accent);
-  }
-
+  .nav-item.active .nav-label { color: var(--accent); }
   .nav-item:active { transform: scale(0.92); }
 
-  /* CTA button */
   .cta-btn {
     width: 100%;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -493,7 +392,6 @@
 
   .cta-btn:active { transform: scale(0.97); opacity: 0.9; }
 
-  /* Share card */
   .share-card {
     background: linear-gradient(135deg, #0a1628, #0d2137);
     border: 1px solid rgba(0,212,170,0.3);
@@ -503,12 +401,7 @@
     text-align: center;
   }
 
-  .share-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
+  .share-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 6px; }
 
   .share-sub {
     font-size: 13px;
@@ -517,32 +410,12 @@
     line-height: 1.5;
   }
 
-  .share-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
-  }
+  .share-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 
-  .share-stat {
-    background: rgba(255,255,255,0.05);
-    border-radius: 10px;
-    padding: 10px 6px;
-  }
+  .share-stat { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 10px 6px; }
+  .share-stat-val { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--accent); }
+  .share-stat-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
-  .share-stat-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: var(--accent);
-  }
-
-  .share-stat-label {
-    font-size: 10px;
-    color: var(--text3);
-    margin-top: 2px;
-  }
-
-  /* Fade in animation */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -558,7 +431,6 @@
   .screen.active .card:nth-child(2) { animation-delay: 0.05s; }
   .screen.active .card:nth-child(3) { animation-delay: 0.1s; }
 
-  /* Tiktok badge */
   .tiktok-badge {
     display: inline-flex;
     align-items: center;
@@ -721,7 +593,7 @@
 
     <div class="insight">
       <span class="insight-icon">💡</span>
-      <p id="insight-text">For your profile, balanced mineral water with TDS 100–300 mg/L is idealss. Most Ethiopian brands do not fully meet WHO mineral levels — consider natural spring water or mineral supplements.</p>
+      <p id="insight-text">For your profile, balanced mineral water with TDS 100–300 mg/L is ideal. Ambo mineral water is currently the closest Ethiopian brand to WHO standards.</p>
     </div>
 
     <div class="section-label">Ask your water advisor</div>
@@ -736,14 +608,15 @@
 
   </div>
 
-  <!-- SCREEN 2: WHO COMPARISON -->
+  <!-- SCREEN 2: BRANDS -->
   <div class="screen" id="screen-brands">
 
-    <div class="tiktok-badge">📊 Ethiopian Water Market Analysis</div>
+    <div class="tiktok-badge">📊 Ethiopian Water Brands vs WHO Standard</div>
 
     <div class="card">
       <div class="card-title">Ethiopian brands vs WHO standard</div>
 
+      <!-- WHO Target -->
       <div class="who-row">
         <div class="who-name" style="font-weight:600;color:var(--text);font-size:12px">WHO minimum</div>
         <div class="who-bars">
@@ -759,6 +632,7 @@
         <span class="who-score score-good">Target</span>
       </div>
 
+      <!-- Ambo -->
       <div class="who-row">
         <div class="who-name">Ambo Mineral</div>
         <div class="who-bars">
@@ -774,6 +648,23 @@
         <span class="who-score score-good">Good</span>
       </div>
 
+      <!-- Highland -->
+      <div class="who-row">
+        <div class="who-name">Highland</div>
+        <div class="who-bars">
+          <div class="who-bar-row">
+            <span class="who-bar-label">Ca 55</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:55%;background:var(--accent)"></div></div>
+          </div>
+          <div class="who-bar-row">
+            <span class="who-bar-label">Mg 18</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:45%;background:var(--accent2)"></div></div>
+          </div>
+        </div>
+        <span class="who-score score-good">Good</span>
+      </div>
+
+      <!-- Aqua Addis -->
       <div class="who-row">
         <div class="who-name">Aqua Addis</div>
         <div class="who-bars">
@@ -789,21 +680,55 @@
         <span class="who-score score-ok">Low</span>
       </div>
 
+      <!-- Abyssinia -->
       <div class="who-row">
-        <div class="who-name">Arki</div>
+        <div class="who-name">Abyssinia</div>
         <div class="who-bars">
           <div class="who-bar-row">
-            <span class="who-bar-label">Ca 18</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:23%;background:var(--danger)"></div></div>
+            <span class="who-bar-label">Ca 30</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:38%;background:var(--warning)"></div></div>
           </div>
           <div class="who-bar-row">
-            <span class="who-bar-label">Mg 5</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:25%;background:var(--danger)"></div></div>
+            <span class="who-bar-label">Mg 10</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:25%;background:var(--warning)"></div></div>
+          </div>
+        </div>
+        <span class="who-score score-ok">Low</span>
+      </div>
+
+      <!-- Top Water -->
+      <div class="who-row">
+        <div class="who-name">Top Water</div>
+        <div class="who-bars">
+          <div class="who-bar-row">
+            <span class="who-bar-label">Ca 12</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:15%;background:var(--danger)"></div></div>
+          </div>
+          <div class="who-bar-row">
+            <span class="who-bar-label">Mg &lt;5</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:12%;background:var(--danger)"></div></div>
           </div>
         </div>
         <span class="who-score score-bad">Poor</span>
       </div>
 
+      <!-- Kool -->
+      <div class="who-row">
+        <div class="who-name">Kool</div>
+        <div class="who-bars">
+          <div class="who-bar-row">
+            <span class="who-bar-label">Ca 20</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:26%;background:var(--warning)"></div></div>
+          </div>
+          <div class="who-bar-row">
+            <span class="who-bar-label">Mg 6</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:30%;background:var(--danger)"></div></div>
+          </div>
+        </div>
+        <span class="who-score score-ok">Low</span>
+      </div>
+
+      <!-- One -->
       <div class="who-row">
         <div class="who-name">One</div>
         <div class="who-bars">
@@ -819,50 +744,70 @@
         <span class="who-score score-ok">Low</span>
       </div>
 
+      <!-- Arki -->
+      <div class="who-row">
+        <div class="who-name">Arki</div>
+        <div class="who-bars">
+          <div class="who-bar-row">
+            <span class="who-bar-label">Ca 18</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:23%;background:var(--danger)"></div></div>
+          </div>
+          <div class="who-bar-row">
+            <span class="who-bar-label">Mg 5</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:25%;background:var(--danger)"></div></div>
+          </div>
+        </div>
+        <span class="who-score score-bad">Poor</span>
+      </div>
+
+      <!-- Babile -->
+      <div class="who-row">
+        <div class="who-name">Babile</div>
+        <div class="who-bars">
+          <div class="who-bar-row">
+            <span class="who-bar-label">Ca 15</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:19%;background:var(--danger)"></div></div>
+          </div>
+          <div class="who-bar-row">
+            <span class="who-bar-label">Mg 4</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:20%;background:var(--danger)"></div></div>
+          </div>
+        </div>
+        <span class="who-score score-bad">Poor</span>
+      </div>
+
+      <!-- South Spring -->
       <div class="who-row">
         <div class="who-name">South Spring</div>
         <div class="who-bars">
           <div class="who-bar-row">
-            <span class="who-bar-label">Ca &lt;1</span>
+            <span class="who-bar-label">Ca 1.5</span>
             <div class="who-bar-track"><div class="who-bar-fill" style="width:2%;background:var(--danger)"></div></div>
           </div>
           <div class="who-bar-row">
-            <span class="who-bar-label">Mg 20</span>
-            <div class="who-bar-track"><div class="who-bar-fill" style="width:50%;background:var(--warning)"></div></div>
+            <span class="who-bar-label">Mg &lt;1</span>
+            <div class="who-bar-track"><div class="who-bar-fill" style="width:1%;background:var(--danger)"></div></div>
           </div>
         </div>
         <span class="who-score score-bad">Stripped</span>
       </div>
+
     </div>
 
     <div class="insight">
       <span class="insight-icon">🇪🇹</span>
-      <p><strong>The opportunity:</strong> Only Ambo mineral water comes close to WHO mineral standards. The rest of the Ethiopian market is significantly below what your body needs — especially for athletes, people who fast, and those in hot climates. This is a massive untapped business opportunity.</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Market gap — functional water</div>
-      <div class="metric-grid" style="margin-bottom:0">
-        <div class="metric-card">
-          <div class="metric-label">Global market size</div>
-          <div class="metric-value" style="font-size:22px">$70B+</div>
-          <div class="metric-unit">functional water</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Ethiopia market</div>
-          <div class="metric-value" style="color:var(--danger);font-size:22px">$0</div>
-          <div class="metric-unit">functional water</div>
-        </div>
-      </div>
+      <p>Only <strong>Ambo</strong> and <strong>Highland</strong> come close to WHO mineral standards. The majority of Ethiopian bottled water brands fall significantly below recommended calcium and magnesium levels — especially important for athletes, people who fast, and those living in hot climates.</p>
     </div>
 
     <div class="card" style="padding:12px">
       <div class="qa-wrap">
         <div class="qa-btn" onclick="ask('Why is Ambo mineral water better than other Ethiopian water brands scientifically?')">Why is Ambo better? 💬</div>
-        <div class="qa-btn" onclick="ask('What is the business opportunity for functional water in Ethiopia?')">Market opportunity 💬</div>
-        <div class="qa-btn" onclick="ask('How can I start a functional water brand in Ethiopia?')">Start a water brand 💬</div>
+        <div class="qa-btn" onclick="ask('What makes Highland water a good choice for Ethiopian consumers?')">About Highland 💬</div>
+        <div class="qa-btn" onclick="ask('How can I improve the mineral content of low-quality bottled water at home?')">Boost low-mineral water 💬</div>
+        <div class="qa-btn" onclick="ask('What is functional water and why does Ethiopia need it?')">Functional water 💬</div>
       </div>
     </div>
+
   </div>
 
   <!-- SCREEN 3: WATER SCIENCE -->
