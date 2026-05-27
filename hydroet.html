@@ -1238,7 +1238,6 @@ calculate();
 var selectedType    = { val:'run', met:9.8, icon:'🏃', label:'Run' };
 var selectedIntMult = 1.0;
 var workouts        = [];
-loadWorkouts();
 
 var typeIcons  = { run:'🏃', walk:'🚶', cycle:'🚴', gym:'🏋️', swim:'🏊', jump:'🤸' };
 var typeLabels = { run:'Run', walk:'Walk', cycle:'Cycle', gym:'Gym', swim:'Swim', jump:'Jump rope' };
@@ -1391,11 +1390,11 @@ function showIndoorMap() {
   // Draw indoor animation hint
   ctx.fillStyle = 'rgba(0,212,170,0.06)';
   ctx.fillRect(0, 0, W, H);
-  ctx.font = '13px DM Sans, sans-serif';
+  ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillStyle = 'rgba(0,212,170,0.5)';
   ctx.textAlign = 'center';
   ctx.fillText(selectedType.icon + '  ' + selectedType.label + ' — timer mode', W/2, H/2 - 10);
-  ctx.font = '11px DM Sans, sans-serif';
+  ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillStyle = 'rgba(139,154,181,0.6)';
   ctx.fillText('GPS not used for indoor workouts', W/2, H/2 + 12);
 }
@@ -1632,6 +1631,25 @@ function closeShareModal() {
   document.getElementById('share-modal').style.display = 'none';
 }
 
+function safeRoundRect(ctx, x, y, w, h, r) {
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+}
+
 function drawShareCard(w) {
   var canvas = document.getElementById('share-canvas');
   if (!canvas) return;
@@ -1644,7 +1662,7 @@ function drawShareCard(w) {
   bg.addColorStop(0, '#060d1f');
   bg.addColorStop(1, '#0a1a2e');
   ctx.fillStyle = bg;
-  ctx.roundRect ? ctx.roundRect(0, 0, W, H, 20) : ctx.fillRect(0, 0, W, H);
+  safeRoundRect(ctx, 0, 0, W, H, 20);
   ctx.fill();
 
   // Accent glow top right
@@ -1656,8 +1674,7 @@ function drawShareCard(w) {
 
   // Top label
   ctx.fillStyle = 'rgba(0,212,170,0.7)';
-  ctx.font = 'bold 11px DM Sans, sans-serif';
-  ctx.letterSpacing = '2px';
+  ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillText('ETHIOMOVE  ·  HYDROETHIO', 24, 36);
 
   // Big icon
@@ -1666,12 +1683,12 @@ function drawShareCard(w) {
 
   // Workout name
   ctx.fillStyle = '#eef2ff';
-  ctx.font = 'bold 32px DM Sans, sans-serif';
+  ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillText(w.label, 24, 168);
 
   // Date
   ctx.fillStyle = 'rgba(139,154,181,0.8)';
-  ctx.font = '13px DM Sans, sans-serif';
+  ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillText(w.date + '  ·  ' + w.time, 24, 192);
 
   // Divider line
@@ -1696,19 +1713,19 @@ function drawShareCard(w) {
     var x = 24 + i * colW;
     var y = 230;
     ctx.fillStyle = s.color;
-    ctx.font = 'bold 26px DM Serif Display, serif';
+    ctx.font = 'bold 28px Georgia, serif';
     ctx.fillText(s.val, x, y + 30);
     ctx.fillStyle = 'rgba(139,154,181,0.7)';
-    ctx.font = '11px DM Sans, sans-serif';
+    ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.fillText(s.label, x, y + 48);
   });
 
   if (w.distance) {
     ctx.fillStyle = '#a78bfa';
-    ctx.font = 'bold 26px DM Serif Display, serif';
+    ctx.font = 'bold 28px Georgia, serif';
     ctx.fillText(w.distance + ' km', 24, 330);
     ctx.fillStyle = 'rgba(139,154,181,0.7)';
-    ctx.font = '11px DM Sans, sans-serif';
+    ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.fillText('Distance', 24, 348);
   }
 
@@ -1717,10 +1734,10 @@ function drawShareCard(w) {
   ctx.fillStyle = 'rgba(0,212,170,0.12)';
   var bw = 110, bh = 28;
   ctx.beginPath();
-  ctx.roundRect ? ctx.roundRect(badgeX - bw, badgeY - bh + 4, bw, bh, 8) : null;
+  safeRoundRect(ctx, badgeX - bw, badgeY - bh + 4, bw, bh, 8);
   ctx.fill();
   ctx.fillStyle = '#00d4aa';
-  ctx.font = 'bold 11px DM Sans, sans-serif';
+  ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.textAlign = 'right';
   ctx.fillText(w.intensity.toUpperCase(), badgeX - 10, badgeY);
   ctx.textAlign = 'left';
@@ -1740,10 +1757,10 @@ function drawShareCard(w) {
   });
 
   ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = '11px DM Sans, sans-serif';
+  ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillText('💧 t.me/daniel_website_bot', 24, H - 16);
   ctx.fillStyle = 'rgba(0,212,170,0.7)';
-  ctx.font = 'bold 11px DM Sans, sans-serif';
+  ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.textAlign = 'right';
   ctx.fillText('🇪🇹 HydroEthio', W - 24, H - 16);
   ctx.textAlign = 'left';
@@ -1764,6 +1781,7 @@ function shareCard() {
   var w = workouts[shareWorkoutIndex];
   if (!canvas || !w) return;
 
+  if (!canvas.toBlob) { alert('Image download not supported on this browser. Try the Download button.'); return; }
   canvas.toBlob(function(blob) {
     var file = new File([blob], 'EthioMove_' + w.label + '.png', { type: 'image/png' });
     var text = w.icon + ' Just completed a ' + w.duration + '-min ' + w.label +
@@ -1780,8 +1798,11 @@ function shareCard() {
         .catch(function(){});
     } else {
       // Fallback — copy text
-      navigator.clipboard && navigator.clipboard.writeText(text);
-      alert('Link copied! Paste it on Telegram, TikTok or Instagram.');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function(){ alert('Caption copied! Paste on Telegram, TikTok or Instagram.'); });
+      } else {
+        alert('Share: ' + text);
+      }
     }
   }, 'image/png');
 }
