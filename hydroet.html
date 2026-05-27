@@ -474,6 +474,82 @@
     padding: 0 4px;
     margin: 16px 0 8px;
   }
+
+  /* ── Tracker pills ── */
+  .type-pill, .intensity-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 13px;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
+  }
+
+  .type-pill.active, .intensity-pill.active {
+    background: rgba(0,212,170,0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .type-pill:active, .intensity-pill:active { transform: scale(0.94); }
+
+  /* History item */
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp 0.25s ease;
+  }
+
+  .history-item:last-child { border-bottom: none; }
+
+  .history-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(0,212,170,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .history-info { flex: 1; }
+
+  .history-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .history-meta {
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .history-right { text-align: right; }
+
+  .history-cal {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warning);
+  }
+
+  .history-water {
+    font-size: 11px;
+    color: var(--accent);
+    margin-top: 2px;
+  }
 </style>
 </head>
 <body>
@@ -822,75 +898,114 @@
 
   </div>
 
-  <!-- SCREEN 3: WATER SCIENCE -->
+  <!-- SCREEN 3: MOVE TRACKER -->
   <div class="screen" id="screen-science">
 
-    <div class="tiktok-badge">🔬 Water Science — Know the Truth</div>
+    <div class="tiktok-badge">🏃 EthioMove — GPS Workout Tracker</div>
 
-    <div class="card">
-      <div class="card-title">What RO filters really do</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.7">
-        <p style="margin-bottom:10px">Reverse osmosis removes <strong style="color:var(--text)">92–99%</strong> of calcium and magnesium. The membrane works by <strong style="color:var(--text)">diffusion through polymer</strong> — only uncharged molecules like H₂O with no hydration shell can pass through.</p>
-        <p style="margin-bottom:10px">Minerals like Ca²⁺ and Mg²⁺ carry an electric charge. That charge attracts surrounding water molecules forming a <strong style="color:var(--accent)">hydration shell</strong> — making the ion 3–6× larger than it looks. Too large to pass through the membrane.</p>
-        <p>Result: pure H₂O comes out the other side — <strong style="color:var(--danger)">nutritionally empty</strong>. Brands then add back tiny amounts of cheap mineral salts just enough to print numbers on the label.</p>
+    <!-- Live GPS tracking card -->
+    <div class="card" id="gps-card">
+      <div class="card-title">Live GPS tracking</div>
+
+      <!-- Workout type for GPS -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Workout type</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;" id="type-pills">
+          <div class="type-pill active" data-val="run" data-met="9.8" onclick="selectType(this)">🏃 Run</div>
+          <div class="type-pill" data-val="walk" data-met="3.5" onclick="selectType(this)">🚶 Walk</div>
+          <div class="type-pill" data-val="cycle" data-met="7.5" onclick="selectType(this)">🚴 Cycle</div>
+          <div class="type-pill" data-val="gym" data-met="6.0" onclick="selectType(this)">🏋️ Gym</div>
+          <div class="type-pill" data-val="swim" data-met="8.0" onclick="selectType(this)">🏊 Swim</div>
+          <div class="type-pill" data-val="jump" data-met="10.0" onclick="selectType(this)">🤸 Jump rope</div>
+        </div>
+      </div>
+
+      <!-- Map canvas -->
+      <div id="gps-map" style="width:100%;height:180px;background:var(--surface2);border-radius:12px;margin-bottom:14px;position:relative;overflow:hidden;">
+        <canvas id="route-canvas" width="440" height="180" style="width:100%;height:100%;"></canvas>
+        <div id="gps-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+          <span style="font-size:28px;">🗺️</span>
+          <span style="font-size:12px;color:var(--text3);">Your route will appear here</span>
+        </div>
+        <!-- Live dot -->
+        <div id="live-dot" style="display:none;position:absolute;width:14px;height:14px;background:var(--accent);border-radius:50%;border:2px solid white;box-shadow:0 0 0 4px rgba(0,212,170,0.3);transform:translate(-50%,-50%);transition:left 0.5s,top 0.5s;"></div>
+        <!-- Status badge -->
+        <div id="gps-status-badge" style="position:absolute;top:8px;right:8px;background:rgba(10,15,26,0.85);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:11px;color:var(--text3);">Not started</div>
+      </div>
+
+      <!-- Live stats row -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:3px;" id="lbl-dist">Distance</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);" id="gps-dist">0.00</div>
+          <div style="font-size:10px;color:var(--text3);" id="lbl-dist-unit">km</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Duration</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent2);" id="gps-time">00:00</div>
+          <div style="font-size:10px;color:var(--text3);">min:sec</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px 6px;text-align:center;">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:3px;" id="lbl-pace">Pace</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);" id="gps-pace">—</div>
+          <div style="font-size:10px;color:var(--text3);" id="lbl-pace-unit">min/km</div>
+        </div>
+      </div>
+
+      <!-- Start / Stop buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button id="btn-start" class="cta-btn" onclick="startGPS()" style="margin-top:0;">▶ Start</button>
+        <button id="btn-stop"  class="cta-btn" onclick="stopGPS()"  style="margin-top:0;background:linear-gradient(135deg,var(--danger),#c0392b);display:none;">⏹ Finish</button>
+      </div>
+
+      <!-- GPS error message -->
+      <div id="gps-error" style="display:none;margin-top:10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--danger);line-height:1.5;"></div>
+    </div>
+
+    <!-- Summary row -->
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">Workouts logged</div>
+        <div class="metric-value" id="t-count">0</div>
+        <div class="metric-unit">total sessions</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Extra water today</div>
+        <div class="metric-value" id="t-water-extra">+0.0</div>
+        <div class="metric-unit">litres needed</div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">WHO drinking water standards</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Ideal pH</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent)">6.5–8.5</div>
+    <!-- History -->
+    <div class="card" id="history-card" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:0;">Activity history</div>
+        <div onclick="clearHistory()" style="font-size:11px;color:var(--text3);cursor:pointer;padding:4px 8px;border:1px solid var(--border);border-radius:8px;">Clear all</div>
+      </div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- Share modal overlay -->
+    <div id="share-modal" onclick="if(event.target===this)closeShareModal()" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <span style="font-size:14px;font-weight:600;color:var(--text);">Share workout</span>
+          <div onclick="closeShareModal()" style="font-size:20px;color:var(--text3);cursor:pointer;line-height:1;padding:4px;">✕</div>
         </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Ideal TDS</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent)">50–300</div>
-          <div style="font-size:10px;color:var(--text3)">mg/L</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Min Calcium</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent2)">50 mg/L</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Min Magnesium</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent2)">10 mg/L</div>
+        <!-- Canvas preview -->
+        <canvas id="share-canvas" width="400" height="400" style="width:100%;border-radius:12px;margin-bottom:14px;display:block;"></canvas>
+        <!-- Action buttons -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <button onclick="downloadCard()" style="background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0a0f1a;cursor:pointer;">⬇ Download</button>
+          <button onclick="shareCard()" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;">✈ Share</button>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Functional water types</div>
-      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">⚡</span>
-          <div><span style="color:var(--text);font-weight:500">Electrolyte water</span><br><span style="color:var(--text2)">Balanced Ca, Mg, K, Na — ideal for athletes and fasting</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">🫧</span>
-          <div><span style="color:var(--text);font-weight:500">Hydrogen water</span><br><span style="color:var(--text2)">Infused with H₂ — antioxidant effects, growing globally</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">🌿</span>
-          <div><span style="color:var(--text);font-weight:500">Adaptogen water</span><br><span style="color:var(--text2)">Ashwagandha, reishi — stress relief, focus</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">✨</span>
-          <div><span style="color:var(--text);font-weight:500">Collagen water</span><br><span style="color:var(--text2)">Skin, joints, hair — huge beauty market</span></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <span style="font-size:18px">🦠</span>
-          <div><span style="color:var(--text);font-weight:500">Probiotic water</span><br><span style="color:var(--text2)">Live cultures — gut health and immunity</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="padding:12px">
-      <div class="qa-wrap">
-        <div class="qa-btn" onclick="ask('Explain how reverse osmosis membrane works at the molecular level')">How does RO work? 💬</div>
-        <div class="qa-btn" onclick="ask('What is the hydration shell and why does it block minerals in RO?')">Hydration shell science 💬</div>
-        <div class="qa-btn" onclick="ask('What are the health risks of drinking RO water long term?')">RO health risks 💬</div>
-      </div>
+    <!-- Tip -->
+    <div class="insight">
+      <span class="insight-icon">💧</span>
+      <p id="tracker-tip">Press Start to begin GPS tracking. Your route will be drawn live on the map. When done, press Finish to log the workout and see your water needs.</p>
     </div>
 
   </div>
@@ -977,8 +1092,8 @@
     <span class="nav-label">Brands</span>
   </div>
   <div class="nav-item" id="nav-science" onclick="showScreen('science')">
-    <span class="nav-icon">🔬</span>
-    <span class="nav-label">Science</span>
+    <span class="nav-icon">🏃</span>
+    <span class="nav-label">Move</span>
   </div>
   <div class="nav-item" id="nav-share" onclick="showScreen('share')">
     <span class="nav-icon">🤝</span>
@@ -1115,6 +1230,562 @@ function share() {
 }
 
 calculate();
+
+
+/* ═══════════════════════════════════════
+   ETHIOMOVE — GPS TRACKER
+═══════════════════════════════════════ */
+var selectedType    = { val:'run', met:9.8, icon:'🏃', label:'Run' };
+var selectedIntMult = 1.0;
+var workouts        = [];
+loadWorkouts();
+
+var typeIcons  = { run:'🏃', walk:'🚶', cycle:'🚴', gym:'🏋️', swim:'🏊', jump:'🤸' };
+var typeLabels = { run:'Run', walk:'Walk', cycle:'Cycle', gym:'Gym', swim:'Swim', jump:'Jump rope' };
+
+var tips = {
+  run:   "Running is the most water-intensive sport. Drink 150-250 ml every 20 minutes during a run.",
+  walk:  "Walking in Ethiopia's heat still causes significant sweat loss. Keep a water bottle with you.",
+  cycle: "Cycling sweat can evaporate fast in wind — you may not notice dehydration until it is too late.",
+  gym:   "Gym training depletes electrolytes fast. Ambo mineral water is your best recovery drink.",
+  swim:  "Swimmers still sweat — you just do not feel it. Drink water before and after every swim session.",
+  jump:  "Jump rope is one of the highest-intensity exercises. Drink before, during, and after."
+};
+
+function selectType(el) {
+  document.querySelectorAll('.type-pill').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  selectedType = {
+    val:   el.dataset.val,
+    met:   parseFloat(el.dataset.met),
+    icon:  typeIcons[el.dataset.val],
+    label: typeLabels[el.dataset.val]
+  };
+  var tipEl = document.getElementById('tracker-tip');
+  if (tipEl) tipEl.textContent = tips[el.dataset.val] || '';
+  // Update stat card labels based on mode
+  var lDist     = document.getElementById('lbl-dist');
+  var lDistUnit = document.getElementById('lbl-dist-unit');
+  var lPace     = document.getElementById('lbl-pace');
+  var lPaceUnit = document.getElementById('lbl-pace-unit');
+  var distEl    = document.getElementById('gps-dist');
+  if (isIndoor()) {
+    if (lDist)     lDist.textContent     = 'Calories';
+    if (lDistUnit) lDistUnit.textContent = 'kcal';
+    if (lPace)     lPace.textContent     = 'Extra water';
+    if (lPaceUnit) lPaceUnit.textContent = 'litres';
+    if (distEl)    distEl.textContent    = '0';
+    var pEl = document.getElementById('gps-pace');
+    if (pEl) pEl.textContent = '0L';
+  } else {
+    if (lDist)     lDist.textContent     = 'Distance';
+    if (lDistUnit) lDistUnit.textContent = 'km';
+    if (lPace)     lPace.textContent     = 'Pace';
+    if (lPaceUnit) lPaceUnit.textContent = 'min/km';
+    if (distEl)    distEl.textContent    = '0.00';
+    var pEl = document.getElementById('gps-pace');
+    if (pEl) pEl.textContent = '—';
+  }
+}
+
+/* ── GPS state ── */
+var gpsWatchId    = null;
+var gpsCoords     = [];   // [{lat, lng, ts}]
+var gpsStartTime  = null;
+var gpsTimerTick  = null;
+var gpsTotalDist  = 0;    // metres
+var gpsRunning    = false;
+
+var GPS_TYPES  = ['run','walk','cycle','swim'];
+var indoor_types = ['gym','jump'];
+
+function isIndoor() { return indoor_types.indexOf(selectedType.val) !== -1; }
+
+function startGPS() {
+  var errEl = document.getElementById('gps-error');
+  errEl.style.display = 'none';
+
+  // Reset state
+  gpsCoords    = [];
+  gpsTotalDist = 0;
+  gpsStartTime = Date.now();
+  gpsRunning   = true;
+
+  // UI
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-stop').style.display  = 'block';
+  document.getElementById('gps-placeholder').style.display = 'none';
+  clearCanvas();
+
+  // Timer always runs
+  gpsTimerTick = setInterval(function(){
+    updateTimer();
+    if (isIndoor()) updateIndoorStats();
+  }, 1000);
+
+  if (isIndoor()) {
+    // Indoor mode — no GPS, just timer + live calorie calc
+    setBadge('⏱ Timer running', 'var(--accent2)');
+    showIndoorMap();
+  } else {
+    // Outdoor GPS mode
+    if (!navigator.geolocation) {
+      showGPSError('GPS is not supported on this device.');
+      stopGPS(); return;
+    }
+    setBadge('🔴 Tracking', 'var(--danger)');
+    gpsWatchId = navigator.geolocation.watchPosition(
+      onGPSPosition,
+      onGPSError,
+      { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+    );
+  }
+}
+
+function onGPSPosition(pos) {
+  if (!gpsRunning) return;
+  var pt = { lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now() };
+
+  if (gpsCoords.length > 0) {
+    var prev = gpsCoords[gpsCoords.length - 1];
+    var d = haversine(prev.lat, prev.lng, pt.lat, pt.lng);
+    // Filter GPS jitter — ignore jumps < 2m or > 200m between ticks
+    if (d >= 2 && d <= 200) {
+      gpsTotalDist += d;
+    }
+  }
+
+  gpsCoords.push(pt);
+  var km = (gpsTotalDist / 1000).toFixed(2);
+  document.getElementById('gps-dist').textContent = km;
+
+  // Pace
+  var elapsed = (Date.now() - gpsStartTime) / 60000; // minutes
+  if (gpsTotalDist > 100) {
+    var paceMin = elapsed / (gpsTotalDist / 1000);
+    var pMin = Math.floor(paceMin);
+    var pSec = Math.round((paceMin - pMin) * 60);
+    document.getElementById('gps-pace').textContent = pMin + ':' + (pSec < 10 ? '0' : '') + pSec;
+  }
+
+  drawRoute();
+  moveLiveDot();
+}
+
+function onGPSError(err) {
+  var msgs = {
+    1: 'Location permission denied. Please allow location access in your browser settings.',
+    2: 'GPS signal not available. Try moving to an open area.',
+    3: 'GPS timed out. Make sure location is enabled on your device.'
+  };
+  showGPSError(msgs[err.code] || 'GPS error. Please try again.');
+  stopGPS();
+}
+
+function showIndoorMap() {
+  var canvas = document.getElementById('route-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  // Draw indoor animation hint
+  ctx.fillStyle = 'rgba(0,212,170,0.06)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.font = '13px DM Sans, sans-serif';
+  ctx.fillStyle = 'rgba(0,212,170,0.5)';
+  ctx.textAlign = 'center';
+  ctx.fillText(selectedType.icon + '  ' + selectedType.label + ' — timer mode', W/2, H/2 - 10);
+  ctx.font = '11px DM Sans, sans-serif';
+  ctx.fillStyle = 'rgba(139,154,181,0.6)';
+  ctx.fillText('GPS not used for indoor workouts', W/2, H/2 + 12);
+}
+
+function updateIndoorStats() {
+  if (!gpsStartTime) return;
+  var dur    = (Date.now() - gpsStartTime) / 60000; // minutes
+  var weight = parseFloat(document.getElementById('sl-weight').value) || 70;
+  var cal    = Math.round(selectedType.met * weight * (dur / 60) * selectedIntMult);
+  var waterEx= Math.round((dur / 30) * 0.5 * selectedIntMult * (selectedType.met / 7) * 10) / 10;
+  var distEl = document.getElementById('gps-dist');
+  var paceEl = document.getElementById('gps-pace');
+  if (distEl) distEl.textContent = cal + ' kcal';
+  if (paceEl) paceEl.textContent = '+' + waterEx + 'L';
+  // Update dist label
+  var labels = document.querySelectorAll('#screen-science .metric-card .metric-unit, #gps-map + div .metric-unit');
+}
+
+function stopGPS() {
+  if (!gpsRunning && gpsCoords.length === 0) return;
+  gpsRunning = false;
+
+  if (gpsWatchId !== null) {
+    navigator.geolocation.clearWatch(gpsWatchId);
+    gpsWatchId = null;
+  }
+  if (gpsTimerTick) { clearInterval(gpsTimerTick); gpsTimerTick = null; }
+
+  // UI reset
+  document.getElementById('btn-start').style.display = 'block';
+  document.getElementById('btn-stop').style.display  = 'none';
+  setBadge('Finished', 'var(--accent)');
+  document.getElementById('live-dot').style.display = 'none';
+
+  if (!isIndoor() && gpsCoords.length < 2) {
+    showGPSError('Not enough GPS points recorded. Try again in an open area.');
+    return;
+  }
+
+  // Calculate & log
+  var dur    = Math.max(1, Math.round((Date.now() - gpsStartTime) / 60000));
+  var distKm = isIndoor() ? null : parseFloat((gpsTotalDist / 1000).toFixed(2));
+  var weight  = parseFloat(document.getElementById('sl-weight').value) || 70;
+  var cal     = Math.round(selectedType.met * weight * (dur / 60) * selectedIntMult);
+  var waterEx = Math.round((dur / 30) * 0.5 * selectedIntMult * (selectedType.met / 7) * 10) / 10;
+
+  var entry = {
+    type:      selectedType.val,
+    icon:      selectedType.icon,
+    label:     selectedType.label,
+    duration:  dur,
+    distance:  distKm,
+    calories:  cal,
+    water:     waterEx,
+    intensity: 'GPS tracked',
+    time:      new Date().toLocaleTimeString('en-ET', { hour:'2-digit', minute:'2-digit' }),
+    date:      new Date().toLocaleDateString('en-ET', { weekday:'short', month:'short', day:'numeric' })
+  };
+
+  workouts.unshift(entry);
+  saveWorkouts();
+  renderHistory();
+  updateSummary();
+
+  var tipEl = document.getElementById('tracker-tip');
+  if (tipEl) tipEl.textContent = 'Workout logged! You burned ' + cal + ' kcal and need +' + waterEx + 'L extra water to recover.';
+}
+
+function updateTimer() {
+  if (!gpsStartTime) return;
+  var elapsed = Math.floor((Date.now() - gpsStartTime) / 1000);
+  var m = Math.floor(elapsed / 60);
+  var s = elapsed % 60;
+  var el = document.getElementById('gps-time');
+  if (el) el.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+/* ── Canvas route drawing ── */
+function clearCanvas() {
+  var canvas = document.getElementById('route-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawRoute() {
+  var canvas = document.getElementById('route-canvas');
+  if (!canvas || gpsCoords.length < 2) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+
+  // Find bounding box
+  var lats = gpsCoords.map(function(p){ return p.lat; });
+  var lngs = gpsCoords.map(function(p){ return p.lng; });
+  var minLat = Math.min.apply(null, lats), maxLat = Math.max.apply(null, lats);
+  var minLng = Math.min.apply(null, lngs), maxLng = Math.max.apply(null, lngs);
+  var pad = 20;
+
+  function toX(lng) {
+    if (maxLng === minLng) return W / 2;
+    return pad + (lng - minLng) / (maxLng - minLng) * (W - pad * 2);
+  }
+  function toY(lat) {
+    if (maxLat === minLat) return H / 2;
+    return pad + (maxLat - lat) / (maxLat - minLat) * (H - pad * 2);
+  }
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw route line
+  ctx.beginPath();
+  ctx.moveTo(toX(gpsCoords[0].lng), toY(gpsCoords[0].lat));
+  for (var i = 1; i < gpsCoords.length; i++) {
+    ctx.lineTo(toX(gpsCoords[i].lng), toY(gpsCoords[i].lat));
+  }
+  ctx.strokeStyle = '#00d4aa';
+  ctx.lineWidth   = 3;
+  ctx.lineJoin    = 'round';
+  ctx.lineCap     = 'round';
+  ctx.stroke();
+
+  // Start dot (green)
+  ctx.beginPath();
+  ctx.arc(toX(gpsCoords[0].lng), toY(gpsCoords[0].lat), 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#00d4aa';
+  ctx.fill();
+}
+
+function moveLiveDot() {
+  var canvas = document.getElementById('route-canvas');
+  var dot    = document.getElementById('live-dot');
+  if (!canvas || !dot || gpsCoords.length === 0) return;
+
+  var lats = gpsCoords.map(function(p){ return p.lat; });
+  var lngs = gpsCoords.map(function(p){ return p.lng; });
+  var minLat = Math.min.apply(null, lats), maxLat = Math.max.apply(null, lats);
+  var minLng = Math.min.apply(null, lngs), maxLng = Math.max.apply(null, lngs);
+  var pad = 20, W = canvas.clientWidth, H = canvas.clientHeight;
+
+  var last = gpsCoords[gpsCoords.length - 1];
+  var x = maxLng === minLng ? W/2 : pad + (last.lng - minLng) / (maxLng - minLng) * (W - pad*2);
+  var y = maxLat === minLat ? H/2 : pad + (maxLat - last.lat) / (maxLat - minLat) * (H - pad*2);
+
+  dot.style.display = 'block';
+  dot.style.left    = x + 'px';
+  dot.style.top     = y + 'px';
+}
+
+function setBadge(text, color) {
+  var b = document.getElementById('gps-status-badge');
+  if (b) { b.textContent = text; b.style.color = color; }
+}
+
+function showGPSError(msg) {
+  var el = document.getElementById('gps-error');
+  if (el) { el.style.display = 'block'; el.textContent = '⚠ ' + msg; }
+}
+
+/* ── Haversine distance (metres) ── */
+function haversine(lat1, lng1, lat2, lng2) {
+  var R = 6371000;
+  var dLat = (lat2 - lat1) * Math.PI / 180;
+  var dLng = (lng2 - lng1) * Math.PI / 180;
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLng/2) * Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/* ── History & summary ── */
+/* ── Persistence ── */
+function saveWorkouts() {
+  try { localStorage.setItem('ethiomove_workouts', JSON.stringify(workouts)); } catch(e) {}
+}
+
+function loadWorkouts() {
+  try {
+    var saved = localStorage.getItem('ethiomove_workouts');
+    if (saved) { workouts = JSON.parse(saved); }
+  } catch(e) {}
+}
+
+function renderHistory() {
+  var list = document.getElementById('history-list');
+  var card = document.getElementById('history-card');
+  if (!list || !card) return;
+  if (workouts.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  list.innerHTML = workouts.map(function(w, i){
+    var distStr = w.distance ? ' · ' + w.distance + ' km' : '';
+    return '<div class="history-item">' +
+      '<div class="history-icon">' + w.icon + '</div>' +
+      '<div class="history-info">' +
+        '<div class="history-name">' + w.label + ' · ' + w.intensity + '</div>' +
+        '<div class="history-meta">' + w.date + ' · ' + w.time + ' · ' + w.duration + ' min' + distStr + '</div>' +
+      '</div>' +
+      '<div class="history-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">' +
+        '<div class="history-cal">' + w.calories + ' kcal</div>' +
+        '<div class="history-water">+' + w.water + 'L</div>' +
+        '<div onclick="openShareModal(' + i + ')" style="font-size:10px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);color:var(--accent);border-radius:6px;padding:2px 7px;cursor:pointer;white-space:nowrap;">Share 📤</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function updateSummary() {
+  var c = document.getElementById('t-count');
+  var w = document.getElementById('t-water-extra');
+  if (c) c.textContent = workouts.length;
+  if (w) {
+    var total = workouts.reduce(function(s, x){ return s + x.water; }, 0);
+    w.textContent = '+' + (Math.round(total * 10) / 10);
+  }
+}
+
+function clearHistory() {
+  workouts = [];
+  saveWorkouts();
+  renderHistory();
+  updateSummary();
+}
+
+/* ── Share card ── */
+var shareWorkoutIndex = 0;
+
+function openShareModal(idx) {
+  shareWorkoutIndex = idx;
+  var modal = document.getElementById('share-modal');
+  modal.style.display = 'flex';
+  setTimeout(function(){ drawShareCard(workouts[idx]); }, 50);
+}
+
+function closeShareModal() {
+  document.getElementById('share-modal').style.display = 'none';
+}
+
+function drawShareCard(w) {
+  var canvas = document.getElementById('share-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = 400, H = 400;
+  canvas.width = W; canvas.height = H;
+
+  // Background gradient
+  var bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#060d1f');
+  bg.addColorStop(1, '#0a1a2e');
+  ctx.fillStyle = bg;
+  ctx.roundRect ? ctx.roundRect(0, 0, W, H, 20) : ctx.fillRect(0, 0, W, H);
+  ctx.fill();
+
+  // Accent glow top right
+  var glow = ctx.createRadialGradient(W, 0, 0, W, 0, 200);
+  glow.addColorStop(0, 'rgba(0,212,170,0.18)');
+  glow.addColorStop(1, 'rgba(0,212,170,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // Top label
+  ctx.fillStyle = 'rgba(0,212,170,0.7)';
+  ctx.font = 'bold 11px DM Sans, sans-serif';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('ETHIOMOVE  ·  HYDROETHIO', 24, 36);
+
+  // Big icon
+  ctx.font = '72px serif';
+  ctx.fillText(w.icon, 24, 120);
+
+  // Workout name
+  ctx.fillStyle = '#eef2ff';
+  ctx.font = 'bold 32px DM Sans, sans-serif';
+  ctx.fillText(w.label, 24, 168);
+
+  // Date
+  ctx.fillStyle = 'rgba(139,154,181,0.8)';
+  ctx.font = '13px DM Sans, sans-serif';
+  ctx.fillText(w.date + '  ·  ' + w.time, 24, 192);
+
+  // Divider line
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(24, 208); ctx.lineTo(W - 24, 208);
+  ctx.stroke();
+
+  // Stats grid — 3 columns
+  var stats = [
+    { label: 'Duration',  val: w.duration + ' min',  color: '#0099ff' },
+    { label: 'Calories',  val: w.calories + ' kcal', color: '#ffa500' },
+    { label: 'Extra H₂O', val: '+' + w.water + 'L',  color: '#00d4aa' }
+  ];
+  if (w.distance) {
+    stats.push({ label: 'Distance', val: w.distance + ' km', color: '#a78bfa' });
+  }
+
+  var colW = (W - 48) / 3;
+  stats.slice(0, 3).forEach(function(s, i) {
+    var x = 24 + i * colW;
+    var y = 230;
+    ctx.fillStyle = s.color;
+    ctx.font = 'bold 26px DM Serif Display, serif';
+    ctx.fillText(s.val, x, y + 30);
+    ctx.fillStyle = 'rgba(139,154,181,0.7)';
+    ctx.font = '11px DM Sans, sans-serif';
+    ctx.fillText(s.label, x, y + 48);
+  });
+
+  if (w.distance) {
+    ctx.fillStyle = '#a78bfa';
+    ctx.font = 'bold 26px DM Serif Display, serif';
+    ctx.fillText(w.distance + ' km', 24, 330);
+    ctx.fillStyle = 'rgba(139,154,181,0.7)';
+    ctx.font = '11px DM Sans, sans-serif';
+    ctx.fillText('Distance', 24, 348);
+  }
+
+  // Intensity badge
+  var badgeX = W - 24, badgeY = 310;
+  ctx.fillStyle = 'rgba(0,212,170,0.12)';
+  var bw = 110, bh = 28;
+  ctx.beginPath();
+  ctx.roundRect ? ctx.roundRect(badgeX - bw, badgeY - bh + 4, bw, bh, 8) : null;
+  ctx.fill();
+  ctx.fillStyle = '#00d4aa';
+  ctx.font = 'bold 11px DM Sans, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(w.intensity.toUpperCase(), badgeX - 10, badgeY);
+  ctx.textAlign = 'left';
+
+  // Bottom bar
+  var barBg = ctx.createLinearGradient(0, H - 46, W, H);
+  barBg.addColorStop(0, 'rgba(0,212,170,0.15)');
+  barBg.addColorStop(1, 'rgba(0,153,255,0.15)');
+  ctx.fillStyle = barBg;
+  ctx.fillRect(0, H - 46, W, 46);
+
+  // Ethiopian flag colors as thin strip at bottom
+  var flagColors = ['#078930','#FCDD09','#EF2118'];
+  flagColors.forEach(function(col, i) {
+    ctx.fillStyle = col;
+    ctx.fillRect(i * (W/3), H - 5, W/3, 5);
+  });
+
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '11px DM Sans, sans-serif';
+  ctx.fillText('💧 t.me/daniel_website_bot', 24, H - 16);
+  ctx.fillStyle = 'rgba(0,212,170,0.7)';
+  ctx.font = 'bold 11px DM Sans, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('🇪🇹 HydroEthio', W - 24, H - 16);
+  ctx.textAlign = 'left';
+}
+
+function downloadCard() {
+  var canvas = document.getElementById('share-canvas');
+  if (!canvas) return;
+  var w = workouts[shareWorkoutIndex];
+  var link = document.createElement('a');
+  link.download = 'EthioMove_' + (w ? w.label : 'workout') + '_' + new Date().toISOString().slice(0,10) + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function shareCard() {
+  var canvas = document.getElementById('share-canvas');
+  var w = workouts[shareWorkoutIndex];
+  if (!canvas || !w) return;
+
+  canvas.toBlob(function(blob) {
+    var file = new File([blob], 'EthioMove_' + w.label + '.png', { type: 'image/png' });
+    var text = w.icon + ' Just completed a ' + w.duration + '-min ' + w.label +
+               (w.distance ? ' (' + w.distance + ' km)' : '') +
+               ' — burned ' + w.calories + ' kcal! \n\n' +
+               'Tracking with HydroEthio: t.me/daniel_website_bot \n\n' +
+               '#EthioMove #HydroEthio #Ethiopia #Fitness';
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'EthioMove Workout', text: text })
+        .catch(function(){});
+    } else if (navigator.share) {
+      navigator.share({ title: 'EthioMove Workout', text: text })
+        .catch(function(){});
+    } else {
+      // Fallback — copy text
+      navigator.clipboard && navigator.clipboard.writeText(text);
+      alert('Link copied! Paste it on Telegram, TikTok or Instagram.');
+    }
+  }, 'image/png');
+}
+
 </script>
 </body>
 </html>
