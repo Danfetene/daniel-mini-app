@@ -385,16 +385,16 @@
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-content">
       <h2>Order Form</h2>
-      <p>Please enter your delivery details below to finalize your order.</p>
+      <p>Please insert your delivery information below.</p>
       
       <div class="input-group">
-        <label>Phone Number</label>
-        <input type="tel" id="order-phone" placeholder="e.g., 0912345678" />
+        <label>1. Delivery Address</label>
+        <textarea id="order-address" rows="3" placeholder="Sub-city, Woreda, specific location..."></textarea>
       </div>
-      
+
       <div class="input-group">
-        <label>Delivery Address</label>
-        <textarea id="order-address" rows="3" placeholder="Sub-city, Woreda, Specific Landmark..."></textarea>
+        <label>2. Phone Number</label>
+        <input type="tel" id="order-phone" placeholder="e.g., 0912345678" />
       </div>
       
       <div class="modal-actions">
@@ -767,12 +767,12 @@
       const phone = phoneInput.value.trim();
       const address = addressInput.value.trim();
 
-      if (phone.length < 9) {
-        tg.showAlert("Please enter a valid phone number.");
+      if (!address) {
+        tg.showAlert("Please insert a delivery address.");
         return;
       }
-      if (address.length < 4) {
-        tg.showAlert("Please enter a clear delivery address.");
+      if (!phone || phone.length < 9) {
+        tg.showAlert("Please insert a valid phone number.");
         return;
       }
 
@@ -789,16 +789,14 @@
       });
 
       const message = 
-`🛒 New Water Order – ET Water Market
-📞 Phone: ${phone}
+`🛒 New Water Order – Order Form
 📍 Address: ${address}
+📞 Phone: ${phone}
 
 Items:
 ${itemsText}
 ────────────────────
-💰 Total: ${total} Birr
-
-Ordered from Telegram Mini App`;
+💰 Total: ${total} Birr`;
 
       try {
         const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -814,21 +812,17 @@ Ordered from Telegram Mini App`;
         const data = await res.json();
 
         if (data.ok) {
-          // Popup Success Alert & Redirect to Home
-          tg.showAlert("Thank you for your order! We will contact you soon. 💧", () => {
+          tg.showAlert("Thank you for your order!", () => {
             checkoutModal.classList.remove('visible');
             
-            // Clear out user input structures
             phoneInput.value = "";
             addressInput.value = "";
             
-            // Wipe out local variables and clean app interface structures
             cart = [];
             saveCart();
             renderCart();
             document.getElementById('cart-summary').classList.remove('visible');
             
-            // Wipe standard controls off interface and snap cleanly back to home view layout
             tg.BackButton.hide();
             returnToMainView();
           });
